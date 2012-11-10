@@ -12,8 +12,8 @@ Document Structure
 ------------------
 
 Title
-- Dataset n
--- Algorithm n
--- Algorithm n+1
-- Dataset n+1
+* Dataset n
+ * Algorithm n
+ * Algorithm n+1
+* Dataset n+1
 ...
