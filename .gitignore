@@ -5,3 +5,5 @@
 # and specific files
 !.gitignore
 !*.tex
+!*.bib
+
