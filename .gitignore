@@ -1,0 +1,7 @@
+# Ignore everything
+*
+# except directories
+!*/
+# and specific files
+!.gitignore
+!*.tex
