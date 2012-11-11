@@ -20,6 +20,9 @@
 
 \documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
 
+\usepackage{natbib}
+\bibliographystyle{plain}
+
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 \usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
 \usepackage[english]{babel} % English language/hyphenation
@@ -57,7 +60,7 @@
 \normalfont \normalsize 
 \textsc{Vienna University of Technology} \\ [25pt] % Your university, school and/or department name(s)
 \horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
-\huge Assignment Title \\ % The assignment title
+\huge Experiments in Machine Learning \\ % The assignment title
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
@@ -75,19 +78,7 @@
 
 \section{Skin Segmentation}
 
-\lipsum[2] % Dummy text
-
-\begin{align} 
-\begin{split}
-(x+y)^3     &= (x+y)^2(x+y)\\
-&=(x^2+2xy+y^2)(x+y)\\
-&=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
-&=x^3+3x^2y+3xy^2+y^3
-\end{split}                 
-\end{align}
-
-Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-
+The ``Skin Segmentation'' data set consists of 245057 BGR-color samples collected via random selection of face images\cite{uci-repo}. 
 %------------------------------------------------
 
 \subsection{Heading on level 2 (subsection)}
@@ -144,5 +135,10 @@ Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et 
 \end{enumerate}
 
 %----------------------------------------------------------------------------------------
+
+
+
+\bibliography{references}
+
 
 \end{document}
