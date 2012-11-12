@@ -6,4 +6,4 @@
 !.gitignore
 !*.tex
 !*.bib
-
+!*.arff
