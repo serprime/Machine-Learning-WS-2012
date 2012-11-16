@@ -29,6 +29,7 @@
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
 
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{todonotes}
 
 \usepackage{sectsty} % Allows customizing section commands
 \allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
@@ -39,7 +40,7 @@
 \fancyfoot[L]{} % Empty left footer
 \fancyfoot[C]{} % Empty center footer
 \fancyfoot[R]{\thepage} % Page numbering for right footer
-\renewcommand{\thesection}{Data Set \arabic{section}}
+% \renewcommand{\thesection}{Data Set \arabic{section}}
 \renewcommand{\headrulewidth}{0pt} % Remove header underlines
 \renewcommand{\footrulewidth}{0pt} % Remove footer underlines
 \setlength{\headheight}{13.6pt} % Customize the height of the header
@@ -76,9 +77,14 @@
 %   PROBLEM 1
 %----------------------------------------------------------------------------------------
 
-\section{Skin Segmentation}
+\section{Echocardiogram data}
 
-The ``Skin Segmentation'' data set consists of 245057 BGR-color samples collected via random selection of face images\cite{uci-repo}. 
+The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. 
+
+\subsection{Preprocessing}
+The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. There is another peculiarity with the attribute ``alive-at-1'': Some of the patients survived less than 12 months even if they were still alive at the end of the survey. In this case these patients joined the survey later and weren't followed the whole year. If the attribute ``alive-at-1'' is set to 1, it means the person survived one year, otherwise the person died or joined the survey later on. This attribute can be fully derived from the first two attributes, so it can be removed without interfering the results.
+\todo{Compare results with/without preprocessing}
+
 %------------------------------------------------
 
 \subsection{Heading on level 2 (subsection)}
