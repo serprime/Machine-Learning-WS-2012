@@ -82,7 +82,8 @@
 The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. 
 
 \subsection{Preprocessing}
-The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. There is another peculiarity with the attribute ``alive-at-1'': Some of the patients survived less than 12 months even if they were still alive at the end of the survey. In this case these patients joined the survey later and weren't followed the whole year. If the attribute ``alive-at-1'' is set to 1, it means the person survived one year, otherwise the person died or joined the survey later on. This attribute can be fully derived from the first two attributes, so it can be removed without interfering the results.
+The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. There is another peculiarity with the attribute ``alive-at-1'': Some of the patients survived less than 12 months even if they were still alive at the end of the survey. In this case these patients joined the survey later and weren't followed a whole year. If the attribute ``alive-at-1'' is set to 1, it means the person survived one year, otherwise the
+person died or joined the survey later on. This attribute can be fully derived from the first two attributes, so it can be removed without interfering the results. Another unnecessary attribute is ``group'' which is just meaningless and can be ignored \cite{uci-repo}. Another derived attribute is ``mult'' and can be ignored as well.
 \todo{Compare results with/without preprocessing}
 
 %------------------------------------------------
