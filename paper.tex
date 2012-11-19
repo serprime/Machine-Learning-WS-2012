@@ -105,6 +105,12 @@ We can also remove the $education-num$ attribute as it is only a numeric represe
 
 At first we try to discretize all numeric attributes with 10 bins of equal ranges.
 
+\subsection{Decision Tree}
+
+\subsection{Random Forrest}
+
+\subsection{Support Vector Machine}
+
 \subsection{Naive Bayes}
 
 We use 66\% of the data set for training and the rest for evaluation.
@@ -150,6 +156,11 @@ Precision   Recall  F-Measure  Class
 \end{verbatim}
 
 It got worse. \todo{why does discretizer with equal bin size not give a better result?}
+
+The Naive Bayes does not have a lot of settings. It use a built in supervised discretizer or a kernel estimator. But the result is always the same with around 80\% correctly classified instances in the test run.
+
+\subsection{k-Nearest}
+
 
 %------------------------------------------------
 
