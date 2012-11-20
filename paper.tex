@@ -80,9 +80,22 @@
 %   PROBLEM 1
 %----------------------------------------------------------------------------------------
 
+\todo[inline]{Chose 5 different classifiers, from at least 3 different types
+of learning algorithms
+
+Argue \& justify choice (part of grading...)
+
+Experiment with different parameter settings - And report on it !
+
+Compare results among classifiers and datasets
+
+Evaluate effect of pre-processing (e.g. different strategies
+for missing values)
+}
+
 \section{Echocardiogram data}
 
-The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine if the patient will survive at least one year.   
+The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine if the patient will survive at least one year.
 
 \subsection{Preprocessing}
 The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. Another unnecessary attribute is ``group'' which is just meaningless and can be ignored \cite{uci-repo}. Another derived attribute is ``mult'' and can be ignored as well.
@@ -139,6 +152,16 @@ Since there is no missing value for the survival attribute, this branch can be i
 But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
 
 
+\subsection{re-pre-processed the data set}
+
+As mentioned in the description of the dataset on the UCI repo site we can remove the attributes group, name and mold as they do not have any meaning for the prediction attribute.
+
+We also have to remove the survival and still-alive attributes, as the prediction attribute derives from them. Otherwise, a classification algorithm could predict all instances by taking into account only these two attributes.
+
+A further refinement of the data set has been done by deleting all instances, where the outcome was unknown, as this cannot be used for training.
+
+
+
 
 \section{Adult data}
 
@@ -154,11 +177,23 @@ We can also remove the $education-num$ attribute as it is only a numeric represe
 
 At first we try to discretize all numeric attributes with 10 bins of equal ranges.
 
+
+
+
 \subsection{Decision Tree}
+
+
+
 
 \subsection{Random Forrest}
 
+
+
+
 \subsection{Support Vector Machine}
+
+
+
 
 \subsection{Naive Bayes}
 
@@ -211,6 +246,29 @@ The Naive Bayes does not have a lot of settings. It use a built in supervised di
 \subsection{k-Nearest}
 
 
+\section{Contraceptive Method Choice Data}
+
+The Contraceptive Method Choice Data Set consists of information about the demographic and socio-economic characteristics of married women. The task is to predict which kind of contraceptive methods a woman uses. These are categorized as no use, short term or long term.
+
+\subsection{Preprocessing}
+
+The attributes are already in a numerical and categorical form, whereby the categories are encoded in an ordinal form. These go from 1 to 4 where 1 is low/bad and 4 is high/good.
+
+\todo{check if ordinal is the correct term when i mean, that the attributes are encoded in numbers, where 1<2, 1<4, 4>2, ...}
+
+
+\subsection{Desicion Tree}
+\subsection{Random Forrest}
+\subsection{Naive Bayes}
+\subsection{Support VectorMachine}
+\subsection{k-Nearest}
+
+
+
+\bibliography{references}
+
+
+\end{document}
 %------------------------------------------------
 
 
@@ -271,7 +329,3 @@ Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et 
 
 
 
-\bibliography{references}
-
-
-\end{document}

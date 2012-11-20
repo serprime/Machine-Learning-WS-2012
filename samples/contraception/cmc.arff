@@ -1,6 +1,5 @@
 @relation cmc
 
-
 @attribute wife-age numeric
 @attribute wife-education {1,2,3,4}
 @attribute husband-education {1,2,3,4}
