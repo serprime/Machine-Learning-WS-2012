@@ -82,14 +82,60 @@
 
 \section{Echocardiogram data}
 
-The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. 
+The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine if the patient will survive at least one year.   
 
 \subsection{Preprocessing}
-The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. There is another peculiarity with the attribute ``alive-at-1'': Some of the patients survived less than 12 months even if they were still alive at the end of the survey. In this case these patients joined the survey later and weren't followed a whole year. If the attribute ``alive-at-1'' is set to 1, it means the person survived one year, otherwise the
-person died or joined the survey later on. This attribute can be fully derived from the first two attributes, so it can be removed without interfering the results. Another unnecessary attribute is ``group'' which is just meaningless and can be ignored \cite{uci-repo}. Another derived attribute is ``mult'' and can be ignored as well.
+The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. Another unnecessary attribute is ``group'' which is just meaningless and can be ignored \cite{uci-repo}. Another derived attribute is ``mult'' and can be ignored as well.
+
+Some of the patients survived less than 12 months even if they were still alive at the end of the survey. In this case these patients joined the survey too recently to be followed at least one year. To make a reasonable prediction if a patient will survive at least one year, those entries have to be left out for the training data set because they would irritate any learning algorithm. \todo[inline]{maybe, give an example to show that those patients confuse a machine learning algorithm} 
+
+Yet, there are some entries, which can be wiped out from the whole data set as well:
+
+\missingfigure{Show the crappy entry with the 76 years old patient who has only null values}
+
+So long, these preprocessing tasks are just removing attributes (column-wise) or removing certain entries (row-wise), depending on their values.
+
+Unfortunately, there is another peculiarity with the actual prediction attribute ``alive-at-1'', here is the official description:
+\begin{quotation} ``Boolean-valued. Derived from the first two attributes. 0 means patient was either dead after 1 year or had been followed for less than 1 year.  1 means patient was alive at 1 year.''\cite{uci-repo} \end{quotation}
+De facto, the values don't fit to this description. The attribute is $1$ if the patient was followed less than one year and $0$ otherwise. Very astonishing: Even if the attribute is supposed to be a derived attribute, there are several \texttt{null} values, making the corresponding values useless for training data.                                                                
+
+\missingfigure{Show the crappy null valued entries}
+The only way to amend this is to add the prediction value by hand: At first, all patients who joined the survey too recently, have to be left out (i.e. survived less than one year but still alive). Then, the ``alive-at-one'' attribute has to be overwritten with the correct value (i.e. $1$ if the patient survived at least one year).
 \todo{Compare results with/without preprocessing}
 
+\subsection{Decision Tree}
 %------------------------------------------------
+On the first glimpse, it is an easy task for a decision based algorithm:
+
+\begin{verbatim}
+J48 pruned tree
+------------------
+
+survival <= 12
+|   survival <= 11: 0 (4.0)
+|   survival > 11: 1 (4.0)
+survival > 12: 1 (87.0)
+\end{verbatim}
+
+That's correct, if the patient survived $ <= 12 $ months, he survived at least 12 month. What a statement! 
+
+The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute don't make any sense ($ 11 $ is yet a smaller number than $ 12 $, isn't it?). E.g. choosing a DecisionStump results in the expected single splitting: 
+\begin{verbatim}
+Class distributions
+survival <= 11.5
+0   1   
+1.0 0.0 
+survival > 11.5
+0   1   
+0.0 1.0 
+survival is missing
+0   1   
+0.042105263157894736    0.9578947368421052
+\end{verbatim}
+Since there is no missing value for the survival attribute, this branch can be ignored.
+
+But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
+
 
 
 \section{Adult data}
