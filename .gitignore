@@ -1,9 +1,4 @@
-# Ignore everything
-*
-# except directories
-!*/
-# and specific files
-!.gitignore
-!*.tex
-!*.bib
-!*.arff
+*.log
+*.aux
+*.pdf
+
