@@ -112,8 +112,6 @@ Unfortunately, there is another peculiarity with the actual prediction attribute
 \begin{quotation} ``Boolean-valued. Derived from the first two attributes. 0 means patient was either dead after 1 year or had been followed for less than 1 year.  1 means patient was alive at 1 year.''\cite{uci-repo} \end{quotation}
 De facto, the values don't fit to this description. The attribute is $1$ if the patient was followed less than one year and $0$ otherwise. Very astonishing: Even if the attribute is supposed to be a derived attribute, there are several \texttt{null} values, making the corresponding values useless for training data.                                                                
 
-\missingfigure{Show the crappy null valued entries}
-
 We thus inferred the prediction attribute ``alive-at-1'' as explained in the description of the whole dataset: For all patients where the months of survival are greater than or equal to 12 we set the ``alive-at-1''-attribute to 1, otherwise we set it to 0.
 
 The only thing which remained then was to a
