@@ -24,6 +24,7 @@
 \usepackage{listings}
 
 \usepackage{natbib}
+\usepackage{listings}
 \bibliographystyle{plain}
 
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
@@ -122,7 +123,7 @@ After preprocessing only 95 of 132 instances remain and it is still a set full o
 %------------------------------------------------
 On the first glimpse, it is an easy task for a decision based algorithm:
 
-\begin{verbatim}
+\begin{lstlisting}
 J48 pruned tree
 ------------------
 
@@ -130,12 +131,12 @@ survival <= 12
 |   survival <= 11: 0 (4.0)
 |   survival > 11: 1 (4.0)
 survival > 12: 1 (87.0)
-\end{verbatim}
+\end{lstlisting}
 
 That's correct, if the patient survived $ <= 12 $ months, he survived at least 12 month. What a statement! 
 
 The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute don't make any sense ($ 11 $ is yet a smaller number than $ 12 $, isn't it?). E.g. choosing a DecisionStump results in the expected single splitting: 
-\begin{verbatim}
+\begin{lstlisting}
 Class distributions
 survival <= 11.5
 0   1   
@@ -146,14 +147,64 @@ survival > 11.5
 survival is missing
 0   1   
 0.042105263157894736    0.9578947368421052
-\end{verbatim}
+\end{lstlisting}
 Since there is no missing value for the survival attribute, this branch can be ignored.
 
 But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
 
 
+\subsection{re-preprocessed the data set}
+
+As mentioned in the description of the dataset on the UCI repository site we can remove the attributes ``group'', ``name'' and ``mult'' as they do not have any meaning for the prediction attribute.
+
+We also have to remove the ``survival'' and ``still-alive'' attributes, as the prediction attribute derives from them. Otherwise, a classification algorithm could predict all instances by taking into account only these two attributes.
+
+A further refinement of the data set has been done by deleting all instances, where the outcome was unknown, as this cannot be used for training.
+
+\subsection{Decision Tree on re-preprocessed data}
+
+The J48 Decision Tree shows a more useful tree on the re-preprocessed data:
+\begin{lstlisting}
+J48 pruned tree
+
+epss <= 13100: 1 (90.63/1.95)
+epss > 13100
+|   fractional-shortening <= 190: 1 (2.25/0.05)
+|   fractional-shortening > 190: 0 (2.11/0.11)
+\end{lstlisting}
+
+The documentation of the data set explains the two attributes as follows:
+\begin{quote}
+``epss -- E-point septal separation, another measure of contractility. Larger numbers are increasingly abnormal.''
+\end{quote}
+\begin{quote}
+`` fractional-shortening -- a measure of contracility around the heart lower numbers are increasingly abnormal''
+\end{quote}
+
+Only the rule for the fractional shortening should be the other way round, because a low fractional shortening is a rather pathological sign. Although the decision tree has a high precision of almost 95\% it performs very imprecise, because none of the patients who died after one year are correctly classified:
+
+\begin{lstlisting}
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+  0  4 |  a = 0
+  1 90 |  b = 1
+    
+\end{lstlisting}
+
+Using an unpruned tree doesn't improve the results:
+\begin{lstlisting}
+J48 unpruned tree
 
 
+pericardial-effusion = 0
+|   epss <= 13100: 1 (76.62/1.95)
+|   epss > 13100
+|   |   epss <= 15600: 0 (2.19/0.16)
+|   |   epss > 15600: 1 (2.19/0.03)
+pericardial-effusion = 1: 1 (14.0)
+\end{lstlisting}
+Here, the existence of a pericardial effusion (fluid around the heart) is assumed to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%.
 \section{Adult data}
 
 The Adult or Census Income data sets contains 48842 instances of information about persons and if they earn more than 50.000 a year. The data set has 14 attributes and missing values.
@@ -261,62 +312,5 @@ The attributes are already in a numerical and categorical form, whereby the cate
 
 \end{document}
 %------------------------------------------------
-
-
-\subsection{Heading on level 2 (subsection)}
-
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. 
-\begin{align}
-A = 
-\begin{bmatrix}
-A_{11} & A_{21} \\
-A_{21} & A_{22}
-\end{bmatrix}
-\end{align}
-Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-
-%------------------------------------------------
-
-\subsubsection{Heading on level 3 (subsubsection)}
-
-\lipsum[3] % Dummy text
-
-\paragraph{Heading on level 4 (paragraph)}
-
-\lipsum[6] % Dummy text
-
-%----------------------------------------------------------------------------------------
-%   PROBLEM 2
-%----------------------------------------------------------------------------------------
-
-\section{Lists}
-
-%------------------------------------------------
-
-\subsection{Example of list (3*itemize)}
-\begin{itemize}
-    \item First item in a list 
-        \begin{itemize}
-        \item First item in a list 
-            \begin{itemize}
-            \item First item in a list 
-            \item Second item in a list 
-            \end{itemize}
-        \item Second item in a list 
-        \end{itemize}
-    \item Second item in a list 
-\end{itemize}
-
-%------------------------------------------------
-
-\subsection{Example of list (enumerate)}
-\begin{enumerate}
-\item First item in a list 
-\item Second item in a list 
-\item Third item in a list
-\end{enumerate}
-
-%----------------------------------------------------------------------------------------
-
 
 
