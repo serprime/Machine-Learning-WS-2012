@@ -152,15 +152,6 @@ Since there is no missing value for the survival attribute, this branch can be i
 But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
 
 
-\subsection{re-pre-processed the data set}
-
-As mentioned in the description of the dataset on the UCI repo site we can remove the attributes group, name and mold as they do not have any meaning for the prediction attribute.
-
-We also have to remove the survival and still-alive attributes, as the prediction attribute derives from them. Otherwise, a classification algorithm could predict all instances by taking into account only these two attributes.
-
-A further refinement of the data set has been done by deleting all instances, where the outcome was unknown, as this cannot be used for training.
-
-
 
 
 \section{Adult data}
