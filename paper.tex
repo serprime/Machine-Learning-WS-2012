@@ -113,10 +113,12 @@ Unfortunately, there is another peculiarity with the actual prediction attribute
 De facto, the values don't fit to this description. The attribute is $1$ if the patient was followed less than one year and $0$ otherwise. Very astonishing: Even if the attribute is supposed to be a derived attribute, there are several \texttt{null} values, making the corresponding values useless for training data.                                                                
 
 \missingfigure{Show the crappy null valued entries}
-The only way to amend this is to add the prediction value by hand: At first, all patients who joined the survey too recently, have to be left out (i.e. survived less than one year but still alive). Then, the ``alive-at-one'' attribute has to be overwritten with the correct value (i.e. $1$ if the patient survived at least one year).
-\todo{Compare results with/without preprocessing}
 
-After preprocessing only 95 of 132 instances remain and it is still a set full of gaps with 45 missing values in total. After preprocessing it is also a very imbalanced data set for machine learning: Only 4 patients died within 12 months, a ratio of 1 to 24. As the documentation of the UCI repository suggests ``The most difficult part of this problem is correctly predicting that the patient will NOT survive. (Part of the difficulty seems to be the size of the data set.)''\cite{uci-repo}. Indeed this is rather difficult to predict with only four valid instances. 
+We thus inferred the prediction attribute ``alive-at-1'' as explained in the description of the whole dataset: For all patients where the months of survival are greater than or equal to 12 we set the ``alive-at-1''-attribute to 1, otherwise we set it to 0.
+
+The only thing which remained then was to a
+
+\todo{Compare results with/without preprocessing}
 
 \subsection{Decision Tree}
 %------------------------------------------------
