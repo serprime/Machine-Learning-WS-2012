@@ -1,10 +1,6 @@
-# Ignore everything
-*
-# except directories
-!*/
-# and specific files
-!.gitignore
-!*.tex
-!*.bib
-!*.arff
-!*.data
+
+*.log
+*.aux
+*.pdf
+*.ods
+

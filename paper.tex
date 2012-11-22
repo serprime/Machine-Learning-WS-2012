@@ -81,6 +81,11 @@
 %   PROBLEM 1
 %----------------------------------------------------------------------------------------
 
+\todo[inline]{defined:
+
+validation: cross-validation with 10 for big data sets (9 training, 1 test), 3 for the small echo cardio set.
+}
+
 \todo[inline]{Chose 5 different classifiers, from at least 3 different types
 of learning algorithms
 
@@ -166,7 +171,6 @@ A further refinement of the data set has been done by deleting all instances, wh
 The J48 Decision Tree shows a more useful tree on the re-preprocessed data:
 \begin{lstlisting}
 J48 pruned tree
-------------------
 
 epss <= 13100: 1 (90.63/1.95)
 epss > 13100
@@ -196,7 +200,7 @@ Only the rule for the fractional shortening should be the other way round, becau
 Using an unpruned tree doesn't improve the results:
 \begin{lstlisting}
 J48 unpruned tree
-------------------
+
 
 pericardial-effusion = 0
 |   epss <= 13100: 1 (76.62/1.95)
