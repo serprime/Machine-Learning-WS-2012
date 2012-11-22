@@ -289,9 +289,40 @@ At first we try to discretize all numeric attributes with 10 bins of equal range
 
 
 \subsection{Decision Tree}
+Using a decision tree yields a precision about 86\%. Varying the parameters for this algorithm influences the quality of the results only slightly, as the following examples illustrate.
 
+First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDLCorrection and Subtree raising and at least 2 instances per leaf of the tree, we get the following summary of the quality:
+ 
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                TP Rate  FP Rate  Precision  Recall  F-Measure  Class
+                0.615    0.062    0.759      0.615   0.68       >50K
+                0.938    0.385    0.885      0.938   0.911      <=50K
+Weighted Avg.   0.86     0.307    0.854      0.86    0.855      
+\end{lstlisting}
 
+The decision tree that was used for this run has a size of 413 and has 311 leaves.
 
+\paragraph{Raising the confidence factor}
+Subsequently increasing the confidence factor, which result in less pruning, leads to a continuous worse quality. If we set the confidence factor to 0.5 we get the following outcome:
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                TP Rate  FP Rate  Precision  Recall  F-Measure  Class
+                0.632    0.071    0.738      0.632   0.681      >50K
+                0.929    0.368    0.888      0.929   0.908      <=50K
+Weighted Avg.   0.857    0.296    0.852      0.857   0.854      
+\end{lstlisting}
+.. for a confidence factor of 0.75 we get the following:
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                TP Rate  FP Rate  Precision  Recall  F-Measure  Class
+                0.655    0.094    0.689      0.655   0.672      >50K
+                0.906    0.345    0.892      0.906   0.899      <=50K
+Weighted Avg.   0.846    0.285    0.843      0.846   0.844     
+\end{lstlisting}
+
+\paragraph{Other parameters}
+Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without MDLcorrection or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\$ respectively.
 
 \subsection{Random Forrest}
 
