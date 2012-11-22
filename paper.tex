@@ -190,7 +190,6 @@ Only the rule for the fractional shortening should be the other way round, becau
 
 \begin{lstlisting}
 === Confusion Matrix ===
-
   a  b   <-- classified as
   0  4 |  a = 0
   1 90 |  b = 1
@@ -210,6 +209,68 @@ pericardial-effusion = 0
 pericardial-effusion = 1: 1 (14.0)
 \end{lstlisting}
 Here, the existence of a pericardial effusion (fluid around the heart) is assumed to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%.
+
+\subsubsection{Random Forest}
+Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features ($ log_2(7) + 1 = 2 $) and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result:
+
+\begin{lstlisting}
+=== Confusion Matrix ===
+  a  b   <-- classified as
+  0  4 |  a = 0
+  2 91 |  b = 1
+\end{lstlisting}
+And the statistical measures:
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                 TP Rate  FP Rate  Precision  Recall  F-Measure    Class
+                 0        0.022    0          0       0            0
+                 0.978    1        0.958      0.978   0.968        1
+Weighted Avg.    0.938    0.96     0.918      0.938   0.928     
+\end{lstlisting}
+\paragraph{Parameter: Number of trees}
+\todo[inline]{proper line break here}
+Reducing the number of the trees continuously decreases the quality of the model, as shown in the accuracy details for 5 random trees:
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                 TP Rate  FP Rate  Precision  Recall  F-Measure    Class
+                 0        0.032    0          0       0            0  
+                 0.968    1        0.957      0.968   0.963        1   
+Weighted Avg.    0.928    0.96     0.918      0.928   0.923    
+\end{lstlisting}
+.. and for a single random tree:
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                 TP Rate  FP Rate  Precision  Recall  F-Measure    Class
+                 0        0.054    0          0       0            0  
+                 0.946    1        0.957      0.946   0.951        1   
+Weighted Avg.    0.907    0.961    0.917      0.907   0.912    
+\end{lstlisting}
+Reducing the number of the trees increases the number of false positives but doesn't catch any true positives.
+\paragraph{Limiting the tree-depth}
+Limitations in the depths of the random trees has also almost no effect on the accuracy of random forests on this data set. The only change to the outcome can be observed as soon the depth of the trees is limited to 6:
+\begin{lstlisting}
+    === Confusion Matrix ===
+    a  b   <-- classified as
+    0  4 |  a = 0
+    1 92 |  b = 1
+\end{lstlisting}
+Only one false positive has gone. Not really a remarkable change in the quality. This does not change if the tree-depth is further reduced.
+\paragraph{Increasing the number of features}
+Increasing the number of features chosen by each random tree seems to has also a low effect on the quality, because until a certain border of 5 chosen features the outcome is exactly the same as it was with default settings. But if we configure the random forests with 6 features we can spot our first true positive:
+\begin{lstlisting}
+=== Confusion Matrix ===
+  a  b   <-- classified as
+  1  3 |  a = 0
+  2 91 |  b = 1
+\end{lstlisting}
+Which gives us the best achievable accuracy that we can reach with decision based algorithms:
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                TP Rate  FP Rate  Precision  Recall  F-Measure   Class
+                0.25     0.022    0.333      0.25    0.286       0
+                0.978    0.75     0.968      0.978   0.973       1
+Weighted Avg.   0.948    0.72     0.942      0.948   0.945      
+\end{lstlisting}
 \section{Adult data}
 
 The Adult or Census Income data sets contains 48842 instances of information about persons and if they earn more than 50.000 a year. The data set has 14 attributes and missing values.
