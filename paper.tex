@@ -86,7 +86,7 @@
 validation: cross-validation with 10 for big data sets (9 training, 1 test), 3 for the small echo cardio set.
 }
 
-\todo[inline]{Chose 5 different classifiers, from at least 3 different types
+\todo[inline]{Choose 5 different classifiers, from at least 3 different types
 of learning algorithms
 
 Argue \& justify choice (part of grading...)
@@ -101,26 +101,28 @@ for missing values)
 
 \section{Echocardiogram data}
 
-The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine if the patient will survive at least one year.
+The Echocardiogram data set originally consists of 132 entries with 13 attributes respectively. The entries of the dataset refer to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine from several different attributes if the patient will survive at least one year, beginning from the day when the heart attack occured. The dataset contains missing values and there's a lot of other preprocessing steps (described later) which have to be done. The dataset is very small, especially after preprocessing and a further problem is that the number of patients which died within one year after their heart attack is very small (4) which makes the classification very hard. It is nevertheless an interesting question wether some classification algorithm can perform well on that data.
 
 \subsection{Preprocessing}
-The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. Another unnecessary attribute is ``group'' which is just meaningless and can be ignored \cite{uci-repo}. Another derived attribute is ``mult'' and can be ignored as well.
+\paragraph{}The patient's attribute ``name'' was replaced by a dummy for all entries. For this reason, this attribute could be entirely removed. Other unnecessary attributes were ``group'' and ``mult'' which were also (as explained in the description) just meaningless and could thus be ignored \cite{uci-repo}. There were also two attributes ``wall-motion-score'' and ``wall-motion-index'' where the description of the dataset said that one should only use the ``wall-motion-index'' for classification issues and so ``wall-motion-score'' was also removed.
 
-Some of the patients survived less than 12 months even if they were still alive at the end of the survey. In this case these patients joined the survey too recently to be followed at least one year. To make a reasonable prediction if a patient will survive at least one year, those entries have to be left out for the training data set because they would irritate any learning algorithm. \todo[inline]{maybe, give an example to show that those patients confuse a machine learning algorithm} 
+\paragraph{}The actual prediction attribute ``alive-at-1'' (denoting that a patient lived at least one year after having a heart attack) had to be inferred from two other attributes, namely ``survival'' (number of months that the test-person survived after the heart attack) and ``still-alive'' (a binary variable denoting if a patient is still alive at the time when the data was recorded). It is possible that the ``survival'' variable has a value lower than 12 but the ``still-alive'' variable is set to true, meaning that the test-person still lived. This is the case if the data for a test-person was recorded in the last 12 months and so this data cannot be used for the classification and was thus removed.
 
-Yet, there are some entries, which can be wiped out from the whole data set as well:
+\paragraph{}It should be clear that the variables ``survival'' and ``still-alive'' should not be used for classification since they constitute the final prediction attribute.
 
-\missingfigure{Show the crappy entry with the 76 years old patient who has only null values}
+\paragraph{}The last preprocessing step was the replacement of missing values (data imputation). Most of the data was complete but there were still some data records having missing values which we replaced by the mean values of the specific variables. One data record did contain completeley useless data and was thus removed (see at the picture below).
 
-So long, these preprocessing tasks are just removing attributes (column-wise) or removing certain entries (row-wise), depending on their values.
+\paragraph{}
 
-Unfortunately, there is another peculiarity with the actual prediction attribute ``alive-at-1'', here is the official description:
-\begin{quotation} ``Boolean-valued. Derived from the first two attributes. 0 means patient was either dead after 1 year or had been followed for less than 1 year.  1 means patient was alive at 1 year.''\cite{uci-repo} \end{quotation}
-De facto, the values don't fit to this description. The attribute is $1$ if the patient was followed less than one year and $0$ otherwise. Very astonishing: Even if the attribute is supposed to be a derived attribute, there are several \texttt{null} values, making the corresponding values useless for training data.                                                                
+%So long, these preprocessing tasks are just removing attributes (column-wise) or removing certain entries (row-wise), depending on their values.
+%
+%Unfortunately, there is another peculiarity with the actual prediction attribute ``alive-at-1'', here is the official description:
+%\begin{quotation} ``Boolean-valued. Derived from the first two attributes. 0 means patient was either dead after 1 year or had been followed for less than 1 year.  1 means patient was alive at 1 year.''\cite{uci-repo} \end{quotation}
+%De facto, the values don't fit to this description. The attribute is $1$ if the patient was followed less than one year and $0$ otherwise. Very astonishing: Even if the attribute is supposed to be a derived attribute, there are several \texttt{null} values, making the corresponding values useless for training data.                                                                
+%
+%We thus inferred the prediction attribute ``alive-at-1'' as explained in the description of the whole dataset: For all patients where the months of survival are greater than or equal to 12 we set the ``alive-at-1''-attribute to 1, otherwise we set it to 0.
 
-We thus inferred the prediction attribute ``alive-at-1'' as explained in the description of the whole dataset: For all patients where the months of survival are greater than or equal to 12 we set the ``alive-at-1''-attribute to 1, otherwise we set it to 0.
-
-The only thing which remained then was to a
+%The only thing which remained then was to a
 
 \todo{Compare results with/without preprocessing}
 
@@ -157,14 +159,6 @@ Since there is no missing value for the survival attribute, this branch can be i
 
 But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
 
-
-\subsection{re-preprocessed the data set}
-
-As mentioned in the description of the dataset on the UCI repository site we can remove the attributes ``group'', ``name'' and ``mult'' as they do not have any meaning for the prediction attribute.
-
-We also have to remove the ``survival'' and ``still-alive'' attributes, as the prediction attribute derives from them. Otherwise, a classification algorithm could predict all instances by taking into account only these two attributes.
-
-A further refinement of the data set has been done by deleting all instances, where the outcome was unknown, as this cannot be used for training.
 
 \subsection{Decision Tree on re-preprocessed data}
 
@@ -271,6 +265,50 @@ Which gives us the best achievable accuracy that we can reach with decision base
                 0.978    0.75     0.968      0.978   0.973       1
 Weighted Avg.   0.948    0.72     0.942      0.948   0.945      
 \end{lstlisting}
+
+\subsection{Support Vector Machine}
+
+\paragraph{}We used the support vector machine implementation called `SMO' in WEKA. Since a support vector machine uses the numeric coordinates of the data records to do the classification we tried to normalize the data in advance to obtain better results. Since this normalization did not have any impact on the results we followed that the support vector machine algorithm of the WEKA-toolkit automatically normalizes all the data records.
+
+\paragraph{}The build of the model took no time since the dataset is that small. The same holds for the evaluation. We tried all the different kernel-functions for the classification but the result didn't change. The following table shows the results of the evaluation and if you take a close look on the results, you can see that all data records were classified to the same class which means that the SVM algorithm wasn't able to cope with the small dataset:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|lllllll|}
+	\hline
+	TP Rate   			&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  &Class\\
+	\hline
+	0         			&0         &0         	&0       &  0         & 0.5      &0\\
+  1         			&1         &0.959     	&1       &0.979       &	0.5       &1\\
+  \hline
+	Weighted Avg.		&0.959     &0.959      	&0.919   &0.959     	&0.939     &0.5\\
+	\hline
+\end{tabular}
+\caption{Results of the SVM-classification for the echocardiogram dataset}
+\end{table}
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|lll|}
+	\hline
+	Classified as	& &\\
+	a		&	b & \\
+	\hline
+	0   & 4  	&  a = 0\\
+  0   & 93 	&  b = 1\\
+  \hline
+\end{tabular}
+\caption{Confusion matrix}
+\end{table}
+
+
+
+\begin{lstlisting}
+  
+\end{lstlisting}
+
 \section{Adult data}
 
 The Adult or Census Income data sets contains 48842 instances of information about persons and if they earn more than 50.000 a year. The data set has 14 attributes and missing values.
@@ -279,13 +317,7 @@ The instances origin from the 1994 Census Database and were extracted by Barry B
 
 \subsection{Preprocessing}
 
-We can remove the final weight -- but we have to find out what it means !!.
-
-We can also remove the $education-num$ attribute as it is only a numeric representation of the education attribute.
-
-At first we try to discretize all numeric attributes with 10 bins of equal ranges.
-
-
+The ``Adult'' dataset has missing values which we all replaced by the mean value of the respective attribute. We did no further preprocessing. As for the Echocardiogram dataset there was no normalization neccessary for the SVM or the kNN algorithms.
 
 
 \subsection{Decision Tree}
