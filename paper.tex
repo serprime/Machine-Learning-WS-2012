@@ -20,10 +20,9 @@
 
 \documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
 
-% philipp: added for code listings
-\usepackage{listings}
 
 \usepackage{natbib}
+% philipp: added for code listings
 \usepackage{listings}
 \usepackage{booktabs}
 \bibliographystyle{plain}
@@ -259,24 +258,33 @@ Weighted Avg. &  0.938   & 0.96    & 0.918     & 0.938  & 0.928     &       \\ \
 
 
 \paragraph{Number of Random Trees}
-\todo[inline]{proper line break here}
-Reducing the number of the trees continuously decreases the quality of the model, as shown in the accuracy details for 5 random trees:
-\begin{lstlisting}
-=== Detailed Accuracy By Class ===
-                 TP Rate  FP Rate  Precision  Recall  F-Measure    Class
-                 0        0.032    0          0       0            0  
-                 0.968    1        0.957      0.968   0.963        1   
-Weighted Avg.    0.928    0.96     0.918      0.928   0.923    
-\end{lstlisting}
-.. and for a single random tree:
-\begin{lstlisting}
-=== Detailed Accuracy By Class ===
-                 TP Rate  FP Rate  Precision  Recall  F-Measure    Class
-                 0        0.054    0          0       0            0  
-                 0.946    1        0.957      0.946   0.951        1   
-Weighted Avg.    0.907    0.961    0.917      0.907   0.912    
-\end{lstlisting}
-Reducing the number of the trees increases the number of false positives but doesn't catch any true positives.
+Reducing the number of the trees continuously decreases the quality of the model, tables \ref{tab:echo:rand:5t} and \ref{tab:echo:rand:1t} show the regression of quality.
+This method increases the number of false positives but doesn't catch any true positives.
+\begin{table*}[H]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+        \toprule 
+        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &   Class  \\ \midrule
+               &  0       & 0.032   & 0         & 0      & 0         &   0      \\
+               &  0.968   & 1       & 0.957     & 0.968  & 0.963     &   1      \\     
+Weighted Avg.  &  0.928   & 0.96    & 0.918     & 0.928  & 0.923     &          \\ \bottomrule
+    \end{tabular*}
+\caption{Random Forest -- 5 Random Trees} 
+\label{tab:echo:rand:5t}
+\end{table*}
+
+\begin{table*}[H]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+        \toprule 
+        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &   Class \\ \midrule
+               &  0       & 0.054   & 0         & 0      & 0         &   0     \\ 
+               &  0.946   & 1       & 0.957     & 0.946  & 0.951     &   1     \\ 
+Weighted Avg.  &  0.907   & 0.961   & 0.917     & 0.907  & 0.912     &         \\ \bottomrule
+    \end{tabular*}
+\caption{Random Forest -- 1 Random Tree} 
+\label{tab:echo:rand:1t}
+\end{table*}
 \paragraph{Limiting the maximum depth of the trees}
 Limitations in the depths of the random trees has also almost no effect on the accuracy of random forests on this data set. The only change to the outcome can be observed as soon the depth of the trees is limited to 6:
 
@@ -310,14 +318,19 @@ b=1 & 2 & 91\\
 \caption{Confusion matrix for Random Forest, increased number of features}
 \end{table}
 
-Which gives us the best achievable accuracy that we can reach with decision based algorithms:
-\begin{lstlisting}
-=== Detailed Accuracy By Class ===
-                TP Rate  FP Rate  Precision  Recall  F-Measure   Class
-                0.25     0.022    0.333      0.25    0.286       0
-                0.978    0.75     0.968      0.978   0.973       1
-Weighted Avg.   0.948    0.72     0.942      0.948   0.945      
-\end{lstlisting}
+Which gives us the best achievable accuracy that we can reach with decision based algorithms, shown in table \ref{tab:echo:rand:6f}.
+\begin{table*}[H]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+        \toprule 
+        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate &  FP Rate &  Precision &  Recall &  F-Measure &  Class \\ \midrule
+               &  0.25    &  0.022   &  0.333     &  0.25   &  0.286     &  0     \\
+               &  0.978   &  0.75    &  0.968     &  0.978  &  0.973     &  1     \\
+Weighted Avg.  &  0.948   &  0.72    &  0.942     &  0.948  &  0.945     &        \\ \bottomrule
+    \end{tabular*}
+\caption{Random Forest -- 6 randomly chosen features} 
+\label{tab:echo:rand:6f}
+\end{table*}
 
 \subsection{Support Vector Machine}
 
@@ -416,15 +429,20 @@ The ``Adult'' dataset has missing values which we all replaced by the mean value
 \subsection{Decision Tree}
 Using a decision tree yields a precision about 86\%. Varying the parameters for this algorithm influences the quality of the results only slightly, as the following examples illustrate.
 
-First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDLCorrection and Subtree raising and at least 2 instances per leaf of the tree, we get the following summary of the quality:
+First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDLCorrection and Subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
  
-\begin{lstlisting}
-=== Detailed Accuracy By Class ===
-                TP Rate  FP Rate  Precision  Recall  F-Measure  Class
-                0.615    0.062    0.759      0.615   0.68       >50K
-                0.938    0.385    0.885      0.938   0.911      <=50K
-Weighted Avg.   0.86     0.307    0.854      0.86    0.855      
-\end{lstlisting}
+\begin{table*}[H]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+        \toprule 
+        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               & TP Rate & FP Rate & Precision & Recall &  F-Measure &  Class \\ \midrule  
+               & 0.615   & 0.062   & 0.759     & 0.615  &  0.68      &  >50K  \\  
+               & 0.938   & 0.385   & 0.885     & 0.938  &  0.911     &  <=50K \\  
+Weighted Avg.  & 0.86    & 0.307   & 0.854     & 0.86   &  0.855     &        \\  \bottomrule 
+    \end{tabular*}
+\caption{Decision Tree -- Default Settings} 
+\label{tab:adult:dec:default}
+\end{table*}
 
 The decision tree that was used for this run has a size of 413 and has 311 leaves.
 
