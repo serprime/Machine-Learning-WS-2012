@@ -25,6 +25,7 @@
 
 \usepackage{natbib}
 \usepackage{listings}
+\usepackage{booktabs}
 \bibliographystyle{plain}
 
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
@@ -133,7 +134,6 @@ On the first glimpse, it is an easy task for a decision based algorithm:
 \begin{lstlisting}
 J48 pruned tree
 ------------------
-
 survival <= 12
 |   survival <= 11: 0 (4.0)
 |   survival > 11: 1 (4.0)
@@ -165,7 +165,6 @@ But allowing the machine learning algorithms to see the origin attributes from w
 The J48 Decision Tree shows a more useful tree on the re-preprocessed data:
 \begin{lstlisting}
 J48 pruned tree
-
 epss <= 13100: 1 (90.63/1.95)
 epss > 13100
 |   fractional-shortening <= 190: 1 (2.25/0.05)
@@ -193,8 +192,6 @@ Only the rule for the fractional shortening should be the other way round, becau
 Using an unpruned tree doesn't improve the results:
 \begin{lstlisting}
 J48 unpruned tree
-
-
 pericardial-effusion = 0
 |   epss <= 13100: 1 (76.62/1.95)
 |   epss > 13100
@@ -205,7 +202,7 @@ pericardial-effusion = 1: 1 (14.0)
 Here, the existence of a pericardial effusion (fluid around the heart) is assumed to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%.
 
 \subsubsection{Random Forest}
-Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features \todo[inline]{calculate!} and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result:
+Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features $ log_2(7) + 1 \approx 4 $, and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result:
 
 \begin{lstlisting}
 === Confusion Matrix ===
@@ -214,14 +211,19 @@ Let's see if a random forest in place of a simple decision tree can make better 
   2 91 |  b = 1
 \end{lstlisting}
 And the statistical measures:
-\begin{lstlisting}
-=== Detailed Accuracy By Class ===
-                 TP Rate  FP Rate  Precision  Recall  F-Measure    Class
-                 0        0.022    0          0       0            0
-                 0.978    1        0.958      0.978   0.968        1
-Weighted Avg.    0.938    0.96     0.918      0.938   0.928     
-\end{lstlisting}
-\paragraph{Parameter: Number of trees}
+\begin{table}
+    \begin{tabular}{lllllll}
+        \toprule 
+        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+              &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\ \midrule
+              &  0       & 0.022   & 0         & 0      & 0         & 0     \\
+              &  0.978   & 1       & 0.958     & 0.978  & 0.968     & 1     \\
+Weighted Avg. &  0.938   & 0.96    & 0.918     & 0.938  & 0.928     &       \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+
+\paragraph{Number of Random Trees}
 \todo[inline]{proper line break here}
 Reducing the number of the trees continuously decreases the quality of the model, as shown in the accuracy details for 5 random trees:
 \begin{lstlisting}
@@ -240,7 +242,7 @@ Weighted Avg.    0.928    0.96     0.918      0.928   0.923
 Weighted Avg.    0.907    0.961    0.917      0.907   0.912    
 \end{lstlisting}
 Reducing the number of the trees increases the number of false positives but doesn't catch any true positives.
-\paragraph{Limiting the tree-depth}
+\paragraph{Limiting the maximum depth of the trees}
 Limitations in the depths of the random trees has also almost no effect on the accuracy of random forests on this data set. The only change to the outcome can be observed as soon the depth of the trees is limited to 6:
 \begin{lstlisting}
     === Confusion Matrix ===
@@ -397,12 +399,12 @@ With default settings, a random forest achieves an accuracy as follows:
                 0.892    0.385    0.88       0.892   0.886      <=50K
 Weighted Avg.   0.825    0.318    0.823      0.825   0.824     
 \end{lstlisting}
-which is surprisingly a worse result than from the J48 algorithm. 
+which is surprisingly worse than the J48 algorithm. 
 
 \paragraph{Number of Random Trees}
 As expected, reducing the number of random trees reduces the quality, with 5 random trees the precision lays at 82.6\% with only 3 random trees it lays at 82.3\%. Interestingly, the quality gets higher if we take even more than 10 random trees into account: With 15 trees, the precision is at 83.2\% and with 25 random trees it is at 83.3\%.
 
-\paragraph{Limitations of the maximum depth of the trees}
+\paragraph{Limiting the maximum depth of the trees}
 We have a sign for overfitting under default settings: Reducing the maximum depth has a positive effect on the quality. From size 20 over 10 until the size of 7 the precision of the random forest rises until 85\%. Reducing the depth even further lets the precision fall again. Here is the detailed accuracy for a random forest which can grow only to a height of 6:
 
 \begin{lstlisting}
@@ -422,8 +424,16 @@ Weighted Avg.   0.858    0.323    0.851      0.858   0.851
 \end{lstlisting}
 
 \paragraph{Number of features}
-Increasing the number of features doesn't support the quality at all. The default number of features for this data set with 13 attributes is \todo[inline]{calculate!}. With a number of 5 randomly chosen features, the precision is yet at 85\% (with maximum depth of tree = 6) but with 10 randomly chosen features the precision falls back to 84.5\%.
-
+Increasing the number of features doesn't support the quality at all. The default number of features for this data set with 13 attributes is $ log_2(13) + 1 \approx 5 $. Choosing 6 attributes brinchoose gs us a precision of 84,9\% and with 10 randomly chosen features the precision falls back to 84.5\%. We can tease the most out of the random forest if we decrease the number of features a little. To be concise, we get the best achievable result, if we take only 3 randomly chosen
+features.
+\begin{lstlisting}
+=== Detailed Accuracy By Class ===
+                 TP Rate  FP Rate  Precision  Recall  F-Measure Class
+                 0.577    0.052    0.779      0.577   0.663     >50K
+                 0.948    0.423    0.876      0.948   0.911     <=50K
+Weighted Avg.    0.859    0.333    0.853      0.859   0.851    
+\end{lstlisting}
+Which is a quite similar accuracy like the best of the J48 algorithm. 
 \subsection{Support Vector Machine}
 
 From the different kernel functions for the SVM-algorithm we used the PolyKernel on this dataset. As with the dataset before the normalization of the numeric data had no inpact on the validation results. One interesting aspect is that the creation of the model and the 10-fold-cross-validation took 135 minutes since the dataset is big. The SVM-algorithm was able to correctly classify 84,9\% of the instances. The following two tables show further validation results including a confusion matrix:
