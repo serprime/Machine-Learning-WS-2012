@@ -112,6 +112,12 @@ for missing values)
 
 \paragraph{}Five classification algorithms were chosen that we used on all data sets. Each chapter will also dicuss how the classifiers perform an the data and why.
 
+
+% ------------------------------------
+% E C H O   C A R D I O    S E T
+% ------------------------------------
+
+
 \section{Echo Cardiogram data}
 
 \paragraph{}The Echocardiogram data set originally consists of 132 entries with 13 attributes respectively. The entries of the dataset refer to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine from several different attributes if the patient will survive at least one year, beginning from the day when the heart attack occured. The dataset contains missing values and there's a lot of other preprocessing steps (described later) which have to be done. The dataset is very small, especially after preprocessing and a further problem is that the number of patients which died within one year after their heart attack is very small (4) which makes the classification very hard. It is nevertheless an interesting question wether some classification algorithm can perform well on that data. Since it is very small we performed a 3-fold-cross-validation on this dataset.
@@ -146,17 +152,15 @@ On the first glimpse, it is an easy task for a decision based algorithm:
 
 \begin{lstlisting}
 J48 pruned tree
-------------------
-
 survival <= 12
 |   survival <= 11: 0 (4.0)
 |   survival > 11: 1 (4.0)
 survival > 12: 1 (87.0)
 \end{lstlisting}
 
-That's correct, if the patient survived $ <= 12 $ months, he survived at least 12 month. What a statement! 
+\paragraph{}That's correct, if the patient survived $ <= 12 $ months, he survived at least 12 month. What a statement! 
 
-The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute don't make any sense ($ 11 $ is yet a smaller number than $ 12 $, isn't it?). E.g. choosing a DecisionStump results in the expected single splitting: 
+\paragraph{}The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute don't make any sense ($ 11 $ is yet a smaller number than $ 12 $, isn't it?). E.g. choosing a DecisionStump results in the expected single splitting: 
 \begin{lstlisting}
 Class distributions
 survival <= 11.5
@@ -169,25 +173,24 @@ survival is missing
 0   1   
 0.042105263157894736    0.9578947368421052
 \end{lstlisting}
-Since there is no missing value for the survival attribute, this branch can be ignored.
+\paragraph{}Since there is no missing value for the survival attribute, this branch can be ignored.
 
-But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
+\paragraph{}But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
 
 
 \subsection{Decision Tree on preprocessed data}
 
-The J48 Decision Tree shows a more useful tree on the preprocessed data:
+\paragraph{}The J48 Decision Tree shows a more useful tree on the preprocessed data:
 
 \begin{lstlisting}
 J48 pruned tree
-
 epss <= 13100: 1 (90.63/1.95)
 epss > 13100
 |   fractional-shortening <= 190: 1 (2.25/0.05)
 |   fractional-shortening > 190: 0 (2.11/0.11)
 \end{lstlisting}
 
-The documentation of the data set explains the two attributes as follows:
+\paragraph{}The documentation of the data set explains the two attributes as follows:
 \begin{quote}
 ``epss -- E-point septal separation, another measure of contractility. Larger numbers are increasingly abnormal.''
 \end{quote}
@@ -195,15 +198,20 @@ The documentation of the data set explains the two attributes as follows:
 `` fractional-shortening -- a measure of contracility around the heart lower numbers are increasingly abnormal''
 \end{quote}
 
-Only the rule for the fractional shortening should be the other way round, because a low fractional shortening is a rather pathological sign. Although the decision tree has a high precision of almost 95\% it performs very imprecise, because none of the patients who died after one year are correctly classified:
+\paragraph{}Only the rule for the fractional shortening should be the other way round, because a low fractional shortening is a rather pathological sign. Although the decision tree has a high precision of almost 95\% it performs very imprecise, because none of the patients who died after one year are correctly classified:
 
-\begin{lstlisting}
-=== Confusion Matrix ===
-  a  b   <-- classified as
-  0  4 |  a = 0
-  1 90 |  b = 1
-    
-\end{lstlisting}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a = 0  & 0 & 4 	\\
+b = 1 & 1 & 90 	\\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Decision tree}
+\end{table}
 
 Using an unpruned tree doesn't improve the results:
 \begin{lstlisting}
@@ -221,13 +229,20 @@ Here, the existence of a pericardial effusion (fluid around the heart) is assume
 
 \subsubsection{Random Forest}
 Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features \todo[inline]{calculate!} and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result:
+	
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a=0 & 0 & 4 \\
+b=1 & 2 & 91\\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Random Forest}
+\end{table}
 
-\begin{lstlisting}
-=== Confusion Matrix ===
-  a  b   <-- classified as
-  0  4 |  a = 0
-  2 91 |  b = 1
-\end{lstlisting}
 And the statistical measures:
 \begin{lstlisting}
 === Detailed Accuracy By Class ===
@@ -257,21 +272,37 @@ Weighted Avg.    0.907    0.961    0.917      0.907   0.912
 Reducing the number of the trees increases the number of false positives but doesn't catch any true positives.
 \paragraph{Limiting the tree-depth}
 Limitations in the depths of the random trees has also almost no effect on the accuracy of random forests on this data set. The only change to the outcome can be observed as soon the depth of the trees is limited to 6:
-\begin{lstlisting}
-    === Confusion Matrix ===
-    a  b   <-- classified as
-    0  4 |  a = 0
-    1 92 |  b = 1
-\end{lstlisting}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a=0 & 0 & 4 \\
+b=1 & 1 & 92\\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Random Forest, limited depth}
+\end{table}
+
 Only one false positive has gone. Not really a remarkable change in the quality. This does not change if the tree-depth is further reduced.
 \paragraph{Increasing the number of features}
 Increasing the number of features chosen by each random tree seems to has also a low effect on the quality, because until a certain border of 5 chosen features the outcome is exactly the same as it was with default settings. But if we configure the random forests with 6 features we can spot our first true positive:
-\begin{lstlisting}
-=== Confusion Matrix ===
-  a  b   <-- classified as
-  1  3 |  a = 0
-  2 91 |  b = 1
-\end{lstlisting}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a=0 & 1 & 3 \\
+b=1 & 2 & 91\\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Random Forest, increased number of features}
+\end{table}
+
 Which gives us the best achievable accuracy that we can reach with decision based algorithms:
 \begin{lstlisting}
 === Detailed Accuracy By Class ===
@@ -306,17 +337,18 @@ Weighted Avg.   0.948    0.72     0.942      0.948   0.945
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|lll|}
-	\hline
-	Classified as	& &\\
-	a		&	b & \\
-	\hline
-	0   & 4  	&  a = 0\\
-  0   & 93 	&  b = 1\\
-  \hline
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a=0 & 0 & 4 \\
+b=1 & 0 & 93\\
+\hline
 \end{tabular}
 \caption{Confusion matrix for SVM}
 \end{table}
+
+
 
 \subsection{k-Nearest Neighbour}
 
@@ -341,19 +373,27 @@ As with the SVM-algorithm there was no normalization necessary (we tested this o
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|lll|}
-	\hline
-	Classified as	& &\\
-	a		&	b & \\
-	\hline
-	0   & 4  	&  a = 0\\
-  0   & 93 	&  b = 1\\
-  \hline
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a=0 & 0 & 4 \\
+b=1 & 0 & 93\\
+\hline
 \end{tabular}
 \caption{Confusion matrix for kNN}
 \end{table}
 
+
 \subsection{Comparison}
+
+
+
+% ------------------------------------
+% A D U L T   D A T A    S E T
+% ------------------------------------
+
+
 
 \section{Adult data}
 
@@ -462,17 +502,17 @@ From the different kernel functions for the SVM-algorithm we used the PolyKernel
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|lll|}
-	\hline
-	Classified as	& &\\
-	a		&	b & \\
-	\hline
-	4454   	& 3387  	&  a = >50K\\
-  1531   	& 23189 	&  b = $\leq$50K\\
-  \hline
+\begin{tabular}{|l|ll|}
+\hline
+              &    a &     b \\
+\hline
+ a = >50k      & 4454 &  3387 \\
+ b = $\leq$50k & 1531 & 23189\\
+\hline
 \end{tabular}
 \caption{Confusion matrix for SVM}
 \end{table}
+
 
 \subsection{Naive Bayes}
 
@@ -545,19 +585,25 @@ We tested the k-nearest neighbour algorithm with different values for $k$. For $
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|lll|}
+\begin{tabular}{|l|ll|}
 	\hline
-	Classified as	& &\\
-	a		&	b & \\
+	 &              a    & b     \\
 	\hline
-	4647  	&3194  		&  a = >50K\\
-  2186 		&22534 		&  b = $\leq$50K\\
-  \hline
+    a = >50K      &	4647 & 3194  \\
+    b = $\leq$50K & 2186 & 22534 \\
+    \hline
 \end{tabular}
 \caption{Confusion matrix for kNN}
 \end{table}
 
+
 \subsection{Comparison}
+
+
+% ------------------------------------
+% C O N T R A S E P T I V E    S E T
+% ------------------------------------
+
 
 \section{Contraceptive Method Choice Data}
 
@@ -597,14 +643,13 @@ We tested different kernel functions on this dataset and obtained the best resul
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|llll|}
+\begin{tabular}{|l|lll|}
 	\hline
-	Classified as	& & &\\
-	a		&	b & c& \\
+	      &a   &b   &c \\
 	\hline
-	367 &105 &157 &   a = 1\\
- 	117 &131 &85 	&   b = 2\\
- 	183 &101 &227 &   c = 3\\
+	a = 1 &367 &105 &157 \\
+ 	b = 2 &117 &131 &85 \\
+ 	c = 3 &183 &101 &227 \\
   \hline
 \end{tabular}
 \caption{Confusion matrix for SVM}
@@ -634,14 +679,13 @@ We tested the kNN-algorithm with a lot of different values for $k$ and obtained 
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|llll|}
+\begin{tabular}{|l|lll|}
 	\hline
-	Classified as	& & &\\
-	a		&	b & c& \\
+	      &a   &b   &c \\
 	\hline
-	358	& 99 	&172 &   a = 1\\
-  99 	&	138 &96  &   b = 2\\
- 	197 & 90 	&224 &   c = 3\\
+    a = 1 &358 &99  &172\\
+    b = 2 &99  &138 &96 \\
+ 	c = 3 &197 &90  &224 \\
   \hline
 \end{tabular}
 \caption{Confusion matrix for kNN}
