@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%x%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Short Sectioned Assignment
 % LaTeX Template
 % Version 1.0 (5/5/12)
@@ -226,16 +226,17 @@ Let's see if a random forest in place of a simple decision tree can make better 
   2 91 |  b = 1
 \end{lstlisting}
 And the statistical measures:
-\begin{table}
-    \begin{tabular}{lllllll}
+\begin{table*}[h]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
         \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\ \midrule
               &  0       & 0.022   & 0         & 0      & 0         & 0     \\
               &  0.978   & 1       & 0.958     & 0.978  & 0.968     & 1     \\
 Weighted Avg. &  0.938   & 0.96    & 0.918     & 0.938  & 0.928     &       \\ \bottomrule
-    \end{tabular}
-\end{table}
+    \end{tabular*}
+\caption{Random Forest -- Default Settings} 
+\end{table*}
 
 
 \paragraph{Number of Random Trees}
