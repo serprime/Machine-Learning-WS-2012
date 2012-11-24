@@ -99,9 +99,22 @@ Evaluate effect of pre-processing (e.g. different strategies
 for missing values)
 }
 
-\section{Echocardiogram data}
+\section{Preface}
 
-The Echocardiogram data set originally consists of 132 entries with 13 attributes respectively. The entries of the dataset refer to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine from several different attributes if the patient will survive at least one year, beginning from the day when the heart attack occured. The dataset contains missing values and there's a lot of other preprocessing steps (described later) which have to be done. The dataset is very small, especially after preprocessing and a further problem is that the number of patients which died within one year after their heart attack is very small (4) which makes the classification very hard. It is nevertheless an interesting question wether some classification algorithm can perform well on that data. Since it is very small we performed a 3-fold-cross-validation on this dataset.
+\paragraph{}For the first exercise 3 data sets were chosen on which five classification algorithms were tested to practice basic machine learning tasks and see how these algorithms behave with their various settings. For the elaboration of this paper the Machine Learning Software Weka was used. It offered all necessary algorithms.
+
+\paragraph{}As data sets we chose as follows:
+\begin{itemize}
+\item Echo Cardiogram, a data set about heart attacks and if a patient survived one year after the attack.
+\item Adult / Census Income, a data set about people and their basic information and if they earn more than 50k a year.
+\item Contraceptive Method Choice, a data set about women and their environment and basic information and what contraceptive method they use.
+\end{itemize}
+
+\paragraph{}Five classification algorithms were chosen that we used on all data sets. Each chapter will also dicuss how the classifiers perform an the data and why.
+
+\section{Echo Cardiogram data}
+
+\paragraph{}The Echocardiogram data set originally consists of 132 entries with 13 attributes respectively. The entries of the dataset refer to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine from several different attributes if the patient will survive at least one year, beginning from the day when the heart attack occured. The dataset contains missing values and there's a lot of other preprocessing steps (described later) which have to be done. The dataset is very small, especially after preprocessing and a further problem is that the number of patients which died within one year after their heart attack is very small (4) which makes the classification very hard. It is nevertheless an interesting question wether some classification algorithm can perform well on that data. Since it is very small we performed a 3-fold-cross-validation on this dataset.
 
 \subsection{Preprocessing}
 \paragraph{}The patient's attribute ``name'' was replaced by a dummy for all entries. For this reason, this attribute could be entirely removed. Other unnecessary attributes were ``group'' and ``mult'' which were also (as explained in the description) just meaningless and could thus be ignored \cite{uci-repo}. There were also two attributes ``wall-motion-score'' and ``wall-motion-index'' where the description of the dataset said that one should only use the ``wall-motion-index'' for classification issues and so ``wall-motion-score'' was also removed.
@@ -127,6 +140,7 @@ The Echocardiogram data set originally consists of 132 entries with 13 attribute
 \todo{Compare results with/without preprocessing}
 
 \subsection{Decision Tree}
+\todo{robert: do you want to keep this section? on the one hand it shows what happens if we run a desicion tree with attributes on which the the prediction attribute depends, but on the other hand we know we should not do that. please decide. i'm ok with both (philipp)}
 %------------------------------------------------
 On the first glimpse, it is an easy task for a decision based algorithm:
 
@@ -160,9 +174,10 @@ Since there is no missing value for the survival attribute, this branch can be i
 But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
 
 
-\subsection{Decision Tree on re-preprocessed data}
+\subsection{Decision Tree on preprocessed data}
 
-The J48 Decision Tree shows a more useful tree on the re-preprocessed data:
+The J48 Decision Tree shows a more useful tree on the preprocessed data:
+
 \begin{lstlisting}
 J48 pruned tree
 
