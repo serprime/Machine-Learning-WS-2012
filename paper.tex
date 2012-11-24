@@ -86,8 +86,7 @@
 validation: cross-validation with 10 for big data sets (9 training, 1 test), 3 for the small echo cardio set.
 }
 
-
-\todo[inline]{Chose 5 different classifiers, from at least 3 different types
+\todo[inline]{Choose 5 different classifiers, from at least 3 different types
 of learning algorithms
 
 Argue \& justify choice (part of grading...)
@@ -102,26 +101,28 @@ for missing values)
 
 \section{Echocardiogram data}
 
-The Echocardiogram data set consists of 132 entries with 13 attributes respectively and has 132 missing values in total. Originally, these entries referred to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine if the patient will survive at least one year.
+The Echocardiogram data set originally consists of 132 entries with 13 attributes respectively. The entries of the dataset refer to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine from several different attributes if the patient will survive at least one year, beginning from the day when the heart attack occured. The dataset contains missing values and there's a lot of other preprocessing steps (described later) which have to be done. The dataset is very small, especially after preprocessing and a further problem is that the number of patients which died within one year after their heart attack is very small (4) which makes the classification very hard. It is nevertheless an interesting question wether some classification algorithm can perform well on that data. Since it is very small we performed a 3-fold-cross-validation on this dataset.
 
 \subsection{Preprocessing}
-The name attribute of the patients was replaced by a dummy for all entries. For this reason, this attribute can be entirely removed. Another unnecessary attribute is ``group'' which is just meaningless and can be ignored \cite{uci-repo}. Another derived attribute is ``mult'' and can be ignored as well.
+\paragraph{}The patient's attribute ``name'' was replaced by a dummy for all entries. For this reason, this attribute could be entirely removed. Other unnecessary attributes were ``group'' and ``mult'' which were also (as explained in the description) just meaningless and could thus be ignored \cite{uci-repo}. There were also two attributes ``wall-motion-score'' and ``wall-motion-index'' where the description of the dataset said that one should only use the ``wall-motion-index'' for classification issues and so ``wall-motion-score'' was also removed.
 
-Some of the patients survived less than 12 months even if they were still alive at the end of the survey. In this case these patients joined the survey too recently to be followed at least one year. To make a reasonable prediction if a patient will survive at least one year, those entries have to be left out for the training data set because they would irritate any learning algorithm. \todo[inline]{maybe, give an example to show that those patients confuse a machine learning algorithm} 
+\paragraph{}The actual prediction attribute ``alive-at-1'' (denoting that a patient lived at least one year after having a heart attack) had to be inferred from two other attributes, namely ``survival'' (number of months that the test-person survived after the heart attack) and ``still-alive'' (a binary variable denoting if a patient is still alive at the time when the data was recorded). It is possible that the ``survival'' variable has a value lower than 12 but the ``still-alive'' variable is set to true, meaning that the test-person still lived. This is the case if the data for a test-person was recorded in the last 12 months and so this data cannot be used for the classification and was thus removed.
 
-Yet, there are some entries, which can be wiped out from the whole data set as well:
+\paragraph{}It should be clear that the variables ``survival'' and ``still-alive'' should not be used for classification since they constitute the final prediction attribute.
 
-\missingfigure{Show the crappy entry with the 76 years old patient who has only null values}
+\paragraph{}The last preprocessing step was the replacement of missing values (data imputation). Most of the data was complete but there were still some data records having missing values which we replaced by the mean values of the specific variables. One data record did contain completeley useless data and was thus removed (see at the picture below).
 
-So long, these preprocessing tasks are just removing attributes (column-wise) or removing certain entries (row-wise), depending on their values.
+\paragraph{}
 
-Unfortunately, there is another peculiarity with the actual prediction attribute ``alive-at-1'', here is the official description:
-\begin{quotation} ``Boolean-valued. Derived from the first two attributes. 0 means patient was either dead after 1 year or had been followed for less than 1 year.  1 means patient was alive at 1 year.''\cite{uci-repo} \end{quotation}
-De facto, the values don't fit to this description. The attribute is $1$ if the patient was followed less than one year and $0$ otherwise. Very astonishing: Even if the attribute is supposed to be a derived attribute, there are several \texttt{null} values, making the corresponding values useless for training data.                                                                
+%So long, these preprocessing tasks are just removing attributes (column-wise) or removing certain entries (row-wise), depending on their values.
+%
+%Unfortunately, there is another peculiarity with the actual prediction attribute ``alive-at-1'', here is the official description:
+%\begin{quotation} ``Boolean-valued. Derived from the first two attributes. 0 means patient was either dead after 1 year or had been followed for less than 1 year.  1 means patient was alive at 1 year.''\cite{uci-repo} \end{quotation}
+%De facto, the values don't fit to this description. The attribute is $1$ if the patient was followed less than one year and $0$ otherwise. Very astonishing: Even if the attribute is supposed to be a derived attribute, there are several \texttt{null} values, making the corresponding values useless for training data.                                                                
+%
+%We thus inferred the prediction attribute ``alive-at-1'' as explained in the description of the whole dataset: For all patients where the months of survival are greater than or equal to 12 we set the ``alive-at-1''-attribute to 1, otherwise we set it to 0.
 
-We thus inferred the prediction attribute ``alive-at-1'' as explained in the description of the whole dataset: For all patients where the months of survival are greater than or equal to 12 we set the ``alive-at-1''-attribute to 1, otherwise we set it to 0.
-
-The only thing which remained then was to a
+%The only thing which remained then was to a
 
 \todo{Compare results with/without preprocessing}
 
@@ -158,14 +159,6 @@ Since there is no missing value for the survival attribute, this branch can be i
 
 But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
 
-
-\subsection{re-preprocessed the data set}
-
-As mentioned in the description of the dataset on the UCI repository site we can remove the attributes ``group'', ``name'' and ``mult'' as they do not have any meaning for the prediction attribute.
-
-We also have to remove the ``survival'' and ``still-alive'' attributes, as the prediction attribute derives from them. Otherwise, a classification algorithm could predict all instances by taking into account only these two attributes.
-
-A further refinement of the data set has been done by deleting all instances, where the outcome was unknown, as this cannot be used for training.
 
 \subsection{Decision Tree on re-preprocessed data}
 
@@ -272,21 +265,90 @@ Which gives us the best achievable accuracy that we can reach with decision base
                 0.978    0.75     0.968      0.978   0.973       1
 Weighted Avg.   0.948    0.72     0.942      0.948   0.945      
 \end{lstlisting}
+
+\subsection{Support Vector Machine}
+
+\paragraph{}We used the support vector machine implementation called `SMO' in WEKA. Since a support vector machine uses the numeric coordinates of the data records to do the classification we tried to normalize the data in advance to obtain better results. Since this normalization did not have any impact on the results (we tried this not only on this dataset) we followed that the support vector machine algorithm of the WEKA-toolkit automatically normalizes all the numeric values.
+
+\paragraph{}The build of the model took not even a second since the dataset is that small. The same holds for the evaluation. We tried all the different kernel-functions for the classification but the result didn't change. The following table shows the results of the evaluation and if you take a close look on the results, you can see that all data records were classified to the same class which means that the SVM algorithm wasn't able to cope with the small number of data records which should be classified with value 0:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|llllllll|}
+	\hline
+									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  &Class\\
+	\hline
+									&0         	&0         &0         	&0       &  0         & 0.5      &0\\
+  								&1         	&1         &0.959     	&1       &0.979       &	0.5      &1\\
+  \hline
+	Weighted Avg.		&0.959     	&0.959     &0.919   		&0.959   &0.939     	&0.5	&\\
+	\hline
+\end{tabular}
+\caption{Results of the SVM-classification for the echocardiogram dataset}
+\end{table}
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|lll|}
+	\hline
+	Classified as	& &\\
+	a		&	b & \\
+	\hline
+	0   & 4  	&  a = 0\\
+  0   & 93 	&  b = 1\\
+  \hline
+\end{tabular}
+\caption{Confusion matrix for SVM}
+\end{table}
+
+\subsection{k-Nearest Neighbour}
+
+As with the SVM-algorithm there was no normalization necessary (we tested this on different datasets). In WEKA there are different implementations of the kNN-algorithm available and we chose (for all our datasets) the brute force kNN-algorithm since this is the classic implementation of the kNN-algorithm where we were interested in the running time. We tried different parameters concerning the number of neighbours which are considered for classification. Changes on that parameter didn't make any differences. As with the SVM, the kNN-algorithm was not able to cope with the small number of data records which should be classified with value 0. The creation of the model doesn't take any time with a kNN-algorithm since there is no model which would be built: kNN is a lazy classification algorithm. The evaluation of the model took not even a second. In the following are the results of the classification. The results are exactly the same as for the SVM.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|llllllll|}
+	\hline
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &ROC Area  &Class\\
+	\hline
+									&0         	&0         &0         &0       &  0         & 0.5      &0\\
+  								&1         	&1         &0.959     &1       &0.979       &	0.5      &1\\
+  \hline
+	Weighted Avg.		&0.959     	&0.959     &0.919   	&0.959   &0.939     	&0.5				&\\
+	\hline
+\end{tabular}
+\caption{Results of the kNN-classification for the echocardiogram dataset}
+\end{table}
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|lll|}
+	\hline
+	Classified as	& &\\
+	a		&	b & \\
+	\hline
+	0   & 4  	&  a = 0\\
+  0   & 93 	&  b = 1\\
+  \hline
+\end{tabular}
+\caption{Confusion matrix for kNN}
+\end{table}
+
+\subsection{Comparison}
+
 \section{Adult data}
 
-The Adult or Census Income data sets contains 48842 instances of information about persons and if they earn more than 50.000 a year. The data set has 14 attributes and missing values.
+\paragraph{}The Adult or Census Income data sets contains 48842 instances of information about persons and the task is to predict if a person earns more than 50.000 dollar a year. The data set has 14 attributes and missing values.
 
-The instances origin from the 1994 Census Database and were extracted by Barry Becker. For having a clean data set, only records with age above 16 with minimium one working hour per week have been selected from the database.
+\paragraph{}The instances origin from the 1994 Census Database and were extracted by Barry Becker. For having a clean data set, only records with age above 16 with minimium one working hour per week have been selected from the database. We performed a 10-fold-cross-validation on this dataset.
 
 \subsection{Preprocessing}
 
-We can remove the final weight -- but we have to find out what it means !!.
-
-We can also remove the $education-num$ attribute as it is only a numeric representation of the education attribute.
-
-At first we try to discretize all numeric attributes with 10 bins of equal ranges.
-
-
+The ``Adult'' dataset has missing values which we all replaced by the mean value of the respective attribute. We did no further preprocessing. As for the Echocardiogram dataset there was no normalization neccessary for the SVM or the kNN algorithms.
 
 
 \subsection{Decision Tree}
@@ -325,7 +387,7 @@ Weighted Avg.   0.846    0.285    0.843      0.846   0.844
 \paragraph{Other parameters}
 Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without MDLcorrection or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\$ respectively.
 
-\subsection{Random Forrest}
+\subsection{Random Forest}
 
 With default settings, a random forest achieves an accuracy as follows:
 \begin{lstlisting}
@@ -361,10 +423,41 @@ Weighted Avg.   0.858    0.323    0.851      0.858   0.851
 
 \paragraph{Number of features}
 Increasing the number of features doesn't support the quality at all. The default number of features for this data set with 13 attributes is \todo[inline]{calculate!}. With a number of 5 randomly chosen features, the precision is yet at 85\% (with maximum depth of tree = 6) but with 10 randomly chosen features the precision falls back to 84.5\%.
+
 \subsection{Support Vector Machine}
 
+From the different kernel functions for the SVM-algorithm we used the PolyKernel on this dataset. As with the dataset before the normalization of the numeric data had no inpact on the validation results. One interesting aspect is that the creation of the model and the 10-fold-cross-validation took 135 minutes since the dataset is big. The SVM-algorithm was able to correctly classify 84,9\% of the instances. The following two tables show further validation results including a confusion matrix:
 
+\begin{table}[h]
+\centering
+\begin{tabular}{|llllllll|}
+	\hline
+									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure &ROC Area  	&Class\\
+	\hline
+									&0.568     	&0.062     &0.744     	&0.568   &0.644    	&0.753    	&	>50K\\
+  								&0.938     	&0.432     &0.873     	&0.938   &0.904     &0.753    	&$\leq$50K\\
+  \hline
+	Weighted Avg.   & 0.849    & 0.343     &0.842   		&0.849   &0.842     & 0.753			&\\
+	\hline
+\end{tabular}
+\caption{Results of the SVM-classification for the adult dataset}
+\end{table}
 
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|lll|}
+	\hline
+	Classified as	& &\\
+	a		&	b & \\
+	\hline
+	4454   	& 3387  	&  a = >50K\\
+  1531   	& 23189 	&  b = $\leq$50K\\
+  \hline
+\end{tabular}
+\caption{Confusion matrix for SVM}
+\end{table}
 
 \subsection{Naive Bayes}
 
@@ -414,12 +507,46 @@ It got worse. \todo{why does discretizer with equal bin size not give a better r
 
 The Naive Bayes does not have a lot of settings. It use a built in supervised discretizer or a kernel estimator. But the result is always the same with around 80\% correctly classified instances in the test run.
 
-\subsection{k-Nearest}
+\subsection{k-Nearest Neighbour}
 
+We tested the k-nearest neighbour algorithm with different values for $k$. For $k$=1 (nearest neighbour) the algorithm was able to correctly classify 79,4\% of the instances. We tested the algorithm also with values 10,40 and 100 for $k$ and obtained the best results with $k=40$, where 83,48\% of the instances were correctly classified. Again the normalization of the input had no influence on the results. The evaluation of this algorithm took 120 seconds. In the following tables we present further results of the evaluation with $k=40$ including a confusion matrix.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|llllllll|}
+	\hline
+									&TP Rate   &FP Rate   &Precision   &Recall  &F-Measure &ROC Area  	&Class\\
+	\hline
+									&0.593     &0.088      &0.68      &0.593     &0.633    &0.884    		&>50K\\
+									&0.912     &0.407      &0.876     &0.912     &0.893    &0.884    		&$\leq$50K\\
+  \hline
+	Weighted Avg.   &0.835     &0.331      &0.829     &0.835     &0.831    &0.884 \\
+	\hline
+\end{tabular}
+\caption{Results of the kNN-classification for the adult dataset}
+\end{table}
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|lll|}
+	\hline
+	Classified as	& &\\
+	a		&	b & \\
+	\hline
+	4647  	&3194  		&  a = >50K\\
+  2186 		&22534 		&  b = $\leq$50K\\
+  \hline
+\end{tabular}
+\caption{Confusion matrix for kNN}
+\end{table}
+
+\subsection{Comparison}
 
 \section{Contraceptive Method Choice Data}
 
-The Contraceptive Method Choice Data Set consists of information about the demographic and socio-economic characteristics of married women. The task is to predict which kind of contraceptive methods a woman uses. These are categorized as no use, short term or long term.
+The Contraceptive Method Choice Data Set consists of information about the demographic and socio-economic characteristics of married women. There are 1473 instances with 9 different attributes. Examples of these attributes are the wife's age, husbands education, wife's religion, etc. The task is to predict which kind of contraceptive method a woman uses. These are categorized as no use, short term or long term. We performed a 10-fold-cross-validation on this dataset.
 
 \subsection{Preprocessing}
 
@@ -429,12 +556,83 @@ The attributes are already in a numerical and categorical form, whereby the cate
 
 
 \subsection{Desicion Tree}
-\subsection{Random Forrest}
+\subsection{Random Forest}
 \subsection{Naive Bayes}
 \subsection{Support VectorMachine}
-\subsection{k-Nearest}
 
+We tested different kernel functions on this dataset and obtained the best results with the NormalizedPolyKernel. The whole process of the evaluation, including the building of the models, took 28 seconds. Normalization of the data had again no influence on the results. The SVM algorithm was able to correctly classify 49,2\% of the instances. The following tables show further results of the evaluation with the NormalizedPolyKernel including a confusion matrix.
 
+\begin{table}[h]
+\centering
+\begin{tabular}{|llllllll|}
+	\hline
+	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  	&Class\\
+	\hline
+									&0.583     	&0.355     &0.55      	&0.583   &0.566   		&0.628    	&1\\
+                 	&0.393     	&0.181     &0.389     	&0.393   &0.391      	&0.648    	&2\\
+                 	&0.444     	&0.252     &0.484     	&0.444   &0.463      	&0.614    	&3\\
+  \hline
+	Weighted Avg.   & 0.849    & 0.343      &0.842   &  0.849     &0.842     & 0.753			&\\
+	\hline
+\end{tabular}
+\caption{Results of the SVM-classification for the contraception dataset}
+\end{table}
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|llll|}
+	\hline
+	Classified as	& & &\\
+	a		&	b & c& \\
+	\hline
+	367 &105 &157 &   a = 1\\
+ 	117 &131 &85 	&   b = 2\\
+ 	183 &101 &227 &   c = 3\\
+  \hline
+\end{tabular}
+\caption{Confusion matrix for SVM}
+\end{table}
+
+\subsection{k-Nearest Neighbour}
+
+We tested the kNN-algorithm with a lot of different values for $k$ and obtained the best results for $k=7$ where 48,88\% of the instances were correctly classified. The evaluation took not even a second. As with the other datasets the normalization of the input had no influence on the results. In the following tables we present further results of the evaluation with $k=7$ including a confusion matrix.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|llllllll|}
+	\hline
+	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  	&Class\\
+	\hline
+									&0.569     	&0.351     &0.547     	&0.569   &0.558      	&0.65     	&1\\
+                 	&0.414     	&0.166     &0.422     	&0.414   &0.418      	&0.677    	&2\\
+                 	&0.438     	&0.279     &0.455     	&0.438   &0.447      	&0.603    	&3\\
+  \hline
+	Weighted Avg.   &0.489     	&0.284     &0.487     	&0.489   &0.488      	&0.64			&\\
+	\hline
+\end{tabular}
+\caption{Results of the kNN-classification for the contraception dataset}
+\end{table}
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|llll|}
+	\hline
+	Classified as	& & &\\
+	a		&	b & c& \\
+	\hline
+	358	& 99 	&172 &   a = 1\\
+  99 	&	138 &96  &   b = 2\\
+ 	197 & 90 	&224 &   c = 3\\
+  \hline
+\end{tabular}
+\caption{Confusion matrix for kNN}
+\end{table}
+
+\subsection{Comparison}
 
 \bibliography{references}
 
