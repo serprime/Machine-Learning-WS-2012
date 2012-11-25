@@ -495,7 +495,7 @@ Weighted Avg. &  0.846   & 0.285   & 0.843     & 0.846  &  0.844     &         \
 \FloatBarrier
 
 \paragraph{Other parameters}
-Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without MDLcorrection or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\$ respectively.
+Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without MDLcorrection or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\% respectively.
 
 
 
@@ -708,7 +708,62 @@ The values of the data sets's attributes are already in a numerical and categori
 
 \subsection{Desicion Tree}
 
-\todo{todo marker}
+With default settings, the J48 algorithm comes off very badly, in table \ref{tab:contra:dec:default} one can see a that it classifies about the half of all instances correctly. It must be apologetically supplemented that the task includes more distinct values, three instead of two nominals, to be predicted. 
+
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule 
+               &  0.609   & 0.287   & 0.613     & 0.609  & 0.611     &  1     \\  
+               &  0.378   & 0.138   & 0.445     & 0.378  & 0.409     &  2     \\      
+               &  0.507   & 0.318   & 0.458     & 0.507  & 0.481     &  3     \\      
+Weighted Avg.  &  0.521   & 0.264   & 0.521     & 0.521  & 0.52      &        \\ \bottomrule     
+    \end{tabular*}
+\caption{Decision Tree on Contraceptive Data Set -- Default Settings} 
+\label{tab:contra:dec:default}
+\end{table*}
+\FloatBarrier
+
+\paragraph{Raising the confidence factor}
+As expected, raising the confidence factor worsens the result. For a series of a factor 0.25, 0.5, 0.25 and a totally unpruned tree, the quality decreases from originally 0.52\% to 50.4\%, 48.6\% and finally 48.7\%. The used decision tree grows from a size of 157 leaves and a maximum depth of 263 to a huge tree with 417 leaves and 655 branches. As said, this is a definitely wrong direction of optimizing.
+
+\paragraph{Raising the minimum of instances per leaf}
+We can notice a certain improvement to the outcome if we ensure that every leaf of the decision tree has to contain more instances, thereby preventing the tree from deep nesting. We can make the most out of it if we set the minimum to 23 leaves, the yield can be seen in table \ref{tab:contra:dec:23l}. This tree has only 31 leaves and 49 branches. Further enhancing of this parameter cuts the amount of correctly classified instances again.
+
+
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+              &   TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule      
+              &   0.595   & 0.231   & 0.657     & 0.595  & 0.624     &  1     \\      
+              &   0.405   & 0.135   & 0.467     & 0.405  & 0.434     &  2     \\      
+              &   0.575   & 0.334   & 0.478     & 0.575  & 0.522     &  3     \\      
+Weighted Avg. &   0.545   & 0.245   & 0.552     & 0.545  & 0.546     &        \\ \bottomrule     
+    \end{tabular*}
+\caption{Decision Tree on Contraceptive Data Set -- at least 23 instances per leaf} 
+\label{tab:contra:dec:23l}
+\end{table*}
+\FloatBarrier
+\paragraph{Other parameters}
+Neither laplace correction nor mdl correction has any positive effect on the output of the algorithm on this data set. The absence of MDL correction make the outcome a bit worse, it brings the precision down to 0.551\%.  But there is one small tweak from which the accuracy of the algorithm can benefit: If binary splits are used on nominal attributes, we get the best result for the J48 on this data set as seen in table \ref{tab:contra:dec:bin}.
+
+ 
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure  Class \\ \midrule   
+               &  0.649   & 0.263   & 0.648     & 0.649  & 0.648      1     \\    
+               &  0.402   & 0.13    & 0.475     & 0.402  & 0.436      2     \\        
+               &  0.548   & 0.292   & 0.499     & 0.548  & 0.522      3     \\    
+Weighted Avg.  &  0.558   & 0.243   & 0.557     & 0.558  & 0.557            \\ \bottomrule 
+    \end{tabular*}
+\caption{Decision Tree on Contraceptive Data Set -- using binary splits} 
+\label{tab:contra:dec:bin}
+\end{table*}
+\FloatBarrier
 
 \subsection{Random Forest}
 
