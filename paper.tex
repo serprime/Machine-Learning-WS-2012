@@ -154,8 +154,6 @@ J48 pruned tree
 
 %The only thing which remained then was to a
 
-\todo[inline]{Compare results with/without preprocessing}
-
 \subsection{Decision Tree}
 
 With default settings J48 Decision Tree seems to show a reasonable tree to some extent as seen in listing \ref{lst:echo:dec:default}.
@@ -480,7 +478,7 @@ Weighted Avg. &   0.897  & 0.244   & 0.958     & 0.897  & 0.92      &   \\ \bott
 \subsection{Decision Tree}
 \paragraph{}Using a decision tree yields a precision about 86\%. Varying the parameters for this algorithm influences the quality of the results only slightly, as the following examples illustrate.
 
-\paragraph{}First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDL correction and subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
+\paragraph{}First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with mdl correction and subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
 The decision tree that was used for this run has a size of 413 and has 311 leaves.
 
 \begin{table*}[htb]\centering
@@ -527,7 +525,7 @@ Weighted Avg. &  0.846   & 0.285   & 0.843     & 0.846  &  0.844     &         \
 \FloatBarrier
 
 \paragraph{Other parameters}
-Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without MDLcorrection or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\% respectively.
+Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without mdl correction or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\% respectively.
 
 
 
@@ -751,7 +749,7 @@ Weighted Avg. &   0.545   & 0.245   & 0.552     & 0.545  & 0.546     &        \\
 \end{table*}
 \FloatBarrier
 \paragraph{Other parameters}
-Neither laplace correction nor mdl correction has any positive effect on the output of the algorithm on this data set. The absence of MDL correction make the outcome a bit worse, it brings the precision down to 0.551\%.  But there is one small tweak from which the accuracy of the algorithm can benefit: If binary splits are used on nominal attributes, we get the best result for the J48 on this data set as seen in table \ref{tab:contra:dec:bin}.
+Neither laplace correction nor mdl correction has any positive effect on the output of the algorithm on this data set. The absence of mdl correction make the outcome a bit worse, it brings the precision down to 0.551\%.  But there is one small tweak from which the accuracy of the algorithm can benefit: If binary splits are used on nominal attributes, we get the best result for the J48 on this data set as seen in table \ref{tab:contra:dec:bin}.
 
  
 \begin{table*}[htb]\centering
