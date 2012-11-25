@@ -20,12 +20,16 @@
 
 \documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
 
-
+\usepackage{color}
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{natbib}
 % philipp: added for code listings
 \usepackage{listings}
+\lstset{
+    captionpos=b
+}
+\newcommand{\Hilight}{\makebox[0pt][l]{\color{red}\rule[-4pt]{0.65\linewidth}{14pt}}}
 \usepackage{booktabs}
 \usepackage{morefloats}
 \bibliographystyle{plain}
@@ -131,7 +135,15 @@ for missing values)
 
 \paragraph{}It should be clear that the variables ``survival'' and ``still-alive'' should not be used for classification since they constitute the final prediction attribute.
 
-\paragraph{}The last preprocessing step was the replacement of missing values (data imputation). Most of the data was complete but there were still some data records having missing values which we replaced by the mean values of the specific variables. One data record did contain completeley useless data and was thus removed (see at the picture below).
+\paragraph{}The last preprocessing step was the replacement of missing values (data imputation). Most of the data was complete but there were still some data records having missing values which we replaced by the mean values of the specific variables. One data record did contain completeley useless data and was thus removed (see at in listing \ref{lst:crappy-entry}).
+
+\begin{lstlisting}[escapechar=\%, float=htb, caption={76 years old patient without useful information}, label=lst:crappy-entry]
+20,1,59,0,0.030,21.300,6.290,17,1.310,0.928,name,2,0
+0.25,1,63,1,?,?,?,23,2.300,0.714,name,2,1
+%\Hilight% ?,?,?,77,?,?,?,?,?,2,?,name,2,?
+2,1,56,1,0.040,14,5,?,?,?,name,2,1
+7,1,61,1,0.270,?,?,9,1.500,0.428,name,2,1
+\end{lstlisting}
 
 \paragraph{}
 
