@@ -298,7 +298,7 @@ Only one false positive has gone. Not really a remarkable change in the quality.
 
 \paragraph{Increasing the number of features}
 Increasing the number of features chosen by each random tree seems to has also a low effect on the quality, because until a certain border of 5 chosen features the outcome is exactly the same as it was with default settings. But if we configure the random forests with 6 features we can spot our first true positive in the confusion matrix (table \ref{tab:echo:rand:matrix3}).
-This gives us the best achievable accuracy that we can reach with decision based algorithms, shown in table \ref{tab:echo:rand:6f}.
+This gives us the best achievable accuracy that we can reach with decision based algorithms, shown in table \ref{tab:echo:rand:6f}. At this point, 96.8\% instances are correctly classified.
 
 
 \begin{table*}[htb]\centering
@@ -465,8 +465,8 @@ The table below shos a comparison of the different algorithms on the adult datas
 	\toprule
 									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure \\
 	\midrule
-	Decision Tree		\\
-  Random Forest		\\
+	Decision Tree &  0.959   & 0.959   & 0.919     & 0.959  & 0.939           \\ 
+  Random Forest &		 0.948   &  0.72    &  0.942     &  0.948  &  0.945             \\ 
   Naive Bayes			&   0.897  & 0.244   & 0.958     & 0.897  & 0.92     \\
   SVM							&0.959     	&0.959     	&0.919   	&0.959   &0.939    \\
   kNN							&0.959     	&0.959     	&0.919   	&0.959   &0.939    \\
@@ -545,7 +545,8 @@ Weighted Avg. &  0.846   & 0.285   & 0.843     & 0.846  &  0.844     &         \
 \FloatBarrier
 
 \paragraph{Other parameters}
-Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without mdl correction or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\% respectively.
+Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without mdl correction or without Subtree raising during pruning, in both cases the precision falls from 86\% to
+85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\% respectively. So we get the best results simply with the default configuration and classify 86.0\% instances correctly.
 
 
 
@@ -586,7 +587,7 @@ Weighted Avg.  &  0.858   & 0.324   & 0.852     & 0.858  & 0.851     &       \\ 
 \FloatBarrier
 
 \paragraph{Number of features}
-Increasing the number of features doesn't support the quality at all. The default number of features for this data set with 13 attributes is $ log_2(13) + 1 \approx 5 $. Choosing 6 attributes brinchoose gs us a precision of 84,9\% and with 10 randomly chosen features the precision falls back to 84.5\%. We can tease the most out of the random forest if we decrease the number of features a little. To be concise, we get the best achievable result, if we take only 3 randomly chosen
+Increasing the number of features doesn't support the quality at all. The default number of features for this data set with 13 attributes is $ log_2(13) + 1 \approx 5 $. Choosing 6 attributes gives us a precision of 84,9\% and with 10 randomly chosen features the precision falls back to 84.5\%. We can tease the most out of the random forest if we decrease the number of features a little. To be concise, we get the best achievable result, if we take only 3 randomly chosen
 features. Table \ref{tab:adult:rand:3f} shows these results which are of similar accuracy like the best of the J48 algorithm. 
 
 \begin{table*}[htb]\centering
@@ -785,8 +786,8 @@ Weighted Avg. &   0.545   & 0.245   & 0.552     & 0.545  & 0.546     &        \\
 \end{table*}
 \FloatBarrier
 \paragraph{Other parameters}
-Neither laplace correction nor mdl correction has any positive effect on the output of the algorithm on this data set. The absence of mdl correction make the outcome a bit worse, it brings the precision down to 0.551\%.  But there is one small tweak from which the accuracy of the algorithm can benefit: If binary splits are used on nominal attributes, we get the best result for the J48 on this data set as seen in table \ref{tab:contra:dec:bin}.
-
+Neither laplace correction nor mdl correction has any positive effect on the output of the algorithm on this data set. The absence of mdl correction make the outcome a bit worse, it brings the precision down to 0.551\%.  But there is one small tweak from which the accuracy of the algorithm can benefit: If binary splits are used on nominal attributes, we get the best result for the J48 on this data set as seen in table \ref{tab:contra:dec:bin}. Eventually we have 95.88\% correctly
+classified instances with the J48 algorithm. 
  
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
