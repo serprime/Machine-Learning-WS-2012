@@ -563,7 +563,7 @@ Varying other parameters has a similar effect like the one mentioned above. Eith
 
 
 
-\subsection{Random Forest}
+\subsubsection{Random Forest}
 
 With default settings, a random forest gains an accuracy on the census income data set that can be seen in table \ref{tab:adult:rand:default}, which is surprisingly worse than the J48 algorithm.
 \begin{table*}[htb]\centering
@@ -816,7 +816,7 @@ Weighted Avg.  &  0.558   & 0.243   & 0.557     & 0.558  & 0.557     &        \\
 \end{table*}
 \FloatBarrier
 
-\subsection{Random Forest}
+\SUBsubsection{Random Forest}
 Random Forests perform even worse than the J48 with default settings. We can see in table \ref{tab:contra:rand:default} that only the half of all classified instances are classified correctly.
 
 \begin{table*}[htb]\centering
@@ -853,40 +853,6 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 \FloatBarrier
 
 
-\subsection{Naive Bayes}
-
-\paragraph{}The input data set does perfectly fit for Naive Bayes. But the classifier is not able to correctly predict the instances. As shown in tables \ref{tab:contra:bayes:1d} and \ref{tab:contra:bayes:1c} it gains a 50:50 chance of a TP prediction.
-
-
-\begin{table*}[htb]\centering
-  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
-      \toprule 
-               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
-               &  0.52    & 0.223   & 0.635     & 0.52   & 0.572     & 1  \\  
-               &  0.526   & 0.245   & 0.385     & 0.526  & 0.445     & 2  \\
-               &  0.481   & 0.268   & 0.488     & 0.481  & 0.485     & 3  \\
-Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \bottomrule
-    \end{tabular*}
-\caption{Naive Bayes} 
-\label{tab:contra:bayes:1d}
-\end{table*}
-
-
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|lll|}
-\hline
-              &   a &   b &   c  \\
-\hline
- a = 1        & 327 & 141 & 161  \\
- b = 2        &  61 & 175 &  97  \\
- c = 3        & 127 & 138 & 246  \\
-\hline
-\end{tabular}
-\caption{Confusion matrix for Naive Bayes}
-\label{tab:contra:bayes:1c}
-\end{table}
 
 
 \subsection{Support Vector Machine}
@@ -960,6 +926,44 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 \end{tabular}
 \caption{Confusion matrix for kNN}
 \end{table}
+
+
+\subsection{Naive Bayes}
+
+\paragraph{}The input data set does perfectly fit for Naive Bayes. But the classifier is not able to correctly predict the instances. As shown in tables \ref{tab:contra:bayes:1d} and \ref{tab:contra:bayes:1c} it gains a 50:50 chance of a TP prediction.
+
+
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
+               &  0.52    & 0.223   & 0.635     & 0.52   & 0.572     & 1  \\  
+               &  0.526   & 0.245   & 0.385     & 0.526  & 0.445     & 2  \\
+               &  0.481   & 0.268   & 0.488     & 0.481  & 0.485     & 3  \\
+Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \bottomrule
+    \end{tabular*}
+\caption{Naive Bayes} 
+\label{tab:contra:bayes:1d}
+\end{table*}
+
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|lll|}
+\hline
+              &   a &   b &   c  \\
+\hline
+ a = 1        & 327 & 141 & 161  \\
+ b = 2        &  61 & 175 &  97  \\
+ c = 3        & 127 & 138 & 246  \\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Naive Bayes}
+\label{tab:contra:bayes:1c}
+\end{table}
+
+
 
 \subsection{Comparison}
 
