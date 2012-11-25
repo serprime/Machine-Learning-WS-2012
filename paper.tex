@@ -331,14 +331,14 @@ Weighted Avg.  &  0.948   &  0.72    &  0.942     &  0.948  &  0.945     &      
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  &Class\\
+									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &Class\\
 	\midrule
-									&0         	&0         &0         	&0       &  0         & 0.5      &0\\
-  								&1         	&1         &0.959     	&1       &0.979       &	0.5      &1\\
+									&0         	&0         &0         	&0       &  0              &0\\
+  								&1         	&1         &0.959     	&1       &0.979             &1\\
   
-	Weighted Avg.		&0.959     	&0.959     &0.919   		&0.959   &0.939     	&0.5	&\\
+	Weighted Avg.		&0.959     	&0.959     &0.919   		&0.959   &0.939     		&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the SVM-classification for the echocardiogram dataset}
@@ -366,14 +366,14 @@ b=1 & 0 & 93\\
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &ROC Area  &Class\\
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &Class\\
 	\midrule
-									&0         	&0         &0         &0       &  0         & 0.5      &0\\
-  								&1         	&1         &0.959     &1       &0.979       &	0.5      &1\\
+									&0         	&0         &0         &0       &  0         &0\\
+  								&1         	&1         &0.959     &1       &0.979       &1\\
   
-	Weighted Avg.		&0.959     	&0.959     &0.919   	&0.959   &0.939     	&0.5				&\\
+	Weighted Avg.		&0.959     	&0.959     &0.919   	&0.959   &0.939     					&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the kNN-classification for the echocardiogram dataset}
@@ -454,6 +454,24 @@ Weighted Avg. &   0.897  & 0.244   & 0.958     & 0.897  & 0.92      &   \\ \bott
 
 
 \subsection{Comparison}
+
+The table below shos a comparison of the different algorithms on the adult dataset. For an algorithm we present here only the best obtained result concerning the TP rate. Values are always the weighted average.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llllllll}
+	\toprule
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &  Correctly classified\\
+	\midrule
+	Decision Tree		\\
+  Random Forest		\\
+  Naive Bayes			&0.897  		& 0.244   	& 0.958   & 0.897  &0.92      	& \\
+  SVM							&0.959     	&0.959     	&0.919   	&0.959   &0.939     	&	0.959\\
+  kNN							&0.959     	&0.959     	&0.919   	&0.959   &0.939     	&	0.959\\
+	\bottomrule
+\end{tabular}
+\caption{Comparison of the different algorithms for the echocardiogram dataset}
+\end{table}
 
 \todo{todo marker}
 
@@ -575,7 +593,7 @@ features. Table \ref{tab:adult:rand:3f} shows these results which are of similar
       \toprule 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
                &  0.577   & 0.052   & 0.779     & 0.577  & 0.663     & >50K  \\   
-               &  0.948   & 0.423   & 0.876     & 0.948  & 0.911     & <=50K \\   
+               &  0.948   & 0.423   & 0.876     & 0.948  & 0.911     & $\leq$50K \\   
 Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\   \bottomrule
     \end{tabular*}
 \caption{Random Forest -- 3 Random Features} 
@@ -592,12 +610,12 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \centering
 \begin{tabular}{llllllll}
 	\toprule
-									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure &ROC Area  	&Class\\
+									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure  	&Class\\
 	\midrule
-									&0.568     	&0.062     &0.744     	&0.568   &0.644    	&0.753    	&	>50K\\
-  								&0.938     	&0.432     &0.873     	&0.938   &0.904     &0.753    	&$\leq$50K\\
+									&0.568     	&0.062     &0.744     	&0.568   &0.644    	    	&	>50K\\
+  								&0.938     	&0.432     &0.873     	&0.938   &0.904         	&$\leq$50K\\
   
-	Weighted Avg.   & 0.849    & 0.343     &0.842   		&0.849   &0.842     & 0.753			&\\
+	Weighted Avg.   & 0.849    & 0.343     &0.842   		&0.849   &0.842     			&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the SVM-classification for the adult dataset}
@@ -662,14 +680,14 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-									&TP Rate   &FP Rate   &Precision   &Recall  &F-Measure &ROC Area  	&Class\\
+									&TP Rate   &FP Rate   &Precision   &Recall  &F-Measure &Class\\
 	\midrule
-									&0.593     &0.088      &0.68      &0.593     &0.633    &0.884    		&>50K\\
-									&0.912     &0.407      &0.876     &0.912     &0.893    &0.884    		&$\leq$50K\\
+									&0.593     &0.088      &0.68      &0.593     &0.633    &>50K\\
+									&0.912     &0.407      &0.876     &0.912     &0.893    &$\leq$50K\\
   
-	Weighted Avg.   &0.835     &0.331      &0.829     &0.835     &0.831    &0.884 \\
+	Weighted Avg.   &0.835     &0.331      &0.829     &0.835     &0.831     \\
 	\bottomrule
 \end{tabular}
 \caption{Results of the kNN-classification for the adult dataset}
@@ -693,7 +711,23 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 
 \subsection{Comparison}
 
-\todo{todo marker}
+The table below shos a comparison of the different algorithms on the adult dataset. For an algorithm we present here only the best obtained result concerning the TP rate. Values are always the weighted average.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llllllll}
+	\toprule
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &  Correctly classified\\
+	\midrule
+	Decision Tree		& 0.86    	& 0.307   	& 0.854   & 0.86   & 0.855     & 		& FEHLT\\
+  Random Forest		& 0.859   	& 0.333   	& 0.853   & 0.859  & 0.851     	& FEHLT\\
+  Naive Bayes		 	& 0.83    	& 0.186   	& 0.854   & 0.83   & 0.837     	& FEHLT\\
+  SVM							& 0.849    	& 0.343     &0.842   	&0.849   &0.842     	& 0.849\\
+  kNN							&0.835     	&0.331      &0.829    &0.835   &0.831				& 0.835\\
+	\bottomrule
+\end{tabular}
+\caption{Comparison of the different algorithms for the adult dataset}
+\end{table}
 
 
 
@@ -846,14 +880,14 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 
 \begin{table}[htb]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  	&Class\\ 
+	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure     	&Class\\ 
 	\midrule
-									&0.583     	&0.355     &0.55      	&0.583   &0.566   		&0.628    	&1\\
-                 	&0.393     	&0.181     &0.389     	&0.393   &0.391      	&0.648    	&2\\
-                 	&0.444     	&0.252     &0.484     	&0.444   &0.463      	&0.614    	&3\\
-	Weighted Avg.   & 0.849    & 0.343      &0.842   &  0.849     &0.842     & 0.753			&\\
+									&0.583     	&0.355     &0.55      	&0.583   &0.566   		    	&1\\
+                 	&0.393     	&0.181     &0.389     	&0.393   &0.391      	    	&2\\
+                 	&0.444     	&0.252     &0.484     	&0.444   &0.463      	    	&3\\
+	Weighted Avg.   & 0.849    & 0.343      &0.842   &  0.849     &0.842     			&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the SVM-classification for the contraception dataset}
@@ -882,15 +916,15 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  	&Class\\
+	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure     	&Class\\
 	\midrule
-									&0.569     	&0.351     &0.547     	&0.569   &0.558      	&0.65     	&1\\
-                 	&0.414     	&0.166     &0.422     	&0.414   &0.418      	&0.677    	&2\\
-                 	&0.438     	&0.279     &0.455     	&0.438   &0.447      	&0.603    	&3\\
+									&0.569     	&0.351     &0.547     	&0.569   &0.558      	     	&1\\
+                 	&0.414     	&0.166     &0.422     	&0.414   &0.418      	    	&2\\
+                 	&0.438     	&0.279     &0.455     	&0.438   &0.447      	    	&3\\
 
-	Weighted Avg.   &0.489     	&0.284     &0.487     	&0.489   &0.488      	&0.64			&\\
+	Weighted Avg.   &0.489     	&0.284     &0.487     	&0.489   &0.488      				&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the kNN-classification for the contraception dataset}
@@ -912,11 +946,25 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 \caption{Confusion matrix for kNN}
 \end{table}
 
-
 \subsection{Comparison}
 
-\todo{todo marker}
+The table below shos a comparison of the different algorithms on the adult dataset. For an algorithm we present here only the best obtained result concerning the TP rate. Values are always the weighted average.
 
+\begin{table}[h]
+\centering
+\begin{tabular}{llllllll}
+	\toprule
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &  Correctly classified\\
+	\midrule
+	Decision Tree 	&  0.558   & 0.243   & 0.557     	& 0.558  & 0.557     & FEHLT\\
+  Random Forest		&  0.556   & 0.241   & 0.562     	& 0.556  & 0.556     & FEHLT\\
+  Naive Bayes		 	&  0.508   & 0.243   & 0.528     	& 0.508  & 0.513     & FEHLT\\
+  SVM							& 0.849    & 0.343   &0.842   		& 0.849  & 0.842 		 & 0.492\\
+  kNN							&0.489     &0.284    &0.487     	& 0.489  & 0.488 		 & 0.489\\
+	\bottomrule
+\end{tabular}
+\caption{Comparison of the different algorithms for the contraceptive method choice dataset}
+\end{table}
 \bibliography{references}
 
 
