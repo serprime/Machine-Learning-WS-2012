@@ -133,9 +133,19 @@ for missing values)
 
 \paragraph{}The actual prediction attribute ``alive-at-1'' (denoting that a patient lived at least one year after having a heart attack) had to be inferred from two other attributes, namely ``survival'' (number of months that the test-person survived after the heart attack) and ``still-alive'' (a binary variable denoting if a patient is still alive at the time when the data was recorded). It is possible that the ``survival'' variable has a value lower than 12 but the ``still-alive'' variable is set to true, meaning that the test-person still lived. This is the case if the data for a test-person was recorded in the last 12 months and so this data cannot be used for the classification and was thus removed.
 
-\paragraph{}It should be clear that the variables ``survival'' and ``still-alive'' should not be used for classification since they constitute the final prediction attribute.
+\paragraph{}It should be clear that the variables ``survival'' and ``still-alive'' should not be used for classification since they constitute the final prediction attribute. Listing \ref{lst:silly-tree} shows what happens if a decision tree can take these attributes into account. It states that if the patient survived $ <= 12 $ months, he survived at least 12 month. Pretty accurate, right? 
+The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute is redundant since $ x > 11 \rightarrow x > 12 $. 
 
-\paragraph{}The last preprocessing step was the replacement of missing values (data imputation). Most of the data was complete but there were still some data records having missing values which we replaced by the mean values of the specific variables. One data record did contain completeley useless data and was thus removed (see at in listing \ref{lst:crappy-entry}).
+\begin{lstlisting}[caption={Decision tree on 100\% dependant attributes}, label=lst:silly-tree, float=htb]
+J48 pruned tree
+------------------
+    survival <= 12
+    |   survival <= 11: 0 (4.0)
+    |   survival > 11: 1 (4.0)
+    survival > 12: 1 (87.0)
+\end{lstlisting}
+
+\paragraph{}The last preprocessing step was the replacement of missing values (data imputation). Most of the data was complete but there were still some data records having missing values which we replaced by the mean values of the specific variables. One data record did contain completeley useless data and was thus removed (see in listing \ref{lst:crappy-entry}).
 
 \begin{lstlisting}[escapechar=\%, float=htb, caption={76 years old patient without useful information}, label=lst:crappy-entry]
 20,1,59,0,0.030,21.300,6.290,17,1.310,0.928,name,2,0
@@ -160,42 +170,8 @@ for missing values)
 \todo[inline]{Compare results with/without preprocessing}
 
 \subsection{Decision Tree}
-\todo[inline]{robert: do you want to keep this section? on the one hand it shows what happens if we run a desicion tree with attributes on which the the prediction attribute depends, but on the other hand we know we should not do that. please decide. i'm ok with both (philipp)}
-%------------------------------------------------
-On the first glimpse, it is an easy task for a decision based algorithm:
 
-\begin{lstlisting}
-J48 pruned tree
-------------------
-survival <= 12
-|   survival <= 11: 0 (4.0)
-|   survival > 11: 1 (4.0)
-survival > 12: 1 (87.0)
-\end{lstlisting}
-
-\paragraph{}That's correct, if the patient survived $ <= 12 $ months, he survived at least 12 month. What a statement! 
-
-\paragraph{}The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute don't make any sense ($ 11 $ is yet a smaller number than $ 12 $, isn't it?). E.g. choosing a DecisionStump results in the expected single splitting: 
-\begin{lstlisting}
-Class distributions
-survival <= 11.5
-0   1   
-1.0 0.0 
-survival > 11.5
-0   1   
-0.0 1.0 
-survival is missing
-0   1   
-0.042105263157894736    0.9578947368421052
-\end{lstlisting}
-\paragraph{}Since there is no missing value for the survival attribute, this branch can be ignored.
-
-\paragraph{}But allowing the machine learning algorithms to see the origin attributes from which we derived the prediction attribut leads to absurdity, since the actual prediction task is to say whether a patient will survive one year after suffering a heart attack or not \emph{depending on the medical characteristics}.
-
-
-\subsection{Decision Tree on preprocessed data}
-
-\paragraph{}The J48 Decision Tree shows a more useful tree on the preprocessed data:
+The J48 Decision Tree shows a more useful tree on the preprocessed data:
 
 \begin{lstlisting}
 J48 pruned tree
