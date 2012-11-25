@@ -156,8 +156,6 @@ J48 pruned tree
 
 %The only thing which remained then was to a
 
-\todo[inline]{Compare results with/without preprocessing}
-
 \subsection{Decision Tree}
 
 With default settings J48 Decision Tree seems to show a reasonable tree to some extent as seen in listing \ref{lst:echo:dec:default}.
@@ -203,7 +201,27 @@ pericardial-effusion = 0
 |   |   epss > 15600: 1 (2.19/0.03)
 pericardial-effusion = 1: 1 (14.0)
 \end{lstlisting}
-Here, the existence of a pericardial effusion (fluid around the heart) is assumed to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%.
+Here, the decision tree assumes a pericardial effusion (fluid around the heart) to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%. Using a higher confidence factor instead of a totally unpruned tree has no effect on the quality or the classification distribution. 
+
+\paragraph{Other parameter}
+Neither the laplace correctin to smooth the count of the leaves nor reduced error pruning has any effect on the quality of result. Without mdl correction the precision decreases a little to 91.9\%. Raising the minimum of instances per leaf has no effect either, which is no suprise since the data set is rather small. We couldn't get a better result with the J48 algorithm than to classify all patients to survive at least one year. The detailed accuracy for this simple, single-sided classification can be seen in table
+\ref{tab:echo:dec:best}.  
+
+
+\begin{table*}[htb]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+        \toprule 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class  \\ \midrule
+               &  0       & 0       & 0         & 0      & 0         &  0      \\     
+               &  1       & 1       & 0.959     & 1      & 0.979     &  1      \\     
+Weighted Avg.  &  0.959   & 0.959   & 0.919     & 0.959  & 0.939     &         \\ \bottomrule
+    \end{tabular*}
+\caption{Decision Tree -- best achievable results} 
+\label{tab:echo:dec:best}
+\end{table*}
+\FloatBarrier
+
+
 
 \subsubsection{Random Forest}
 Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features $ log_2(7) + 1 \approx 4 $, and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result as shown in the confusion matrix in table \ref{tab:echo:rand:matrix1} and the accuracy details in table \ref{tab:echo:rand:default}:
@@ -223,7 +241,6 @@ Let's see if a random forest in place of a simple decision tree can make better 
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\ \midrule
               &  0       & 0.022   & 0         & 0      & 0         & 0     \\
               &  0.978   & 1       & 0.958     & 0.978  & 0.968     & 1     \\
@@ -241,7 +258,6 @@ This method increases the number of false positives but doesn't catch any true p
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &   Class  \\ \midrule
                &  0       & 0.032   & 0         & 0      & 0         &   0      \\
                &  0.968   & 1       & 0.957     & 0.968  & 0.963     &   1      \\     
@@ -255,7 +271,6 @@ Weighted Avg.  &  0.928   & 0.96    & 0.918     & 0.928  & 0.923     &          
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &   Class \\ \midrule
                &  0       & 0.054   & 0         & 0      & 0         &   0     \\ 
                &  0.946   & 1       & 0.957     & 0.946  & 0.951     &   1     \\ 
@@ -300,7 +315,6 @@ This gives us the best achievable accuracy that we can reach with decision based
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate &  FP Rate &  Precision &  Recall &  F-Measure &  Class \\ \midrule
                &  0.25    &  0.022   &  0.333     &  0.25   &  0.286     &  0     \\
                &  0.978   &  0.75    &  0.968     &  0.978  &  0.973     &  1     \\
@@ -319,14 +333,14 @@ Weighted Avg.  &  0.948   &  0.72    &  0.942     &  0.948  &  0.945     &      
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  &Class\\
+									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &Class\\
 	\midrule
-									&0         	&0         &0         	&0       &  0         & 0.5      &0\\
-  								&1         	&1         &0.959     	&1       &0.979       &	0.5      &1\\
+									&0         	&0         &0         	&0       &  0              &0\\
+  								&1         	&1         &0.959     	&1       &0.979             &1\\
   
-	Weighted Avg.		&0.959     	&0.959     &0.919   		&0.959   &0.939     	&0.5	&\\
+	Weighted Avg.		&0.959     	&0.959     &0.919   		&0.959   &0.939     		&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the SVM-classification for the echocardiogram dataset}
@@ -354,14 +368,14 @@ b=1 & 0 & 93\\
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &ROC Area  &Class\\
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &Class\\
 	\midrule
-									&0         	&0         &0         &0       &  0         & 0.5      &0\\
-  								&1         	&1         &0.959     &1       &0.979       &	0.5      &1\\
+									&0         	&0         &0         &0       &  0         &0\\
+  								&1         	&1         &0.959     &1       &0.979       &1\\
   
-	Weighted Avg.		&0.959     	&0.959     &0.919   	&0.959   &0.939     	&0.5				&\\
+	Weighted Avg.		&0.959     	&0.959     &0.919   	&0.959   &0.939     					&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the kNN-classification for the echocardiogram dataset}
@@ -431,7 +445,6 @@ b=1 & 9 & 84\\
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
               &   0.75   & 0.097   & 0.25      & 0.75   & 0.375     & 0 \\
               &   0.903  & 0.25    & 0.988     & 0.903  & 0.944     & 1 \\
@@ -443,6 +456,22 @@ Weighted Avg. &   0.897  & 0.244   & 0.958     & 0.897  & 0.92      &   \\ \bott
 
 
 \subsection{Comparison}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llllllll}
+	\toprule
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &  Correctly classified\\
+	\midrule
+	Decision Tree		\\
+  Random Forest		\\
+  Naive Bayes			&0.897  		& 0.244   	& 0.958   & 0.897  &0.92      	& \\
+  SVM							&0.959     	&0.959     	&0.919   	&0.959   &0.939     	&	0.959\\
+  kNN							&0.959     	&0.959     	&0.919   	&0.959   &0.939     	&	0.959\\
+	\bottomrule
+\end{tabular}
+\caption{Comparison of the different algorithms for the echocardiogram dataset}
+\end{table}
 
 \todo{todo marker}
 
@@ -467,13 +496,12 @@ Weighted Avg. &   0.897  & 0.244   & 0.958     & 0.897  & 0.92      &   \\ \bott
 \subsection{Decision Tree}
 \paragraph{}Using a decision tree yields a precision about 86\%. Varying the parameters for this algorithm influences the quality of the results only slightly, as the following examples illustrate.
 
-\paragraph{}First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDL correction and subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
+\paragraph{}First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with mdl correction and subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
 The decision tree that was used for this run has a size of 413 and has 311 leaves.
 
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                & TP Rate & FP Rate & Precision & Recall &  F-Measure &  Class \\ \midrule  
                & 0.615   & 0.062   & 0.759     & 0.615  &  0.68      &  >50K  \\  
                & 0.938   & 0.385   & 0.885     & 0.938  &  0.911     &  <=50K \\  
@@ -490,7 +518,6 @@ Subsequently increasing the confidence factor, which result in less pruning, lea
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
               &  0.632   & 0.071   & 0.738     & 0.632  & 0.681     & >50K     \\ 
               &  0.929   & 0.368   & 0.888     & 0.929  & 0.908     & <=50K    \\ 
@@ -505,7 +532,6 @@ Weighted Avg. &  0.857   & 0.296   & 0.852     & 0.857  & 0.854     &          \
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall &  F-Measure &  Class  \\ \midrule        
               &  0.655   & 0.094   & 0.689     & 0.655  &  0.672     &  >50K   \\          
               &  0.906   & 0.345   & 0.892     & 0.906  &  0.899     &  <=50K  \\          
@@ -517,7 +543,7 @@ Weighted Avg. &  0.846   & 0.285   & 0.843     & 0.846  &  0.844     &         \
 \FloatBarrier
 
 \paragraph{Other parameters}
-Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without MDLcorrection or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\% respectively.
+Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without mdl correction or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\% respectively.
 
 
 
@@ -527,7 +553,6 @@ With default settings, a random forest gains an accuracy on the census income da
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
               &  0.615   & 0.108   & 0.644     & 0.615  & 0.629     & >50K     \\     
               &  0.892   & 0.385   & 0.88      & 0.892  & 0.886     & <=50K    \\ 
@@ -548,7 +573,6 @@ We have a sign for overfitting under default settings: Reducing the maximum dept
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\ \midrule
                &  0.591   & 0.057   & 0.766     & 0.591  & 0.667     & >50K  \\
                &  0.943   & 0.409   & 0.879     & 0.943  & 0.91      & <=50K \\
@@ -566,10 +590,9 @@ features. Table \ref{tab:adult:rand:3f} shows these results which are of similar
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
                &  0.577   & 0.052   & 0.779     & 0.577  & 0.663     & >50K  \\   
-               &  0.948   & 0.423   & 0.876     & 0.948  & 0.911     & <=50K \\   
+               &  0.948   & 0.423   & 0.876     & 0.948  & 0.911     & $\leq$50K \\   
 Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\   \bottomrule
     \end{tabular*}
 \caption{Random Forest -- 3 Random Features} 
@@ -586,12 +609,12 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \centering
 \begin{tabular}{llllllll}
 	\toprule
-									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure &ROC Area  	&Class\\
+									&TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure  	&Class\\
 	\midrule
-									&0.568     	&0.062     &0.744     	&0.568   &0.644    	&0.753    	&	>50K\\
-  								&0.938     	&0.432     &0.873     	&0.938   &0.904     &0.753    	&$\leq$50K\\
+									&0.568     	&0.062     &0.744     	&0.568   &0.644    	    	&	>50K\\
+  								&0.938     	&0.432     &0.873     	&0.938   &0.904         	&$\leq$50K\\
   
-	Weighted Avg.   & 0.849    & 0.343     &0.842   		&0.849   &0.842     & 0.753			&\\
+	Weighted Avg.   & 0.849    & 0.343     &0.842   		&0.849   &0.842     			&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the SVM-classification for the adult dataset}
@@ -621,7 +644,6 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
                &  0.806   & 0.163   & 0.611     & 0.806  & 0.695     & >50K  \\
                &  0.837   & 0.194   & 0.932     & 0.837  & 0.882     & <=50K \\
@@ -657,14 +679,14 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-									&TP Rate   &FP Rate   &Precision   &Recall  &F-Measure &ROC Area  	&Class\\
+									&TP Rate   &FP Rate   &Precision   &Recall  &F-Measure &Class\\
 	\midrule
-									&0.593     &0.088      &0.68      &0.593     &0.633    &0.884    		&>50K\\
-									&0.912     &0.407      &0.876     &0.912     &0.893    &0.884    		&$\leq$50K\\
+									&0.593     &0.088      &0.68      &0.593     &0.633    &>50K\\
+									&0.912     &0.407      &0.876     &0.912     &0.893    &$\leq$50K\\
   
-	Weighted Avg.   &0.835     &0.331      &0.829     &0.835     &0.831    &0.884 \\
+	Weighted Avg.   &0.835     &0.331      &0.829     &0.835     &0.831     \\
 	\bottomrule
 \end{tabular}
 \caption{Results of the kNN-classification for the adult dataset}
@@ -688,7 +710,21 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 
 \subsection{Comparison}
 
-\todo{todo marker}
+\begin{table}[h]
+\centering
+\begin{tabular}{llllllll}
+	\toprule
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &  Correctly classified\\
+	\midrule
+	Decision Tree		&  0.846   	& 0.285   	& 0.843   & 0.846  &  0.844 		& FEHLT\\
+  Random Forest		&  0.859   	& 0.333   	& 0.853   & 0.859  & 0.851     	& FEHLT\\
+  Naive Bayes		 	&  0.83    	& 0.186   	& 0.854   & 0.83   & 0.837     	& FEHLT\\
+  SVM							& 0.849    	& 0.343     &0.842   	&0.849   &0.842     	& 0.849\\
+  kNN							&0.835     	&0.331      &0.829    &0.835   &0.831				& 0.835\\
+	\bottomrule
+\end{tabular}
+\caption{Comparison of the different algorithms for the adult dataset}
+\end{table}
 
 
 
@@ -713,7 +749,6 @@ With default settings, the J48 algorithm comes off very badly, in table \ref{tab
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule 
                &  0.609   & 0.287   & 0.613     & 0.609  & 0.611     &  1     \\  
                &  0.378   & 0.138   & 0.445     & 0.378  & 0.409     &  2     \\      
@@ -735,7 +770,6 @@ We can notice a certain improvement to the outcome if we ensure that every leaf 
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &   TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule      
               &   0.595   & 0.231   & 0.657     & 0.595  & 0.624     &  1     \\      
               &   0.405   & 0.135   & 0.467     & 0.405  & 0.434     &  2     \\      
@@ -747,13 +781,12 @@ Weighted Avg. &   0.545   & 0.245   & 0.552     & 0.545  & 0.546     &        \\
 \end{table*}
 \FloatBarrier
 \paragraph{Other parameters}
-Neither laplace correction nor mdl correction has any positive effect on the output of the algorithm on this data set. The absence of MDL correction make the outcome a bit worse, it brings the precision down to 0.551\%.  But there is one small tweak from which the accuracy of the algorithm can benefit: If binary splits are used on nominal attributes, we get the best result for the J48 on this data set as seen in table \ref{tab:contra:dec:bin}.
+Neither laplace correction nor mdl correction has any positive effect on the output of the algorithm on this data set. The absence of mdl correction make the outcome a bit worse, it brings the precision down to 0.551\%.  But there is one small tweak from which the accuracy of the algorithm can benefit: If binary splits are used on nominal attributes, we get the best result for the J48 on this data set as seen in table \ref{tab:contra:dec:bin}.
 
  
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule   
                &  0.649   & 0.263   & 0.648     & 0.649  & 0.648     &  1     \\    
                &  0.402   & 0.13    & 0.475     & 0.402  & 0.436     &  2     \\        
@@ -771,7 +804,6 @@ Random Forests perform even worse than the J48 with default settings. We can see
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure  & Class  \\  \midrule      
                &  0.631   & 0.328   & 0.589     & 0.631  & 0.609      & 1      \\       
                &  0.36    & 0.16    & 0.397     & 0.36   & 0.378      & 2      \\       
@@ -791,7 +823,6 @@ The most significant improvement can then observed after increasing the number o
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\  \midrule     
                &  0.604   & 0.231   & 0.661     & 0.604  & 0.631     &  1     \\  
                &  0.408   & 0.127   & 0.484     & 0.408  & 0.443     &  2     \\  
@@ -812,7 +843,6 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
                &  0.52    & 0.223   & 0.635     & 0.52   & 0.572     & 1  \\  
                &  0.526   & 0.245   & 0.385     & 0.526  & 0.445     & 2  \\
@@ -847,14 +877,14 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 
 \begin{table}[htb]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  	&Class\\ 
+	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure     	&Class\\ 
 	\midrule
-									&0.583     	&0.355     &0.55      	&0.583   &0.566   		&0.628    	&1\\
-                 	&0.393     	&0.181     &0.389     	&0.393   &0.391      	&0.648    	&2\\
-                 	&0.444     	&0.252     &0.484     	&0.444   &0.463      	&0.614    	&3\\
-	Weighted Avg.   & 0.849    & 0.343      &0.842   &  0.849     &0.842     & 0.753			&\\
+									&0.583     	&0.355     &0.55      	&0.583   &0.566   		    	&1\\
+                 	&0.393     	&0.181     &0.389     	&0.393   &0.391      	    	&2\\
+                 	&0.444     	&0.252     &0.484     	&0.444   &0.463      	    	&3\\
+	Weighted Avg.   & 0.849    & 0.343      &0.842   &  0.849     &0.842     			&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the SVM-classification for the contraception dataset}
@@ -883,15 +913,15 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{lllllll}
 	\toprule
-	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure   &ROC Area  	&Class\\
+	&								TP Rate   	&FP Rate   &Precision   &Recall  &F-Measure     	&Class\\
 	\midrule
-									&0.569     	&0.351     &0.547     	&0.569   &0.558      	&0.65     	&1\\
-                 	&0.414     	&0.166     &0.422     	&0.414   &0.418      	&0.677    	&2\\
-                 	&0.438     	&0.279     &0.455     	&0.438   &0.447      	&0.603    	&3\\
+									&0.569     	&0.351     &0.547     	&0.569   &0.558      	     	&1\\
+                 	&0.414     	&0.166     &0.422     	&0.414   &0.418      	    	&2\\
+                 	&0.438     	&0.279     &0.455     	&0.438   &0.447      	    	&3\\
 
-	Weighted Avg.   &0.489     	&0.284     &0.487     	&0.489   &0.488      	&0.64			&\\
+	Weighted Avg.   &0.489     	&0.284     &0.487     	&0.489   &0.488      				&\\
 	\bottomrule
 \end{tabular}
 \caption{Results of the kNN-classification for the contraception dataset}
@@ -916,8 +946,23 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 
 \subsection{Comparison}
 
-\todo{todo marker}
+\subsection{Comparison}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{llllllll}
+	\toprule
+									&TP Rate   	&FP Rate   &Precision &Recall  &F-Measure   &  Correctly classified\\
+	\midrule
+	Decision Tree 	&  0.558   & 0.243   & 0.557     	& 0.558  & 0.557     & FEHLT\\
+  Random Forest		&  0.556   & 0.241   & 0.562     	& 0.556  & 0.556     & FEHLT\\
+  Naive Bayes		 	&  0.508   & 0.243   & 0.528     	& 0.508  & 0.513     & FEHLT\\
+  SVM							& 0.849    & 0.343   &0.842   		& 0.849  & 0.842 		 & 0.492\\
+  kNN							&0.489     &0.284    &0.487     	& 0.489  & 0.488 		 & 0.489\\
+	\bottomrule
+\end{tabular}
+\caption{Comparison of the different algorithms for the contraceptive method choice dataset}
+\end{table}
 \bibliography{references}
 
 
