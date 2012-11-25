@@ -31,6 +31,7 @@
 }
 \newcommand{\Hilight}{\makebox[0pt][l]{\color{red}\rule[-4pt]{0.65\linewidth}{14pt}}}
 \usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{morefloats}
 \bibliographystyle{plain}
 
@@ -171,9 +172,9 @@ J48 pruned tree
 
 \subsection{Decision Tree}
 
-The J48 Decision Tree shows a more useful tree on the preprocessed data:
+With default settings J48 Decision Tree seems to show a reasonable tree to some extent as seen in listing \ref{lst:echo:dec:default}.
 
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:echo:dec:default, caption={Vizualization of Decision Tree on echocardiogram data -- Default Settings}]
 J48 pruned tree
 ------------------
 epss <= 13100: 1 (90.63/1.95)
@@ -194,18 +195,15 @@ epss > 13100
 
 \paragraph{}Only the rule for the fractional shortening should be the other way round, because a low fractional shortening is a rather pathological sign. Although the decision tree has a high precision of almost 95\% it performs very imprecise, because none of the patients who died after one year are correctly classified:
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|ll|}
-\hline
- & a &	b \\
-\hline
-a = 0  & 0 & 4 	\\
-b = 1 & 1 & 90 	\\
-\hline
+\begin{table*}[htb]\centering
+    \begin{tabular}{@{}ll|ll@{}} 
+\multicolumn{2}{c}{\phantom{bla}}  & \multicolumn{2}{c}{Classified as} \\  
+                        & \phantom{aa}  &  0  &  1  \\ \cmidrule{2-4}
+\multirow{2}{*}{Instances}     &  0  &  0  &  4  \\
+                                   &  1  &  1  &  90 \\ 
 \end{tabular}
 \caption{Confusion matrix for Decision tree}
-\end{table}
+\end{table*}
 
 Using an unpruned tree doesn't improve the results:
 \begin{lstlisting}
@@ -220,22 +218,20 @@ pericardial-effusion = 1: 1 (14.0)
 Here, the existence of a pericardial effusion (fluid around the heart) is assumed to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%.
 
 \subsubsection{Random Forest}
-Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features $ log_2(7) + 1 \approx 4 $, and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result:
+Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features $ log_2(7) + 1 \approx 4 $, and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result as shown in the confusion matrix in table \ref{tab:echo:rand:matrix1} and the accuracy details in table \ref{tab:echo:rand:default}:
 	
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|ll|}
-\hline
- & a &	b \\
-\hline
-a=0 & 0 & 4 \\
-b=1 & 2 & 91\\
-\hline
+
+\begin{table*}[htb]\centering
+    \begin{tabular}{@{}ll|ll@{}} 
+\multicolumn{2}{c}{\phantom{bla}}  & \multicolumn{2}{c}{Classified as} \\  
+                   & \phantom{aa}        &  0  &  1  \\ \cmidrule{2-4}
+\multirow{2}{*}{Instances}         &  0  &  0  &  4  \\
+                                   &  1  &  2  &  91 \\ 
 \end{tabular}
 \caption{Confusion matrix for Random Forest}
-\end{table}
+\label{tab:echo:rand:matrix1}
+\end{table*}
 
-And the statistical measures:
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
@@ -246,6 +242,7 @@ And the statistical measures:
 Weighted Avg. &  0.938   & 0.96    & 0.918     & 0.938  & 0.928     &       \\ \bottomrule
     \end{tabular*}
 \caption{Random Forest -- Default Settings} 
+\label{tab:echo:rand:default}
 \end{table*}
 \FloatBarrier
 
@@ -281,40 +278,37 @@ Weighted Avg.  &  0.907   & 0.961   & 0.917     & 0.907  & 0.912     &         \
 \end{table*}
 \FloatBarrier
 \paragraph{Limiting the maximum depth of the trees}
-Limitations in the depths of the random trees has also almost no effect on the accuracy of random forests on this data set. The only change to the outcome can be observed as soon the depth of the trees is limited to 6:
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|ll|}
-\hline
- & a &	b \\
-\hline
-a=0 & 0 & 4 \\
-b=1 & 1 & 92\\
-\hline
+Limitations in the depths of the random trees has also almost no effect on the accuracy of random forests on this data set. The only change to the outcome can be observed as soon the depth of the trees is limited to 6 (see table \ref{tab:echo:rand:matrix2}).
+Only one false positive has gone. Not really a remarkable change in the quality. This does not change if the tree-depth is further reduced.
+\begin{table*}[htb]\centering
+    \begin{tabular}{@{}ll|ll@{}} 
+\multicolumn{2}{c}{\phantom{bla}}  & \multicolumn{2}{c}{Classified as} \\  
+                   & \phantom{aa}        &  0  &  1  \\ \cmidrule{2-4}
+\multirow{2}{*}{Instances}         &  0  & 0 & 4 \\
+                                   &  1  & 1 & 92\\ 
 \end{tabular}
 \caption{Confusion matrix for Random Forest, limited depth}
-\end{table}
+\label{tab:echo:rand:matrix2}
+\end{table*}
 
-Only one false positive has gone. Not really a remarkable change in the quality. This does not change if the tree-depth is further reduced.
+
 
 \paragraph{Increasing the number of features}
-Increasing the number of features chosen by each random tree seems to has also a low effect on the quality, because until a certain border of 5 chosen features the outcome is exactly the same as it was with default settings. But if we configure the random forests with 6 features we can spot our first true positive:
+Increasing the number of features chosen by each random tree seems to has also a low effect on the quality, because until a certain border of 5 chosen features the outcome is exactly the same as it was with default settings. But if we configure the random forests with 6 features we can spot our first true positive in the confusion matrix (table \ref{tab:echo:rand:matrix3}).
+This gives us the best achievable accuracy that we can reach with decision based algorithms, shown in table \ref{tab:echo:rand:6f}.
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|ll|}
-\hline
- & a &	b \\
-\hline
-a=0 & 1 & 3 \\
-b=1 & 2 & 91\\
-\hline
+
+\begin{table*}[htb]\centering
+    \begin{tabular}{@{}ll|ll@{}} 
+\multicolumn{2}{c}{\phantom{bla}}  & \multicolumn{2}{c}{Classified as} \\  
+                   & \phantom{aa}        &  0  &  1  \\ \cmidrule{2-4}
+\multirow{2}{*}{Instances}         &  0  & 1 & 3 \\
+                                   &  1  & 2 & 91\\ 
 \end{tabular}
 \caption{Confusion matrix for Random Forest, increased number of features}
-\end{table}
+\label{tab:echo:rand:matrix3}
+\end{table*}
 
-Which gives us the best achievable accuracy that we can reach with decision based algorithms, shown in table \ref{tab:echo:rand:6f}.
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
@@ -485,8 +479,9 @@ Weighted Avg. &   0.897  & 0.244   & 0.958     & 0.897  & 0.92      &   \\ \bott
 \subsection{Decision Tree}
 \paragraph{}Using a decision tree yields a precision about 86\%. Varying the parameters for this algorithm influences the quality of the results only slightly, as the following examples illustrate.
 
-\paragraph{}First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDLCorrection and Subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
- 
+\paragraph{}First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDL correction and subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
+The decision tree that was used for this run has a size of 413 and has 311 leaves.
+
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
@@ -501,7 +496,6 @@ Weighted Avg.  & 0.86    & 0.307   & 0.854     & 0.86   &  0.855     &        \\
 \end{table*}
 \FloatBarrier
 
-\paragraph{}The decision tree that was used for this run has a size of 413 and has 311 leaves.
 
 \paragraph{Raising the confidence factor}
 Subsequently increasing the confidence factor, which result in less pruning, leads to a continuous worse quality. If we set the confidence factor to 0.5 we get an outcome as shown in table \ref{tab:adult:dec:cf5} and if we set it to 0.75 the quality gets even worse as seen in \ref{tab:adult:dec:cf75}.
@@ -541,7 +535,7 @@ Varying other parameters has a similar effect like the one mentioned above. Eith
 
 \subsection{Random Forest}
 
-With default settings, a random forest gains an accuracy on the census income data set that can be seen in table \ref{tab:adult:rand:default}:
+With default settings, a random forest gains an accuracy on the census income data set that can be seen in table \ref{tab:adult:rand:default}, which is surprisingly worse than the J48 algorithm.
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
@@ -555,45 +549,32 @@ Weighted Avg. &  0.825   & 0.318   & 0.823     & 0.825  & 0.824     &          \
 \label{tab:adult:rand:default}
 \end{table*}
 \FloatBarrier
-which is surprisingly worse than the J48 algorithm. 
+
 
 \paragraph{Number of Random Trees}
 As expected, reducing the number of random trees reduces the quality, with 5 random trees the precision lays at 82.6\% with only 3 random trees it lays at 82.3\%. Interestingly, the quality gets higher if we take even more than 10 random trees into account: With 15 trees, the precision is at 83.2\% and with 25 random trees it is at 83.3\%.
 
 \paragraph{Limiting the maximum depth of the trees}
-We have a sign for overfitting under default settings: Reducing the maximum depth has a positive effect on the quality. From size 20 over 10 until the size of 7 the precision of the random forest rises until 85\%. Reducing the depth even further lets the precision fall again. Here is the detailed accuracy for a random forest which can grow only to a height of 6:
+We have a sign for overfitting under default settings: Reducing the maximum depth has a positive effect on the quality. From size 20 over 10 until the size of 7 the precision of the randomeforest rises until 85\%. Reducing the depth even further lets the precision fall again. Table \ref{tab:adult:rand:6d} shows the detailed accuracy for a random forest of seven trees which can grow only to a height of 6:
 
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
       \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
-              &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
-              &  0.606   & 0.064   & 0.749     & 0.606  & 0.67      & >50K     \\ 
-              &  0.936   & 0.394   & 0.882     & 0.936  & 0.908     & <=50K    \\ 
-Weighted Avg. &  0.856   & 0.314   & 0.85      & 0.856  & 0.851     &          \\  \bottomrule
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\ \midrule
+               &  0.591   & 0.057   & 0.766     & 0.591  & 0.667     & >50K  \\
+               &  0.943   & 0.409   & 0.879     & 0.943  & 0.91      & <=50K \\
+Weighted Avg.  &  0.858   & 0.324   & 0.852     & 0.858  & 0.851     &       \\ \bottomrule
     \end{tabular*}
-\caption{Random Forest -- 7 Random Trees} 
-\label{tab:adult:rand:7t}
-\end{table*}
-\FloatBarrier
-We can push the accuracy even further, if we take more random trees, e.g. twenty:
-\begin{table*}[htb]\centering
-  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
-      \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
-                & TP Rate  & FP Rate  & Precision &  Recall &  F-Measure  & Class  \\  \midrule          
-                & 0.593    & 0.058    & 0.763     &  0.593  &  0.667      & >50K   \\     
-                & 0.942    & 0.407    & 0.879     &  0.942  &  0.909      & <=50K  \\     
-Weighted Avg.   & 0.858    & 0.323    & 0.851     &  0.858  &  0.851      &        \\  \bottomrule
-    \end{tabular*}
-\caption{Random Forest -- 20 Random Trees} 
-\label{tab:adult:rand:20t}
+\caption{Random Forest -- 7 Random Trees each not more than 6 branches high} 
+\label{tab:adult:rand:6d}
 \end{table*}
 \FloatBarrier
 
 \paragraph{Number of features}
 Increasing the number of features doesn't support the quality at all. The default number of features for this data set with 13 attributes is $ log_2(13) + 1 \approx 5 $. Choosing 6 attributes brinchoose gs us a precision of 84,9\% and with 10 randomly chosen features the precision falls back to 84.5\%. We can tease the most out of the random forest if we decrease the number of features a little. To be concise, we get the best achievable result, if we take only 3 randomly chosen
-features.
+features. Table \ref{tab:adult:rand:3f} shows these results which are of similar accuracy like the best of the J48 algorithm. 
+
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
@@ -607,7 +588,6 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \label{tab:adult:rand:3f}
 \end{table*}
 \FloatBarrier
-Which is a quite similar accuracy like the best of the J48 algorithm. 
 
 
 \subsection{Support Vector Machine}
