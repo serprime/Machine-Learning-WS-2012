@@ -798,11 +798,11 @@ Neither laplace correction nor mdl correction has any positive effect on the out
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
       \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
-               &  TP Rate & FP Rate & Precision & Recall & F-Measure  Class \\ \midrule   
-               &  0.649   & 0.263   & 0.648     & 0.649  & 0.648      1     \\    
-               &  0.402   & 0.13    & 0.475     & 0.402  & 0.436      2     \\        
-               &  0.548   & 0.292   & 0.499     & 0.548  & 0.522      3     \\    
-Weighted Avg.  &  0.558   & 0.243   & 0.557     & 0.558  & 0.557            \\ \bottomrule 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule   
+               &  0.649   & 0.263   & 0.648     & 0.649  & 0.648     &  1     \\    
+               &  0.402   & 0.13    & 0.475     & 0.402  & 0.436     &  2     \\        
+               &  0.548   & 0.292   & 0.499     & 0.548  & 0.522     &  3     \\    
+Weighted Avg.  &  0.558   & 0.243   & 0.557     & 0.558  & 0.557     &        \\ \bottomrule 
     \end{tabular*}
 \caption{Decision Tree on Contraceptive Data Set -- using binary splits} 
 \label{tab:contra:dec:bin}
@@ -810,8 +810,43 @@ Weighted Avg.  &  0.558   & 0.243   & 0.557     & 0.558  & 0.557            \\ \
 \FloatBarrier
 
 \subsection{Random Forest}
+Random Forests perform even worse than the J48 with default settings. We can see in table \ref{tab:contra:rand:default} that only the half of all classified instances are classified correctly.
 
-\todo{todo marker}
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure  & Class  \\  \midrule      
+               &  0.631   & 0.328   & 0.589     & 0.631  & 0.609      & 1      \\       
+               &  0.36    & 0.16    & 0.397     & 0.36   & 0.378      & 2      \\       
+               &  0.456   & 0.274   & 0.469     & 0.456  & 0.462      & 3      \\       
+Weighted Avg.  &  0.509   & 0.271   & 0.504     & 0.509  & 0.506      &        \\  \bottomrule     
+    \end{tabular*}
+\caption{Random Forests on Contraceptive Data Set -- Default Settings} 
+\label{tab:contra:rand:default}
+\end{table*}
+\FloatBarrier
+
+\paragraph{More but shorter trees}
+Random forests perform best on the data set with a maximum depth of 5 branches. After this improvement we can lift the precision up to 54.4\%. Furthermore, our random forest benefits from adding five more random trees so we can enhance the precision to  54.7\%.
+\paragraph{More Features}
+The most significant improvement can then observed after increasing the number of randomly chosen features. By default, the number of chosen features for this data set lays about 4 ( $ log_2(10) + 1 $ ). Choosing two more of them results in the best accuracy for random forests on this data set, as shown in table \ref{tab:contra:rand:6f}.
+
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\  \midrule     
+               &  0.604   & 0.231   & 0.661     & 0.604  & 0.631     &  1     \\  
+               &  0.408   & 0.127   & 0.484     & 0.408  & 0.443     &  2     \\  
+               &  0.593   & 0.326   & 0.491     & 0.593  & 0.537     &  3     \\  
+Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\  \bottomrule 
+    \end{tabular*}
+\caption{Random Forests on Contraceptive Data Set -- with at least 6 chosen features} 
+\label{tab:contra:rand:6f}
+\end{table*}
+\FloatBarrier
+
 
 \subsection{Naive Bayes}
 
