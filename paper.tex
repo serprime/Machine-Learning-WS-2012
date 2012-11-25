@@ -84,11 +84,6 @@
 %   PROBLEM 1
 %----------------------------------------------------------------------------------------
 
-\todo[inline]{defined:
-
-validation: cross-validation with 10 for big data sets (9 training, 1 test), 3 for the small echo cardio set.
-}
-
 \todo[inline]{Choose 5 different classifiers, from at least 3 different types
 of learning algorithms
 
@@ -102,11 +97,13 @@ Evaluate effect of pre-processing (e.g. different strategies
 for missing values)
 }
 
+
 \section{Preface}
 
 \paragraph{}For the first exercise 3 data sets were chosen on which five classification algorithms were tested to practice basic machine learning tasks and see how these algorithms behave with their various settings. For the elaboration of this paper the Machine Learning Software Weka was used. It offered all necessary algorithms.
 
 \paragraph{}As data sets we chose as follows:
+
 \begin{itemize}
 \item Echo Cardiogram, a data set about heart attacks and if a patient survived one year after the attack.
 \item Adult / Census Income, a data set about people and their basic information and if they earn more than 50k a year.
@@ -125,7 +122,9 @@ for missing values)
 
 \paragraph{}The Echocardiogram data set originally consists of 132 entries with 13 attributes respectively. The entries of the dataset refer to patients that suffered from a heart attack at some point in the past \cite{uci-repo}. The prediction task is to determine from several different attributes if the patient will survive at least one year, beginning from the day when the heart attack occured. The dataset contains missing values and there's a lot of other preprocessing steps (described later) which have to be done. The dataset is very small, especially after preprocessing and a further problem is that the number of patients which died within one year after their heart attack is very small (4) which makes the classification very hard. It is nevertheless an interesting question wether some classification algorithm can perform well on that data. Since it is very small we performed a 3-fold-cross-validation on this dataset.
 
+
 \subsection{Preprocessing}
+
 \paragraph{}The patient's attribute ``name'' was replaced by a dummy for all entries. For this reason, this attribute could be entirely removed. Other unnecessary attributes were ``group'' and ``mult'' which were also (as explained in the description) just meaningless and could thus be ignored \cite{uci-repo}. There were also two attributes ``wall-motion-score'' and ``wall-motion-index'' where the description of the dataset said that one should only use the ``wall-motion-index'' for classification issues and so ``wall-motion-score'' was also removed.
 
 \paragraph{}The actual prediction attribute ``alive-at-1'' (denoting that a patient lived at least one year after having a heart attack) had to be inferred from two other attributes, namely ``survival'' (number of months that the test-person survived after the heart attack) and ``still-alive'' (a binary variable denoting if a patient is still alive at the time when the data was recorded). It is possible that the ``survival'' variable has a value lower than 12 but the ``still-alive'' variable is set to true, meaning that the test-person still lived. This is the case if the data for a test-person was recorded in the last 12 months and so this data cannot be used for the classification and was thus removed.
@@ -196,9 +195,11 @@ epss > 13100
 \end{lstlisting}
 
 \paragraph{}The documentation of the data set explains the two attributes as follows:
+
 \begin{quote}
 ``epss -- E-point septal separation, another measure of contractility. Larger numbers are increasingly abnormal.''
 \end{quote}
+
 \begin{quote}
 `` fractional-shortening -- a measure of contracility around the heart lower numbers are increasingly abnormal''
 \end{quote}
@@ -308,6 +309,7 @@ b=1 & 1 & 92\\
 \end{table}
 
 Only one false positive has gone. Not really a remarkable change in the quality. This does not change if the tree-depth is further reduced.
+
 \paragraph{Increasing the number of features}
 Increasing the number of features chosen by each random tree seems to has also a low effect on the quality, because until a certain border of 5 chosen features the outcome is exactly the same as it was with default settings. But if we configure the random forests with 6 features we can spot our first true positive:
 
@@ -376,10 +378,9 @@ b=1 & 0 & 93\\
 \end{table}
 
 
-
 \subsection{k-Nearest Neighbour}
 
-As with the SVM-algorithm there was no normalization necessary (we tested this on different datasets). In WEKA there are different implementations of the kNN-algorithm available and we chose (for all our datasets) the brute force kNN-algorithm since this is the classic implementation of the kNN-algorithm where we were interested in the running time. We tried different parameters concerning the number of neighbours which are considered for classification. Changes on that parameter didn't make any differences. As with the SVM, the kNN-algorithm was not able to cope with the small number of data records which should be classified with value 0. The creation of the model doesn't take any time with a kNN-algorithm since there is no model which would be built: kNN is a lazy classification algorithm. The evaluation of the model took not even a second. In the following are the results of the classification. The results are exactly the same as for the SVM.
+\paragraph{}As with the SVM-algorithm there was no normalization necessary (we tested this on different datasets). In WEKA there are different implementations of the kNN-algorithm available and we chose (for all our datasets) the brute force kNN-algorithm since this is the classic implementation of the kNN-algorithm where we were interested in the running time. We tried different parameters concerning the number of neighbours which are considered for classification. Changes on that parameter didn't make any differences. As with the SVM, the kNN-algorithm was not able to cope with the small number of data records which should be classified with value 0. The creation of the model doesn't take any time with a kNN-algorithm since there is no model which would be built: kNN is a lazy classification algorithm. The evaluation of the model took not even a second. In the following are the results of the classification. The results are exactly the same as for the SVM.
 
 \begin{table}[h]
 \centering
@@ -414,9 +415,9 @@ b=1 & 0 & 93\\
 
 \subsection{Naive Bayes}
 
-For the fist try, the unsupervised discretizer was used. But the result was bad. The classifier could predict one single instance for for patients that did not survive one year.
+\paragraph{}For the fist try, the unsupervised discretizer was used. But the result was bad. The classifier could predict one single instance for for patients that did not survive one year.
 
-For the second try we prepare the data set with the PKIDiscretizer. The description says it "Discretizes numeric attributes using equal frequency binning, where the number of bins is equal to the square root of the number of non-missing values." But as we can see in \ref{tab:echo:bayes:1c} this discretizer does not perform better.
+\paragraph{}For the second try we prepare the data set with the PKIDiscretizer. The description says it "Discretizes numeric attributes using equal frequency binning, where the number of bins is equal to the square root of the number of non-missing values." But as we can see in \ref{tab:echo:bayes:1c} this discretizer does not perform better.
 
 \begin{table}[h]
 \centering
@@ -432,14 +433,14 @@ b=1 & 1 & 92\\
 \label{tab:echo:bayes:1c}
 \end{table}
 
-The log output of Naive Bayes shows that each bin has 1-2 negative (alive-at-1 = 0) instances. This means that each bin has the same low possibility for TP-prediction.
+\paragraph{}The log output of Naive Bayes shows that each bin has 1-2 negative (alive-at-1 = 0) instances. This means that each bin has the same low possibility for TP-prediction.
 
-So we have to boost the instances we want to predict. For that the SMOTE filter is used. It produces more instances of a given class index by looking at near neighbours with the same class value. The filter was applied several times, until the number of instances that have alive-at-1 = 0 1.2 times more than the alive-at-1 = 1 instances (128:93). The SMOTE filter used 3 nearest neighbours and produced 100\% new instances in each run. In this way we raised the numbers of instances with an outcome we want to predict, as for this training set it is better to predict if a patient is at risk to not survive one year.
+\paragraph{}So we have to boost the instances we want to predict. For that the SMOTE filter is used. It produces more instances of a given class index by looking at near neighbours with the same class value. The filter was applied several times, until the number of instances that have alive-at-1 = 0 1.2 times more than the alive-at-1 = 1 instances (128:93). The SMOTE filter used 3 nearest neighbours and produced 100\% new instances in each run. In this way we raised the numbers of instances with an outcome we want to predict, as for this training set it is better to predict if a patient is at risk to not survive one year.
 
-We have to supply a separate set for validation as we kind of destroy the data set when generating new instances. For that the original training set was taken. Although it is not good to validate a classifier with the same set as the training set, we can use this approach because our training set does not have a lot in common with the original set as we added a lot of generated instances.
+\paragraph{}We have to supply a separate set for validation as we kind of destroy the data set when generating new instances. For that the original training set was taken. Although it is not good to validate a classifier with the same set as the training set, we can use this approach because our training set does not have a lot in common with the original set as we added a lot of generated instances.
 
 
-The confusion matrix \ref{tab:echo:bayes:2c} shows, that we predicted three out of four correct instances and also had more errors when predicting alive-at-1 = 0 than  alive-at-1 = 1.
+\paragraph{}The confusion matrix \ref{tab:echo:bayes:2c} shows, that we predicted three out of four correct instances and also had more errors when predicting alive-at-1 = 0 than  alive-at-1 = 1.
 
 \begin{table}[h]
 \centering
@@ -455,7 +456,7 @@ b=1 & 9 & 84\\
 \label{tab:echo:bayes:2c}
 \end{table}
 
-Also the detailed accuracy table \ref{tab:echo:bayes:2d} shows that this approach gained a high recall with a low precision for alive-at-1 = 0 and both high precision and recall for alive-at-1 = 1.
+\paragraph{}Also the detailed accuracy table \ref{tab:echo:bayes:2d} shows that this approach gained a high recall with a low precision for alive-at-1 = 0 and both high precision and recall for alive-at-1 = 1.
 
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
@@ -490,13 +491,13 @@ Weighted Avg. &   0.897  & 0.244   & 0.958     & 0.897  & 0.92      &   \\ \bott
 
 \subsection{Preprocessing}
 
-The ``Adult'' dataset has missing values which we all replaced by the mean value of the respective attribute. We did no further preprocessing. As for the Echocardiogram dataset there was no normalization neccessary for the SVM or the kNN algorithms.
+\paragraph{}The ``Adult'' dataset has missing values which we all replaced by the mean value of the respective attribute. We did no further preprocessing. As for the Echocardiogram dataset there was no normalization neccessary for the SVM or the kNN algorithms.
 
 
 \subsection{Decision Tree}
-Using a decision tree yields a precision about 86\%. Varying the parameters for this algorithm influences the quality of the results only slightly, as the following examples illustrate.
+\paragraph{}Using a decision tree yields a precision about 86\%. Varying the parameters for this algorithm influences the quality of the results only slightly, as the following examples illustrate.
 
-First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDLCorrection and Subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
+\paragraph{}First of all, with the default settings of the J48 implementation of weka, i.e. using pruning with a confidence factor of 0.25 together with MDLCorrection and Subtree raising and at least 2 instances per leaf of the tree, we get a summary of the quality as shown in table \ref{tab:adult:dec:default}:
  
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
@@ -512,7 +513,7 @@ Weighted Avg.  & 0.86    & 0.307   & 0.854     & 0.86   &  0.855     &        \\
 \end{table*}
 \FloatBarrier
 
-The decision tree that was used for this run has a size of 413 and has 311 leaves.
+\paragraph{}The decision tree that was used for this run has a size of 413 and has 311 leaves.
 
 \paragraph{Raising the confidence factor}
 Subsequently increasing the confidence factor, which result in less pruning, leads to a continuous worse quality. If we set the confidence factor to 0.5 we get an outcome as shown in table \ref{tab:adult:dec:cf5} and if we set it to 0.75 the quality gets even worse as seen in \ref{tab:adult:dec:cf75}.
@@ -619,9 +620,11 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \end{table*}
 \FloatBarrier
 Which is a quite similar accuracy like the best of the J48 algorithm. 
+
+
 \subsection{Support Vector Machine}
 
-From the different kernel functions for the SVM-algorithm we used the PolyKernel on this dataset. As with the dataset before the normalization of the numeric data had no inpact on the validation results. One interesting aspect is that the creation of the model and the 10-fold-cross-validation took 135 minutes since the dataset is big. The SVM-algorithm was able to correctly classify 84,9\% of the instances. The following two tables show further validation results including a confusion matrix:
+\paragraph{}From the different kernel functions for the SVM-algorithm we used the PolyKernel on this dataset. As with the dataset before the normalization of the numeric data had no inpact on the validation results. One interesting aspect is that the creation of the model and the 10-fold-cross-validation took 135 minutes since the dataset is big. The SVM-algorithm was able to correctly classify 84,9\% of the instances. The following two tables show further validation results including a confusion matrix:
 
 \begin{table}[h]
 \centering
@@ -656,13 +659,8 @@ From the different kernel functions for the SVM-algorithm we used the PolyKernel
 
 \subsection{Naive Bayes}
 
+\paragraph{}As further preprocessing for Naive Bayes it is important to dicretize the numerical attributes. The PKIDescretizer was used again as it produces better bin sizes than the standard discretizer without any configuration. After the first run with the Simple Naive Bayes algorithm we gain the result shown in table \ref{tab:adult:bayes:1d} and a confusion matrix \ref{tab:adult:bayes:1c}.
 
-
-
-
-As further preprocessing for Naive Bayes it is important to dicretize the numerical attributes. The PKIDescretizer was used again as it produces better bin sizes than the standard discretizer without any configuration.
-
-After the first run with the Simple Naive Bayes algorithm we gain the result shown in table \ref{tab:adult:bayes:1d} and a confusion matrix \ref{tab:adult:bayes:1c}.
 
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
@@ -693,13 +691,13 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 \label{tab:adult:bayes:1c}
 \end{table}
 
-By using different discretizers and also do not seperately discretize in the preprocessing section of weka but instead let the NaiveBayers classifier use it's own discretizers namely KernelEstimator or SupervisedDiscretizer the outcome of precision and recall differ a bit by 0.05 to 0.1 higher and lower. It does obviously do not really make a difference.
+\paragraph{}By using different discretizers and also do not seperately discretize in the preprocessing section of weka but instead let the NaiveBayers classifier use it's own discretizers namely KernelEstimator or SupervisedDiscretizer the outcome of precision and recall differ a bit by 0.05 to 0.1 higher and lower. It does obviously do not really make a difference.
 
 
 
 \subsection{k-Nearest Neighbour}
 
-We tested the k-nearest neighbour algorithm with different values for $k$. For $k$=1 (nearest neighbour) the algorithm was able to correctly classify 79,4\% of the instances. We tested the algorithm also with values 10,40 and 100 for $k$ and obtained the best results with $k=40$, where 83,48\% of the instances were correctly classified. Again the normalization of the input had no influence on the results. The evaluation of this algorithm took 120 seconds. In the following tables we present further results of the evaluation with $k=40$ including a confusion matrix.
+\paragraph{}We tested the k-nearest neighbour algorithm with different values for $k$. For $k$=1 (nearest neighbour) the algorithm was able to correctly classify 79,4\% of the instances. We tested the algorithm also with values 10,40 and 100 for $k$ and obtained the best results with $k=40$, where 83,48\% of the instances were correctly classified. Again the normalization of the input had no influence on the results. The evaluation of this algorithm took 120 seconds. In the following tables we present further results of the evaluation with $k=40$ including a confusion matrix.
 
 \begin{table}[h]
 \centering
@@ -736,6 +734,8 @@ We tested the k-nearest neighbour algorithm with different values for $k$. For $
 
 \todo{todo marker}
 
+
+
 % ------------------------------------
 % C O N T R A S E P T I V E    S E T
 % ------------------------------------
@@ -743,11 +743,11 @@ We tested the k-nearest neighbour algorithm with different values for $k$. For $
 
 \section{Contraceptive Method Choice Data}
 
-The Contraceptive Method Choice Data Set consists of information about the demographic and socio-economic characteristics of married women. There are 1473 instances with 9 different attributes. Examples of these attributes are the wife's age, husbands education, wife's religion, etc. The task is to predict which kind of contraceptive method a woman uses. These are categorized as no use, short term or long term. We performed a 10-fold-cross-validation on this dataset.
+\paragraph{}The Contraceptive Method Choice Data Set consists of information about the demographic and socio-economic characteristics of married women. There are 1473 instances with 9 different attributes. Examples of these attributes are the wife's age, husbands education, wife's religion, etc. The task is to predict which kind of contraceptive method a woman uses. These are categorized as no use, short term or long term. We performed a 10-fold-cross-validation on this dataset.
 
 \subsection{Preprocessing}
 
-The values of the data sets's attributes are already in a numerical and categorical form, whereby the categories are encoded in an ordinal form. These go from 1 to 4 where 1 means low/bad and 4 means high/good. This set has no missing values and the attributes do not depend on each other. So we can use the data as is.
+\paragraph{}The values of the data sets's attributes are already in a numerical and categorical form, whereby the categories are encoded in an ordinal form. These go from 1 to 4 where 1 means low/bad and 4 means high/good. The number-of-children attribute is numeric but the values range from 0 to 16 so that a preprocessing is not necessary as one can think of 15 classes (15 distinct values). This set has no missing values and the attributes do not depend on each other. So we can use the data as is.
 
 
 \subsection{Desicion Tree}
@@ -850,11 +850,44 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 
 \subsection{Naive Bayes}
 
-\todo{todo marker}
+\paragraph{}The input data set does perfectly fit for Naive Bayes. But the classifier is not able to correctly predict the instances. As shown in tables \ref{tab:contra:bayes:1d} and \ref{tab:contra:bayes:1c} it gains a 50:50 chance of a TP prediction.
+
+
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
+               &  0.52    & 0.223   & 0.635     & 0.52   & 0.572     & 1  \\   \midrule
+               &  0.526   & 0.245   & 0.385     & 0.526  & 0.445     & 2  \\
+               &  0.481   & 0.268   & 0.488     & 0.481  & 0.485     & 3  \\
+Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \bottomrule
+    \end{tabular*}
+\caption{Naive Bayes} 
+\label{tab:contra:bayes:1d}
+\end{table*}
+
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|lll|}
+\hline
+              &   a &   b &   c  \\
+\hline
+ a = 1        & 327 & 141 & 161  \\
+ b = 2        &  61 & 175 &  97  \\
+ c = 3        & 127 & 138 & 246  \\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Naive Bayes}
+\label{tab:contra:bayes:1c}
+\end{table}
+
 
 \subsection{Support VectorMachine}
 
-We tested different kernel functions on this dataset and obtained the best results with the NormalizedPolyKernel. The whole process of the evaluation, including the building of the models, took 28 seconds. Normalization of the data had again no influence on the results. The SVM algorithm was able to correctly classify 49,2\% of the instances. The following tables show further results of the evaluation with the NormalizedPolyKernel including a confusion matrix.
+\paragraph{}We tested different kernel functions on this dataset and obtained the best results with the NormalizedPolyKernel. The whole process of the evaluation, including the building of the models, took 28 seconds. Normalization of the data had again no influence on the results. The SVM algorithm was able to correctly classify 49,2\% of the instances. The following tables show further results of the evaluation with the NormalizedPolyKernel including a confusion matrix.
 
 \begin{table}[h]
 \centering
@@ -888,9 +921,10 @@ We tested different kernel functions on this dataset and obtained the best resul
 \caption{Confusion matrix for SVM}
 \end{table}
 
+
 \subsection{k-Nearest Neighbour}
 
-We tested the kNN-algorithm with a lot of different values for $k$ and obtained the best results for $k=7$ where 48,88\% of the instances were correctly classified. The evaluation took not even a second. As with the other datasets the normalization of the input had no influence on the results. In the following tables we present further results of the evaluation with $k=7$ including a confusion matrix.
+\paragraph{}We tested the kNN-algorithm with a lot of different values for $k$ and obtained the best results for $k=7$ where 48,88\% of the instances were correctly classified. The evaluation took not even a second. As with the other datasets the normalization of the input had no influence on the results. In the following tables we present further results of the evaluation with $k=7$ including a confusion matrix.
 
 \begin{table}[h]
 \centering
@@ -923,6 +957,7 @@ We tested the kNN-algorithm with a lot of different values for $k$ and obtained 
 \end{tabular}
 \caption{Confusion matrix for kNN}
 \end{table}
+
 
 \subsection{Comparison}
 
