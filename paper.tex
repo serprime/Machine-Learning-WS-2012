@@ -406,8 +406,17 @@ b=1 & 0 & 93\\
 \end{table}
 
 
+\subsection{Naive Bayes}
+
+\todo{todo marker}
+
+
+
+
+
 \subsection{Comparison}
 
+\todo{todo marker}
 
 
 % ------------------------------------
@@ -478,6 +487,8 @@ Weighted Avg. &  0.846   & 0.285   & 0.843     & 0.846  &  0.844     &         \
 
 \paragraph{Other parameters}
 Varying other parameters has a similar effect like the one mentioned above. Either the quality of the J48 algorithm decreases a little or it stays the same, thus never exceeding an overall quality of 86\%. To sum it up: Using an unpruned tree yields the same quality as a tree with a confidence factor of 0.75. Smoothing the counts at the leaves with laplace has no effect. Either without MDLcorrection or without Subtree raising during pruning, in both cases the precision falls from 86\% to 85.5\%. If we rise the minimum of instances per leaves, e.g. to 20 instances and 50 instances, the precision falls from 86\% to 85\% and 84\$ respectively.
+
+
 
 \subsection{Random Forest}
 
@@ -581,6 +592,8 @@ From the different kernel functions for the SVM-algorithm we used the PolyKernel
 
 \subsection{Naive Bayes}
 
+\todo{rewrite this section}
+
 We use 66\% of the data set for training and the rest for evaluation.
 
 For the first run, we use the default setting and get the following result:
@@ -595,7 +608,7 @@ Precision   Recall  F-Measure  Class
  0.927       0.834   0.878      <=50K
 \end{verbatim}
 
-Second run: we use the discretizer with 20 bin.
+Second run: we use the discretizer with 20 bins.
 
 \begin{verbatim}
 Correctly Classified Instances        9287               83.8858 %
@@ -664,6 +677,7 @@ We tested the k-nearest neighbour algorithm with different values for $k$. For $
 
 \subsection{Comparison}
 
+\todo{todo marker}
 
 % ------------------------------------
 % C O N T R A S E P T I V E    S E T
@@ -676,14 +690,21 @@ The Contraceptive Method Choice Data Set consists of information about the demog
 
 \subsection{Preprocessing}
 
-The attributes are already in a numerical and categorical form, whereby the categories are encoded in an ordinal form. These go from 1 to 4 where 1 is low/bad and 4 is high/good.
-
-\todo{check if ordinal is the correct term when i mean, that the attributes are encoded in numbers, where 1<2, 1<4, 4>2, ...}
+The values of the data sets's attributes are already in a numerical and categorical form, whereby the categories are encoded in an ordinal form. These go from 1 to 4 where 1 means low/bad and 4 means high/good. This set has no missing values and the attributes do not depend on each other. So we can use the data as is.
 
 
 \subsection{Desicion Tree}
+
+\todo{todo marker}
+
 \subsection{Random Forest}
+
+\todo{todo marker}
+
 \subsection{Naive Bayes}
+
+\todo{todo marker}
+
 \subsection{Support VectorMachine}
 
 We tested different kernel functions on this dataset and obtained the best results with the NormalizedPolyKernel. The whole process of the evaluation, including the building of the models, took 28 seconds. Normalization of the data had again no influence on the results. The SVM algorithm was able to correctly classify 49,2\% of the instances. The following tables show further results of the evaluation with the NormalizedPolyKernel including a confusion matrix.
@@ -757,6 +778,8 @@ We tested the kNN-algorithm with a lot of different values for $k$ and obtained 
 \end{table}
 
 \subsection{Comparison}
+
+\todo{todo marker}
 
 \bibliography{references}
 
