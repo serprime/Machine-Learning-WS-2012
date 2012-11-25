@@ -122,17 +122,17 @@
 
 \paragraph{}The actual prediction attribute ``alive-at-1'' (denoting that a patient lived at least one year after having a heart attack) had to be inferred from two other attributes, namely ``survival'' (number of months that the test-person survived after the heart attack) and ``still-alive'' (a binary variable denoting if a patient is still alive at the time when the data was recorded). It is possible that the ``survival'' variable has a value lower than 12 but the ``still-alive'' variable is set to true, meaning that the test-person still lived. This is the case if the data for a test-person was recorded in the last 12 months and so this data cannot be used for the classification and was thus removed.
 
-\paragraph{}It should be clear that the variables ``survival'' and ``still-alive'' should not be used for classification since they constitute the final prediction attribute. Listing \ref{lst:silly-tree} shows what happens if a decision tree can take these attributes into account. It states that if the patient survived $ <= 12 $ months, he survived at least 12 month. Pretty accurate, right? 
-The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute is redundant since $ x > 11 \rightarrow x > 12 $. 
-
-\begin{lstlisting}[caption={Decision tree on 100\% dependant attributes}, label=lst:silly-tree, float=htb]
-J48 pruned tree
-------------------
-    survival <= 12
-    |   survival <= 11: 0 (4.0)
-    |   survival > 11: 1 (4.0)
-    survival > 12: 1 (87.0)
-\end{lstlisting}
+%\paragraph{}It should be clear that the variables ``survival'' and ``still-alive'' should not be used for classification since they constitute the final prediction attribute. Listing \ref{lst:silly-tree} shows what happens if a decision tree can take these attributes into account. It states that if the patient survived $ <= 12 $ months, he survived at least 12 month. Pretty accurate, right? 
+%The only remarkable thing is, that the J48 implementation under default settings seems to enforce a certain depth of the tree, even if the splitting on the same attribute is redundant since $ x > 11 \rightarrow x > 12 $. 
+%
+%\begin{lstlisting}[caption={Decision tree on 100\% dependant attributes}, label=lst:silly-tree, float=htb]
+%J48 pruned tree
+%------------------
+%    survival <= 12
+%    |   survival <= 11: 0 (4.0)
+%    |   survival > 11: 1 (4.0)
+%    survival > 12: 1 (87.0)
+%\end{lstlisting}
 
 \paragraph{}The last preprocessing step was the replacement of missing values (data imputation). Most of the data was complete but there were still some data records having missing values which we replaced by the mean values of the specific variables. One data record did contain completeley useless data and was thus removed (see in listing \ref{lst:crappy-entry}).
 
@@ -181,8 +181,8 @@ epss > 13100
 
 \paragraph{}Only the rule for the fractional shortening should be the other way round, because a low fractional shortening is a rather pathological sign. Although the decision tree has a high precision of almost 95\% it performs very imprecise, because none of the patients who died after one year are correctly classified:
 
-\begin{table*}[htb]\centering
-    \begin{tabular}{@{}ll|ll@{}} 
+\begin{table}[htb]\centering
+    \begin{tabular}{|ll|ll|} 
 \multicolumn{2}{c}{\phantom{bla}}  & \multicolumn{2}{c}{Classified as} \\  
                         & \phantom{aa}  &  0  &  1  \\ \cmidrule{2-4}
 \multirow{2}{*}{Instances}     &  0  &  0  &  4  \\
@@ -220,8 +220,6 @@ Weighted Avg.  &  0.959   & 0.959   & 0.919     & 0.959  & 0.939     &         \
 \label{tab:echo:dec:best}
 \end{table*}
 \FloatBarrier
-
-
 
 \subsubsection{Random Forest}
 Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features $ log_2(7) + 1 \approx 4 $, and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result as shown in the confusion matrix in table \ref{tab:echo:rand:matrix1} and the accuracy details in table \ref{tab:echo:rand:default}:
