@@ -345,7 +345,7 @@ Weighted Avg.  &  0.948   &  0.72    &  0.942     &  0.948  &  0.945     &      
 \end{tabular}
 \caption{Results of the SVM-classification for the echocardiogram dataset}
 \end{table}
-
+\FloatBarrier
 \vspace{6pt}
 
 \begin{table}[h]
@@ -360,7 +360,7 @@ b=1 & 0 & 93\\
 \end{tabular}
 \caption{Confusion matrix for SVM}
 \end{table}
-
+\FloatBarrier
 
 \subsection{k-Nearest Neighbour}
 
@@ -380,7 +380,7 @@ b=1 & 0 & 93\\
 \end{tabular}
 \caption{Results of the kNN-classification for the echocardiogram dataset}
 \end{table}
-
+\FloatBarrier
 \vspace{6pt}
 
 \begin{table}[h]
@@ -395,7 +395,7 @@ b=1 & 0 & 93\\
 \end{tabular}
 \caption{Confusion matrix for kNN}
 \end{table}
-
+\FloatBarrier
 
 \subsection{Naive Bayes}
 
@@ -416,6 +416,7 @@ b=1 & 1 & 92\\
 \caption{Confusion matrix for Naive Bayes}
 \label{tab:echo:bayes:1c}
 \end{table}
+\FloatBarrier
 
 \paragraph{}The log output of Naive Bayes shows that each bin has 1-2 negative (alive-at-1 = 0) instances. This means that each bin has the same low possibility for TP-prediction.
 
@@ -439,7 +440,7 @@ b=1 & 9 & 84\\
 \caption{Confusion matrix for kNN}
 \label{tab:echo:bayes:2c}
 \end{table}
-
+\FloatBarrier
 \paragraph{}Also the detailed accuracy table \ref{tab:echo:bayes:2d} shows that this approach gained a high recall with a low precision for alive-at-1 = 0 and both high precision and recall for alive-at-1 = 1.
 
 \begin{table*}[htb]\centering
@@ -474,7 +475,7 @@ The table below shos a comparison of the different algorithms on the adult datas
 \end{tabular}
 \caption{Comparison of the different algorithms for the echocardiogram dataset}
 \end{table}
-
+\FloatBarrier
 
 
 
@@ -622,7 +623,7 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \end{tabular}
 \caption{Results of the SVM-classification for the adult dataset}
 \end{table}
-
+\FloatBarrier
 \vspace{6pt}
 
 \begin{table}[h]
@@ -637,7 +638,7 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \end{tabular}
 \caption{Confusion matrix for SVM}
 \end{table}
-
+\FloatBarrier
 
 \subsection{Naive Bayes}
 
@@ -671,7 +672,7 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 \caption{Confusion matrix for Naive Bayes}
 \label{tab:adult:bayes:1c}
 \end{table}
-
+\FloatBarrier
 \paragraph{}By using different discretizers and also do not seperately discretize in the preprocessing section of weka but instead let the NaiveBayers classifier use it's own discretizers namely KernelEstimator or SupervisedDiscretizer the outcome of precision and recall differ a bit by 0.05 to 0.1 higher and lower. It does obviously do not really make a difference.
 
 
@@ -694,7 +695,7 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 \end{tabular}
 \caption{Results of the kNN-classification for the adult dataset}
 \end{table}
-
+\FloatBarrier
 \vspace{6pt}
 
 \begin{table}[h]
@@ -709,7 +710,7 @@ Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\ 
 \end{tabular}
 \caption{Confusion matrix for kNN}
 \end{table}
-
+\FloatBarrier
 
 \subsection{Comparison}
 
@@ -730,7 +731,7 @@ The table below shos a comparison of the different algorithms on the adult datas
 \end{tabular}
 \caption{Comparison of the different algorithms for the adult dataset}
 \end{table}
-
+\FloatBarrier
 
 
 % ------------------------------------
@@ -860,7 +861,7 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 \end{tabular}
 \caption{Results of the SVM-classification for the contraception dataset}
 \end{table}
-
+\FloatBarrier
 \vspace{6pt}
 
 \begin{table}[h]
@@ -876,7 +877,7 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 \end{tabular}
 \caption{Confusion matrix for SVM}
 \end{table}
-
+\FloatBarrier
 
 \subsection{k-Nearest Neighbour}
 
@@ -897,7 +898,7 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 \end{tabular}
 \caption{Results of the kNN-classification for the contraception dataset}
 \end{table}
-
+\FloatBarrier
 \vspace{6pt}
 
 \begin{table}[h]
@@ -913,7 +914,7 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 \end{tabular}
 \caption{Confusion matrix for kNN}
 \end{table}
-
+\FloatBarrier
 
 \subsection{Naive Bayes}
 
@@ -949,7 +950,7 @@ Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \
 \caption{Confusion matrix for Naive Bayes}
 \label{tab:contra:bayes:1c}
 \end{table}
-
+\FloatBarrier
 
 
 \subsection{Comparison}
@@ -971,7 +972,7 @@ The table below shos a comparison of the different algorithms on the adult datas
 \end{tabular}
 \caption{Comparison of the different algorithms for the contraceptive method choice dataset}
 \end{table}
-\bibliography{references}
+\FloatBarrier\bibliography{references}
 
 
 \end{document}
