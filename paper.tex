@@ -215,7 +215,28 @@ pericardial-effusion = 0
 |   |   epss > 15600: 1 (2.19/0.03)
 pericardial-effusion = 1: 1 (14.0)
 \end{lstlisting}
-Here, the existence of a pericardial effusion (fluid around the heart) is assumed to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%.
+Here, the decision tree assumes a pericardial effusion (fluid around the heart) to be a healthy characteristic, but it is not. Accordingly, the precision of the J48 decreases from 95\% to 88\%. Using a higher confidence factor instead of a totally unpruned tree has no effect on the quality or the classification distribution. 
+
+\paragraph{Other parameter}
+Neither the laplace correctin to smooth the count of the leaves nor reduced error pruning has any effect on the quality of result. Without mdl correction the precision decreases a little to 91.9\%. Raising the minimum of instances per leaf has no effect either, which is no suprise since the data set is rather small. We couldn't get a better result with the J48 algorithm than to classify all patients to survive at least one year. The detailed accuracy for this simple, single-sided classification can be seen in table
+\ref{tab:echo:dec:best}.  
+
+
+\begin{table*}[htb]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+        \toprule 
+        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class  \\ \midrule
+               &  0       & 0       & 0         & 0      & 0         &  0      \\     
+               &  1       & 1       & 0.959     & 1      & 0.979     &  1      \\     
+Weighted Avg.  &  0.959   & 0.959   & 0.919     & 0.959  & 0.939     &         \\ \bottomrule
+    \end{tabular*}
+\caption{Decision Tree -- best achievable results} 
+\label{tab:echo:dec:best}
+\end{table*}
+\FloatBarrier
+
+
 
 \subsubsection{Random Forest}
 Let's see if a random forest in place of a simple decision tree can make better result out of the echocardiogram data set. With default settings, i.e. default number of features $ log_2(7) + 1 \approx 4 $, and 10 random trees with unlimited tree depth, the random forest shows us a rather disappointing result as shown in the confusion matrix in table \ref{tab:echo:rand:matrix1} and the accuracy details in table \ref{tab:echo:rand:default}:
