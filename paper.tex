@@ -486,10 +486,10 @@ With default settings, a random forest gains an accuracy on the census income da
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
       \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
-                TP Rate  FP Rate  Precision  Recall  F-Measure  Class
-                0.615    0.108    0.644      0.615   0.629      >50K
-                0.892    0.385    0.88       0.892   0.886      <=50K
-Weighted Avg.   0.825    0.318    0.823      0.825   0.824     
+              &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
+              &  0.615   & 0.108   & 0.644     & 0.615  & 0.629     & >50K     \\     
+              &  0.892   & 0.385   & 0.88      & 0.892  & 0.886     & <=50K    \\ 
+Weighted Avg. &  0.825   & 0.318   & 0.823     & 0.825  & 0.824     &          \\ \bottomrule
     \end{tabular*}
 \caption{Random Forest -- Default Settings} 
 \label{tab:adult:rand:default}
@@ -506,10 +506,10 @@ We have a sign for overfitting under default settings: Reducing the maximum dept
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
       \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
-                TP Rate  FP Rate  Precision  Recall  F-Measure  Class
-                0.606    0.064    0.749      0.606   0.67       >50K
-                0.936    0.394    0.882      0.936   0.908      <=50K
-Weighted Avg.   0.856    0.314    0.85       0.856   0.851     
+              &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
+              &  0.606   & 0.064   & 0.749     & 0.606  & 0.67      & >50K     \\ 
+              &  0.936   & 0.394   & 0.882     & 0.936  & 0.908     & <=50K    \\ 
+Weighted Avg. &  0.856   & 0.314   & 0.85      & 0.856  & 0.851     &          \\  \bottomrule
     \end{tabular*}
 \caption{Random Forest -- 7 Random Trees} 
 \label{tab:adult:rand:7t}
