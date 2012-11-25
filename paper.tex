@@ -211,7 +211,6 @@ Neither the laplace correctin to smooth the count of the leaves nor reduced erro
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class  \\ \midrule
                &  0       & 0       & 0         & 0      & 0         &  0      \\     
                &  1       & 1       & 0.959     & 1      & 0.979     &  1      \\     
@@ -242,7 +241,6 @@ Let's see if a random forest in place of a simple decision tree can make better 
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\ \midrule
               &  0       & 0.022   & 0         & 0      & 0         & 0     \\
               &  0.978   & 1       & 0.958     & 0.978  & 0.968     & 1     \\
@@ -260,7 +258,6 @@ This method increases the number of false positives but doesn't catch any true p
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &   Class  \\ \midrule
                &  0       & 0.032   & 0         & 0      & 0         &   0      \\
                &  0.968   & 1       & 0.957     & 0.968  & 0.963     &   1      \\     
@@ -274,7 +271,6 @@ Weighted Avg.  &  0.928   & 0.96    & 0.918     & 0.928  & 0.923     &          
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &   Class \\ \midrule
                &  0       & 0.054   & 0         & 0      & 0         &   0     \\ 
                &  0.946   & 1       & 0.957     & 0.946  & 0.951     &   1     \\ 
@@ -319,7 +315,6 @@ This gives us the best achievable accuracy that we can reach with decision based
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate &  FP Rate &  Precision &  Recall &  F-Measure &  Class \\ \midrule
                &  0.25    &  0.022   &  0.333     &  0.25   &  0.286     &  0     \\
                &  0.978   &  0.75    &  0.968     &  0.978  &  0.973     &  1     \\
@@ -450,7 +445,6 @@ b=1 & 9 & 84\\
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
               &   0.75   & 0.097   & 0.25      & 0.75   & 0.375     & 0 \\
               &   0.903  & 0.25    & 0.988     & 0.903  & 0.944     & 1 \\
@@ -492,7 +486,6 @@ The decision tree that was used for this run has a size of 413 and has 311 leave
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                & TP Rate & FP Rate & Precision & Recall &  F-Measure &  Class \\ \midrule  
                & 0.615   & 0.062   & 0.759     & 0.615  &  0.68      &  >50K  \\  
                & 0.938   & 0.385   & 0.885     & 0.938  &  0.911     &  <=50K \\  
@@ -509,7 +502,6 @@ Subsequently increasing the confidence factor, which result in less pruning, lea
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
               &  0.632   & 0.071   & 0.738     & 0.632  & 0.681     & >50K     \\ 
               &  0.929   & 0.368   & 0.888     & 0.929  & 0.908     & <=50K    \\ 
@@ -524,7 +516,6 @@ Weighted Avg. &  0.857   & 0.296   & 0.852     & 0.857  & 0.854     &          \
 \begin{table*}[htb]\centering
     \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
         \toprule 
-        \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall &  F-Measure &  Class  \\ \midrule        
               &  0.655   & 0.094   & 0.689     & 0.655  &  0.672     &  >50K   \\          
               &  0.906   & 0.345   & 0.892     & 0.906  &  0.899     &  <=50K  \\          
@@ -546,7 +537,6 @@ With default settings, a random forest gains an accuracy on the census income da
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
               &  0.615   & 0.108   & 0.644     & 0.615  & 0.629     & >50K     \\     
               &  0.892   & 0.385   & 0.88      & 0.892  & 0.886     & <=50K    \\ 
@@ -567,7 +557,6 @@ We have a sign for overfitting under default settings: Reducing the maximum dept
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\ \midrule
                &  0.591   & 0.057   & 0.766     & 0.591  & 0.667     & >50K  \\
                &  0.943   & 0.409   & 0.879     & 0.943  & 0.91      & <=50K \\
@@ -585,7 +574,6 @@ features. Table \ref{tab:adult:rand:3f} shows these results which are of similar
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
                &  0.577   & 0.052   & 0.779     & 0.577  & 0.663     & >50K  \\   
                &  0.948   & 0.423   & 0.876     & 0.948  & 0.911     & <=50K \\   
@@ -640,7 +628,6 @@ Weighted Avg.  &  0.859   & 0.333   & 0.853     & 0.859  & 0.851     &       \\ 
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
                &  0.806   & 0.163   & 0.611     & 0.806  & 0.695     & >50K  \\
                &  0.837   & 0.194   & 0.932     & 0.837  & 0.882     & <=50K \\
@@ -732,7 +719,6 @@ With default settings, the J48 algorithm comes off very badly, in table \ref{tab
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule 
                &  0.609   & 0.287   & 0.613     & 0.609  & 0.611     &  1     \\  
                &  0.378   & 0.138   & 0.445     & 0.378  & 0.409     &  2     \\      
@@ -754,7 +740,6 @@ We can notice a certain improvement to the outcome if we ensure that every leaf 
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
               &   TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule      
               &   0.595   & 0.231   & 0.657     & 0.595  & 0.624     &  1     \\      
               &   0.405   & 0.135   & 0.467     & 0.405  & 0.434     &  2     \\      
@@ -772,7 +757,6 @@ Neither laplace correction nor mdl correction has any positive effect on the out
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\ \midrule   
                &  0.649   & 0.263   & 0.648     & 0.649  & 0.648     &  1     \\    
                &  0.402   & 0.13    & 0.475     & 0.402  & 0.436     &  2     \\        
@@ -790,7 +774,6 @@ Random Forests perform even worse than the J48 with default settings. We can see
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure  & Class  \\  \midrule      
                &  0.631   & 0.328   & 0.589     & 0.631  & 0.609      & 1      \\       
                &  0.36    & 0.16    & 0.397     & 0.36   & 0.378      & 2      \\       
@@ -810,7 +793,6 @@ The most significant improvement can then observed after increasing the number o
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class \\  \midrule     
                &  0.604   & 0.231   & 0.661     & 0.604  & 0.631     &  1     \\  
                &  0.408   & 0.127   & 0.484     & 0.408  & 0.443     &  2     \\  
@@ -831,7 +813,6 @@ Weighted Avg.  &  0.556   & 0.241   & 0.562     & 0.556  & 0.556     &        \\
 \begin{table*}[htb]\centering
   \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
       \toprule 
-      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
                &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
                &  0.52    & 0.223   & 0.635     & 0.52   & 0.572     & 1  \\  
                &  0.526   & 0.245   & 0.385     & 0.526  & 0.445     & 2  \\
