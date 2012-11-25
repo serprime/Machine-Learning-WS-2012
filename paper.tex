@@ -747,7 +747,7 @@ The Contraceptive Method Choice Data Set consists of information about the demog
 
 \subsection{Preprocessing}
 
-The values of the data sets's attributes are already in a numerical and categorical form, whereby the categories are encoded in an ordinal form. These go from 1 to 4 where 1 means low/bad and 4 means high/good. This set has no missing values and the attributes do not depend on each other. So we can use the data as is.
+The values of the data sets's attributes are already in a numerical and categorical form, whereby the categories are encoded in an ordinal form. These go from 1 to 4 where 1 means low/bad and 4 means high/good. The number-of-children attribute is numeric but the values range from 0 to 16 so that a preprocessing is not necessary as one can think of 15 classes (15 distinct values). This set has no missing values and the attributes do not depend on each other. So we can use the data as is.
 
 
 \subsection{Desicion Tree}
@@ -760,7 +760,43 @@ The values of the data sets's attributes are already in a numerical and categori
 
 \subsection{Naive Bayes}
 
-\todo{todo marker}
+The input data set does perfectly fit for Naive Bayes. But the classifier is not able to correctly predict the instances. As shown in tables \ref{tab:contra:bayes:1d} and \ref{tab:contra:bayes:1c} it gains a 50:50 chance of a TP prediction.
+
+
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
+               &  0.52    & 0.223   & 0.635     & 0.52   & 0.572     & 1  \\   \midrule
+               &  0.526   & 0.245   & 0.385     & 0.526  & 0.445     & 2  \\
+               &  0.481   & 0.268   & 0.488     & 0.481  & 0.485     & 3  \\
+Weighted Avg.  &  0.508   & 0.243   & 0.528     & 0.508  & 0.513     &    \\   \bottomrule
+    \end{tabular*}
+\caption{Naive Bayes} 
+\label{tab:contra:bayes:1d}
+\end{table*}
+
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|lll|}
+\hline
+              &   a &   b &   c  \\
+\hline
+ a = 1        & 327 & 141 & 161  \\
+ b = 2        &  61 & 175 &  97  \\
+ c = 3        & 127 & 138 & 246  \\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Naive Bayes}
+\label{tab:contra:bayes:1c}
+\end{table}
+
+
+
+
 
 \subsection{Support VectorMachine}
 
