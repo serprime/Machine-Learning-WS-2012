@@ -414,10 +414,61 @@ b=1 & 0 & 93\\
 
 \subsection{Naive Bayes}
 
-\todo{todo marker}
+For the fist try, the unsupervised discretizer was used. But the result was bad. The classifier could predict one single instance for for patients that did not survive one year.
+
+For the second try we prepare the data set with the PKIDiscretizer. The description says it "Discretizes numeric attributes using equal frequency binning, where the number of bins is equal to the square root of the number of non-missing values." But as we can see in \ref{tab:echo:bayes:1c} this discretizer does not perform better.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a=0 & 0 & 4 \\
+b=1 & 1 & 92\\
+\hline
+\end{tabular}
+\caption{Confusion matrix for kNN}
+\label{tab:echo:bayes:1c}
+\end{table}
+
+The log output of Naive Bayes shows that each bin has 1-2 negative (alive-at-1 = 0) instances. This means that each bin has the same low possibility for TP-prediction.
+
+So we have to boost the instances we want to predict. For that the SMOTE filter is used. It produces more instances of a given class index by looking at near neighbours with the same class value. The filter was applied several times, until the number of instances that have alive-at-1 = 0 1.2 times more than the alive-at-1 = 1 instances (128:93). The SMOTE filter used 3 nearest neighbours and produced 100\% new instances in each run. In this way we raised the numbers of instances with an outcome we want to predict, as for this training set it is better to predict if a patient is at risk to not survive one year.
+
+We have to supply a separate set for validation as we kind of destroy the data set when generating new instances. For that the original training set was taken. Although it is not good to validate a classifier with the same set as the training set, we can use this approach because our training set does not have a lot in common with the original set as we added a lot of generated instances.
 
 
+The confusion matrix \ref{tab:echo:bayes:2c} shows, that we predicted three out of four correct instances and also had more errors when predicting alive-at-1 = 0 than  alive-at-1 = 1.
 
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|ll|}
+\hline
+ & a &	b \\
+\hline
+a=0 & 3 & 1 \\
+b=1 & 9 & 84\\
+\hline
+\end{tabular}
+\caption{Confusion matrix for kNN}
+\label{tab:echo:bayes:2c}
+\end{table}
+
+Also the detailed accuracy table \ref{tab:echo:bayes:2d} shows that this approach gained a high recall with a low precision for alive-at-1 = 0 and both high precision and recall for alive-at-1 = 1.
+
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+              &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class    \\  \midrule
+              &   0.75   & 0.097   & 0.25      & 0.75   & 0.375     & 0 \\
+              &   0.903  & 0.25    & 0.988     & 0.903  & 0.944     & 1 \\
+Weighted Avg. &   0.897  & 0.244   & 0.958     & 0.897  & 0.92      &   \\ \bottomrule
+  \end{tabular*}
+\caption{Naive Bayes with SMOTE filter} 
+\label{tab:echo:bayes:2d}
+\end{table*}
 
 
 \subsection{Comparison}
@@ -605,53 +656,46 @@ From the different kernel functions for the SVM-algorithm we used the PolyKernel
 
 \subsection{Naive Bayes}
 
-\todo{rewrite this section}
 
-We use 66\% of the data set for training and the rest for evaluation.
 
-For the first run, we use the default setting and get the following result:
 
-\begin{verbatim}
-Correctly Classified Instances        9104               82.2329 %
-Incorrectly Classified Instances      1967               17.7671 %
-Total Number of Instances            11071     
 
-Precision   Recall  F-Measure  Class
- 0.592       0.786   0.675      >50K
- 0.927       0.834   0.878      <=50K
-\end{verbatim}
+As further preprocessing for Naive Bayes it is important to dicretize the numerical attributes. The PKIDescretizer was used again as it produces better bin sizes than the standard discretizer without any configuration.
 
-Second run: we use the discretizer with 20 bins.
+After the first run with the Simple Naive Bayes algorithm we gain the result shown in table \label{tab:adult:bayes:1d} and a confusion matrix \ref{tab:adult:bayes:1c}.
 
-\begin{verbatim}
-Correctly Classified Instances        9287               83.8858 %
-Incorrectly Classified Instances      1784               16.1142 %
-Total Number of Instances            11071     
+\begin{table*}[htb]\centering
+  \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+      \toprule 
+      \multicolumn{7}{c}{Detailed Accuracy By Class} \\ 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure & Class \\   \midrule
+               &  0.806   & 0.163   & 0.611     & 0.806  & 0.695     & >50K  \\
+               &  0.837   & 0.194   & 0.932     & 0.837  & 0.882     & <=50K \\
+Weighted Avg.  &  0.83    & 0.186   & 0.854     & 0.83   & 0.837     &       \\   \bottomrule
+    \end{tabular*}
+\caption{Naive Bayes -- preprocessed with PKIDiscretizer} 
+\label{tab:adult:bayes:1d}
+\end{table*}
 
-=== Detailed Accuracy By Class ===
 
-Precision   Recall  F-Measure  Class
- 0.621       0.805   0.701      >50K
- 0.934       0.849   0.89       <=50K
-\end{verbatim}
 
-As expected, the result is slightly better.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|ll|}
+\hline
+              &    a &     b \\
+\hline
+ a = >50k      & 6321 &1520   \\
+ b = $\leq$50k & 4025 &20695 \\
+\hline
+\end{tabular}
+\caption{Confusion matrix for Naive Bayes}
+\label{tab:adult:bayes:1c}
+\end{table}
 
-A better result should be possible if we let the dicretizer split the values in part of nearly equal size. The result:
+By using different discretizers and also do not seperately discretize in the preprocessing section of weka but instead let the NaiveBayers classifier use it's own discretizers namely KernelEstimator or SupervisedDiscretizer the outcome of precision and recall differ a bit by 0.05 to 0.1 higher and lower. It does obviously do not really make a difference.
 
-\begin{verbatim}
-Correctly Classified Instances        9179               82.9103 %
-Incorrectly Classified Instances      1892               17.0897 %
-Total Number of Instances            11071     
 
-Precision   Recall  F-Measure  Class
-0.602        0.805   0.689      >50K
-0.933        0.836   0.882      <=50K
-\end{verbatim}
-
-It got worse. \todo{why does discretizer with equal bin size not give a better result?}
-
-The Naive Bayes does not have a lot of settings. It use a built in supervised discretizer or a kernel estimator. But the result is always the same with around 80\% correctly classified instances in the test run.
 
 \subsection{k-Nearest Neighbour}
 
