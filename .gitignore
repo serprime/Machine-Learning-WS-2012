@@ -4,3 +4,7 @@
 *.pdf
 *.ods
 
+*.tcp
+*.tps
+*.bbl
+*.blg
