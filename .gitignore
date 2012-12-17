@@ -8,3 +8,7 @@
 *.tps
 *.bbl
 *.blg
+/exercise3/BayesianNetwork/.settings/
+/exercise3/BayesianNetwork/target/
+/exercise3/BayesianNetwork/.classpath
+/exercise3/BayesianNetwork/.project
