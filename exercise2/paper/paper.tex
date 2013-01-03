@@ -1,0 +1,182 @@
+%x%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%   PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+
+\usepackage{color}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{natbib}
+% philipp: added for code listings
+\usepackage{listings}
+\lstset{
+    captionpos=b
+}
+\newcommand{\Hilight}{\makebox[0pt][l]{\color{red}\rule[-4pt]{0.65\linewidth}{14pt}}}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{morefloats}
+\bibliographystyle{plain}
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{todonotes}
+
+\usepackage{sectsty} % Allows customizing section commands
+\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+% \renewcommand{\thesection}{Data Set \arabic{section}}
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+
+%----------------------------------------------------------------------------------------
+%   TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{ 
+\normalfont \normalsize 
+\textsc{Vienna University of Technology} \\ [25pt] % Your university, school and/or department name(s)
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Experiments in Machine Learning 2 \\ % The assignment title
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{Benjamin Kiesl \and Philipp Steinwender \and Robert Sch\"{a}fer} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+
+\maketitle % Print the title
+
+%----------------------------------------------------------------------------------------
+%   PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+\tableofcontents
+
+\section{TODO}
+
+\begin{itemize}
+\item Structure for paper
+\item Implementation of cutsom bn-searcher
+\item documentation of cutsom bn-searcher
+\item comparison and interpretation of the results
+\item description of the used R and Weka features and commands
+\item description of the setup/infrastructure (weka, custom searcher, R, runtime, comparison, data set, ...)
+\item R script that runs the custom searcher
+\item R script that runs a default searcher
+\item find and describe a custom search algorithm we want to uses
+\end{itemize}
+
+\section{Preface}
+
+\paragraph{}This assignment is about extending a Bayes Network Classifier by adding a custom search algorithm.
+
+\section{Setup}
+
+Used stuff: R. RWeka -- an interface in R for Weka. implement a searcher by extending a java class from the weka library/framework. running a R script that starts the weka BayesNet-classifier with our custom searcher.
+
+\subsection{RWeka}
+
+RWeka is a interface in R that wraps the Weka framework and has a really good documentation.
+
+Some good stuff to know:
+
+\texttt{WOW("at.ac.tuwien.machine\_learning.UltraSearcher")} WOW is a function in R that reads and prints all possible options of a weka class. This can be done for classifiers, filters, searchers and all other types in weka.
+
+\subsection{Preprocessing}
+
+\paragraph{}Write about how we preprocessed the data.
+
+
+\subsection{Classifier}
+
+=There is a beautiful confusion matrix:
+
+\begin{table*}[htb]\centering
+    \begin{tabular}{ll|ll} 
+\multicolumn{2}{c}{\phantom{bla}}  & \multicolumn{2}{c}{Classified as} \\  
+                        & \phantom{aa}  &  0  &  1  \\ \cmidrule{2-4}
+\multirow{2}{*}{Instances}     &  0  &  0  &  4  \\
+                                   &  1  &  1  &  90 \\ 
+\end{tabular}
+\caption{Confusion matrix for Decision tree}
+\end{table*}
+
+And a listing:
+
+\begin{lstlisting}
+J48 unpruned tree
+pericardial-effusion = 0
+|   epss <= 13100: 1 (76.62/1.95)
+|   epss > 13100
+|   |   epss <= 15600: 0 (2.19/0.16)
+|   |   epss > 15600: 1 (2.19/0.03)
+pericardial-effusion = 1: 1 (14.0)
+\end{lstlisting}
+
+And look at this performance/accuracy table:
+
+\begin{table*}[htb]\centering
+    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
+        \toprule 
+               &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class  \\ \midrule
+               &  0       & 0       & 0         & 0      & 0         &  0      \\     
+               &  1       & 1       & 0.959     & 1      & 0.979     &  1      \\     
+Weighted Avg.  &  0.959   & 0.959   & 0.919     & 0.959  & 0.939     &         \\ \bottomrule
+    \end{tabular*}
+\caption{Decision Tree -- best achievable results} 
+\label{tab:echo:dec:best}
+\end{table*}
+\FloatBarrier
+
+\subsubsection{Another Classifier}
+
+Look what I can predict!
+	
+
+
+\bibliography{references}
+
+
+\end{document}
+%------------------------------------------------
+
+
