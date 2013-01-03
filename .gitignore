@@ -8,6 +8,10 @@
 *.tps
 *.bbl
 *.blg
+
+*.iml
+.idea
+
 /exercise2/BayesianNetwork/.settings/
 /exercise2/BayesianNetwork/target/
 /exercise2/BayesianNetwork/.classpath
