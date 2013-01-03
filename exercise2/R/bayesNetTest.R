@@ -11,3 +11,7 @@ predict(res)
 
 
 
+result = table(iris$Species, predict(res))
+result
+
+
