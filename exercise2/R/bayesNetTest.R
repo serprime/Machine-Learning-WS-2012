@@ -6,12 +6,11 @@ require("rJava")
 
 bayesNet <- make_Weka_classifier("weka/classifiers/bayes/BayesNet")
 
-res = bayesNet(Species~., data=iris, control = Weka_control(D="",  Q = "at.ac.tuwien.machine_learning.UltraSearcher", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
-predict(res)
+model = bayesNet(Species~., data=iris, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.IteratedLocalSearch", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
+predict(model)
 
 
 
-result = table(iris$Species, predict(res))
-result
+result = table(iris$Species, predict(model))
 
-
+evaluate_Weka_classifier(model)
