@@ -1,33 +1,35 @@
+package weka.classifiers.bayes.net.search.global;
+
 /*
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /*
  * HillClimber.java
- * Copyright (C) 2004-2012 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2004 University of Waikato, Hamilton, New Zealand
  * 
  */
- 
-package at.ac.tuwien.machine_learning;
 
 import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.Vector;
 
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.net.ParentSet;
-import weka.classifiers.bayes.net.search.local.LocalScoreSearchAlgorithm;
+import weka.classifiers.bayes.net.search.global.GlobalScoreSearchAlgorithm;
 import weka.core.Instances;
 import weka.core.Option;
 import weka.core.RevisionHandler;
@@ -59,37 +61,40 @@ import weka.core.Utils;
  *  nodes in the network are part of the Markov blanket of the 
  *  classifier node.</pre>
  * 
- * <pre> -S [BAYES|MDL|ENTROPY|AIC|CROSS_CLASSIC|CROSS_BAYES]
- *  Score type (BAYES, BDeu, MDL, ENTROPY and AIC)</pre>
+ * <pre> -S [LOO-CV|k-Fold-CV|Cumulative-CV]
+ *  Score type (LOO-CV,k-Fold-CV,Cumulative-CV)</pre>
+ * 
+ * <pre> -Q
+ *  Use probabilistic or 0/1 scoring.
+ *  (default probabilistic scoring)</pre>
  * 
  <!-- options-end -->
  * 
  * @author Remco Bouckaert (rrb@xm.co.nz)
- * @version $Revision: 8034 $
+ * @version $Revision: 1.9 $
  */
-public class UltraSearcher 
-    extends LocalScoreSearchAlgorithm {
-  
-    /** for serialization */
-    static final long serialVersionUID = 4322783593818122403L;
+public class IteratedLocalSearch 
+    extends GlobalScoreSearchAlgorithm {
 
-	/** the Operation class contains info on operations performed
-	 * on the current Bayesian network.
-	 */
+    /** for serialization */
+    static final long serialVersionUID = -3885042888195820149L;
+  
+  /** 
+   * the Operation class contains info on operations performed
+   * on the current Bayesian network.
+   */
     class Operation 
     	implements Serializable, RevisionHandler {
       
       	/** for serialization */
-        static final long serialVersionUID = -4880888790432547895L;
+        static final long serialVersionUID = -2934970456587374967L;
       
     	// constants indicating the type of an operation
     	final static int OPERATION_ADD = 0;
     	final static int OPERATION_DEL = 1;
     	final static int OPERATION_REVERSE = 2;
-    	
-    	/** 
-    	 * c'tor
-    	 */
+
+    	/** c'tor **/
         public Operation() {
         }
         
@@ -116,18 +121,14 @@ public class UltraSearcher
 			(m_nHead == other.m_nHead) &&
 			(m_nTail == other.m_nTail));
 		} // equals
-		
 		/** number of the tail node **/
         public int m_nTail;
-        
 		/** number of the head node **/
         public int m_nHead;
-        
 		/** type of operation (ADD, DEL, REVERSE) **/
         public int m_nOperation;
-        
         /** change of score due to this operation **/
-        public double m_fDeltaScore = -1E100;
+        public double m_fScore = -1E100;
         
         /**
          * Returns the revision string.
@@ -135,130 +136,74 @@ public class UltraSearcher
          * @return		the revision
          */
         public String getRevision() {
-          return RevisionUtils.extract("$Revision: 8034 $");
+          return RevisionUtils.extract("$Revision: 1.9 $");
         }
     } // class Operation
-
-	/** cache for remembering the change in score for steps in the search space
-	 */
-	class Cache implements RevisionHandler {
-	  
-		/** change in score due to adding an arc **/
-		double [] [] m_fDeltaScoreAdd;
-		/** change in score due to deleting an arc **/
-		double [] [] m_fDeltaScoreDel;
-		/** c'tor
-		 * @param nNrOfNodes number of nodes in network, used to determine memory size to reserve
-		 */
-		Cache(int nNrOfNodes) {
-			m_fDeltaScoreAdd = new double [nNrOfNodes][nNrOfNodes];
-			m_fDeltaScoreDel = new double [nNrOfNodes][nNrOfNodes];
-		}
-
-		/** set cache entry
-		 * @param oOperation operation to perform
-		 * @param fValue value to put in cache
-		 */
-		public void put(Operation oOperation, double fValue) {
-			if (oOperation.m_nOperation == Operation.OPERATION_ADD) {
-				m_fDeltaScoreAdd[oOperation.m_nTail][oOperation.m_nHead] = fValue;
-			} else {
-				m_fDeltaScoreDel[oOperation.m_nTail][oOperation.m_nHead] = fValue;
-			}
-		} // put
-
-		/** get cache entry
-		 * @param oOperation operation to perform
-		 * @return cache value
-		 */
-		public double get(Operation oOperation) {
-			switch(oOperation.m_nOperation) {
-				case Operation.OPERATION_ADD:
-					return m_fDeltaScoreAdd[oOperation.m_nTail][oOperation.m_nHead];
-				case Operation.OPERATION_DEL:
-					return m_fDeltaScoreDel[oOperation.m_nTail][oOperation.m_nHead];
-				case Operation.OPERATION_REVERSE:
-				return m_fDeltaScoreDel[oOperation.m_nTail][oOperation.m_nHead] + 
-						m_fDeltaScoreAdd[oOperation.m_nHead][oOperation.m_nTail];
-			}
-			// should never get here
-			return 0;
-		} // get
-
-		/**
-		 * Returns the revision string.
-		 * 
-		 * @return		the revision
-		 */
-		public String getRevision() {
-		  return RevisionUtils.extract("$Revision: 8034 $");
-		}
-	} // class Cache
-
-	/** cache for storing score differences **/
-	Cache m_Cache = null;
 	
     /** use the arc reversal operator **/
     boolean m_bUseArcReversal = false;
-    	
 
     /**
      * search determines the network structure/graph of the network
      * with the Taby algorithm.
      * 
-     * @param bayesNet the network to use
-     * @param instances the data to use
+     * @param bayesNet the network to search
+     * @param instances the instances to work with
      * @throws Exception if something goes wrong
      */
     protected void search(BayesNet bayesNet, Instances instances) throws Exception {
-        initCache(bayesNet, instances);
-
-        // go do the search        
-		Operation oOperation = getOptimalOperation(bayesNet, instances);
-		while ((oOperation != null) && (oOperation.m_fDeltaScore > 0)) {
-			performOperation(bayesNet, instances, oOperation);
-			oOperation = getOptimalOperation(bayesNet, instances);
-        }
+    	m_BayesNet = bayesNet;   
+		localSearch(bayesNet, instances);
+        ParentSet[] bestSolution = copyParentSets(bayesNet.getParentSets());
+        double scoreOfBestSolution = calcScore(bayesNet);
+        double scoreOfFoundSolution;
+        int numberOfIterationsWithNoBetterSolution = 0;
         
-		// free up memory
-		m_Cache = null;
+        do{
+        	perturbate(bayesNet, instances);
+        	localSearch(bayesNet, instances);
+        	scoreOfFoundSolution = calcScore(bayesNet);
+        	if(scoreOfFoundSolution > scoreOfBestSolution){
+        		bestSolution = copyParentSets(bayesNet.getParentSets());
+        		scoreOfBestSolution = scoreOfFoundSolution;
+        		numberOfIterationsWithNoBetterSolution = 0;
+        	}else{
+        		copyParentSetsToBayesNet(bayesNet, bestSolution);
+        		numberOfIterationsWithNoBetterSolution++;
+        	}
+        }while(numberOfIterationsWithNoBetterSolution < 8);
     } // search
 
+    protected void localSearch(BayesNet bayesNet, Instances instances) throws Exception {
+		double fScore = calcScore(bayesNet);
+        // go do the search        
+		Operation oOperation = getOptimalOperation(bayesNet, instances);
+		while ((oOperation != null) && (oOperation.m_fScore > fScore)) {
+			performOperation(bayesNet, instances, oOperation);
+			fScore = oOperation.m_fScore;
+			oOperation = getOptimalOperation(bayesNet, instances);
+        }        
+    } // search
+    
+    private void perturbate(BayesNet bayesNet, Instances instances) throws Exception{
+    	Operation randomOperation = getRandomOperation(bayesNet, instances);
+    	performOperation(bayesNet, instances, randomOperation);
+    }
 
-	/** 
-	 * initCache initializes the cache
-	 * 
-	 * @param bayesNet Bayes network to be learned
-	 * @param instances data set to learn from
-	 * @throws Exception if something goes wrong
-	 */
-    void initCache(BayesNet bayesNet, Instances instances)  throws Exception {
-    	
-        // determine base scores
-		double[] fBaseScores = new double[instances.numAttributes()];
-        int nNrOfAtts = instances.numAttributes();
-
-		m_Cache = new Cache (nNrOfAtts);
-		
-		for (int iAttribute = 0; iAttribute < nNrOfAtts; iAttribute++) {
-			updateCache(iAttribute, nNrOfAtts, bayesNet.getParentSet(iAttribute));
-		}
-
-
-        for (int iAttribute = 0; iAttribute < nNrOfAtts; iAttribute++) {
-            fBaseScores[iAttribute] = calcNodeScore(iAttribute);
-        }
-
-        for (int iAttributeHead = 0; iAttributeHead < nNrOfAtts; iAttributeHead++) {
-                for (int iAttributeTail = 0; iAttributeTail < nNrOfAtts; iAttributeTail++) {
-                	if (iAttributeHead != iAttributeTail) {
-	                    Operation oOperation = new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
-	                    m_Cache.put(oOperation, calcScoreWithExtraParent(iAttributeHead, iAttributeTail) - fBaseScores[iAttributeHead]);
-					}
-            }
-        }
-
-    } // initCache
+    private ParentSet[] copyParentSets(ParentSet[] parentSets){
+    	ParentSet[] copy = new ParentSet[parentSets.length];
+    	for(int i=0;i<copy.length;i++){
+    		copy[i] = new ParentSet();
+    		copy[i].copy(parentSets[i]);
+    	}
+    	return copy;
+    }
+    
+    private void copyParentSetsToBayesNet(BayesNet bayesNet, ParentSet[] parentSets){
+    	for(int i=0; i<parentSets.length;i++){
+    		bayesNet.getParentSets()[i].copy(parentSets[i]);
+    	}
+    }
 
 	/** check whether the operation is not in the forbidden.
 	 * For base hill climber, there are no restrictions on operations,
@@ -292,15 +237,58 @@ public class UltraSearcher
 		}
 
 		// did we find something?
-		if (oBestOperation.m_fDeltaScore == -1E100) {
+		if (oBestOperation.m_fScore == -1E100) {
 			return null;
 		}
 
         return oBestOperation;
     } // getOptimalOperation
+    
+    Operation getRandomOperation(BayesNet bayesNet, Instances instances) throws Exception {
+    	Random random = new Random();
+    	int operationType = random.nextInt(3);
+    	int nNrOfAtts = instances.numAttributes();
+    	int iAttributeHead = random.nextInt(nNrOfAtts);
+    	int iAttributeTail;
+    	if(false/*operationType == 0 && isArcAdditionPossible(bayesNet)*/){
+    		return addRandomArc(bayesNet, instances);
+    	}else{//remove or reverse random arc		
+    		while(bayesNet.getParentSet(iAttributeHead).getNrOfParents()==0){
+    			iAttributeHead = random.nextInt(nNrOfAtts);
+    		}
+    		iAttributeTail = random.nextInt(bayesNet.getParentSet(iAttributeHead).getNrOfParents());
+	    	if(operationType == 1){
+	    		return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
+	    	}else{
+	    		return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_REVERSE);
+	    	}
+    	}
+    }
+    
+    private boolean isArcAdditionPossible(BayesNet bayesNet){
+    	for(int i=0;i<bayesNet.getParentSets().length;i++){
+    		if(bayesNet.getParentSets()[i].getNrOfParents() < m_nMaxNrOfParents){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    private Operation addRandomArc(BayesNet bayesNet, Instances instances) throws Exception {
+    	Random random = new Random();
+    	int nNrOfAtts = instances.numAttributes();
+    	int iAttributeHead = random.nextInt(nNrOfAtts);
+    	int iAttributeTail = random.nextInt(nNrOfAtts);
+		while(!addArcMakesSense(bayesNet, instances, iAttributeHead, iAttributeTail)){
+			do{
+				iAttributeHead = random.nextInt(nNrOfAtts);
+			}while(bayesNet.getParentSet(iAttributeHead).getNrOfParents() >= m_nMaxNrOfParents);
+			iAttributeTail = random.nextInt(nNrOfAtts);
+		}
+		return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
+    }
 
-	/** 
-	 * performOperation applies an operation 
+	/** performOperation applies an operation 
 	 * on the Bayes network and update the cache.
 	 * 
 	 * @param bayesNet Bayes network to apply operation on
@@ -333,7 +321,6 @@ public class UltraSearcher
 		}
 	} // performOperation
 
-
 	/**
 	 * 
 	 * @param bayesNet
@@ -344,7 +331,6 @@ public class UltraSearcher
 	void applyArcAddition(BayesNet bayesNet, int iHead, int iTail, Instances instances) {
 		ParentSet bestParentSet = bayesNet.getParentSet(iHead);
 		bestParentSet.addParent(iTail, instances);
-		updateCache(iHead, instances.numAttributes(), bestParentSet);
 	} // applyArcAddition
 
 	/**
@@ -357,7 +343,6 @@ public class UltraSearcher
 	void applyArcDeletion(BayesNet bayesNet, int iHead, int iTail, Instances instances) {
 		ParentSet bestParentSet = bayesNet.getParentSet(iHead);
 		bestParentSet.deleteParent(iTail, instances);
-		updateCache(iHead, instances.numAttributes(), bestParentSet);
 	} // applyArcAddition
 
 
@@ -370,8 +355,9 @@ public class UltraSearcher
 	 * @return Operation containing best arc to add, or null if no arc addition is allowed 
 	 * (this can happen if any arc addition introduces a cycle, or all parent sets are filled
 	 * up to the maximum nr of parents).
+	 * @throws Exception if something goes wrong
 	 */
-	Operation findBestArcToAdd(BayesNet bayesNet, Instances instances, Operation oBestOperation) {
+	Operation findBestArcToAdd(BayesNet bayesNet, Instances instances, Operation oBestOperation) throws Exception {
 		int nNrOfAtts = instances.numAttributes();
 		// find best arc to add
 		for (int iAttributeHead = 0; iAttributeHead < nNrOfAtts; iAttributeHead++) {
@@ -379,10 +365,11 @@ public class UltraSearcher
 				for (int iAttributeTail = 0; iAttributeTail < nNrOfAtts; iAttributeTail++) {
 					if (addArcMakesSense(bayesNet, instances, iAttributeHead, iAttributeTail)) {
 						Operation oOperation = new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
-						if (m_Cache.get(oOperation) > oBestOperation.m_fDeltaScore) {
+						double fScore = calcScoreWithExtraParent(oOperation.m_nHead, oOperation.m_nTail);
+						if (fScore > oBestOperation.m_fScore) {
 							if (isNotTabu(oOperation)) {
 								oBestOperation = oOperation;
-								oBestOperation.m_fDeltaScore = m_Cache.get(oOperation);
+								oBestOperation.m_fScore = fScore;
 							}
 						}
 					}
@@ -400,18 +387,20 @@ public class UltraSearcher
 	 * @param oBestOperation
 	 * @return Operation containing best arc to delete, or null if no deletion can be made 
 	 * (happens when there is no arc in the network yet).
+	 * @throws Exception of something goes wrong
 	 */
-	Operation findBestArcToDelete(BayesNet bayesNet, Instances instances, Operation oBestOperation) {
+	Operation findBestArcToDelete(BayesNet bayesNet, Instances instances, Operation oBestOperation) throws Exception {
 		int nNrOfAtts = instances.numAttributes();
 		// find best arc to delete
 		for (int iNode = 0; iNode < nNrOfAtts; iNode++) {
 			ParentSet parentSet = bayesNet.getParentSet(iNode);
 			for (int iParent = 0; iParent < parentSet.getNrOfParents(); iParent++) {
 				Operation oOperation = new Operation(parentSet.getParent(iParent), iNode, Operation.OPERATION_DEL);
-				if (m_Cache.get(oOperation) > oBestOperation.m_fDeltaScore) {
+				double fScore = calcScoreWithMissingParent(oOperation.m_nHead, oOperation.m_nTail);
+				if (fScore > oBestOperation.m_fScore) {
 					if (isNotTabu(oOperation)) {
 						oBestOperation = oOperation;
-						oBestOperation.m_fDeltaScore = m_Cache.get(oOperation);
+						oBestOperation.m_fScore = fScore;
 					}
 				}
 			}
@@ -428,8 +417,9 @@ public class UltraSearcher
 	 * @return Operation containing best arc to reverse, or null if no reversal is allowed
 	 * (happens if there is no arc in the network yet, or when any such reversal introduces
 	 * a cycle).
+	 * @throws Exception if something goes wrong
 	 */
-	Operation findBestArcToReverse(BayesNet bayesNet, Instances instances, Operation oBestOperation) {
+	Operation findBestArcToReverse(BayesNet bayesNet, Instances instances, Operation oBestOperation) throws Exception {
 		int nNrOfAtts = instances.numAttributes();
 		// find best arc to reverse
 		for (int iNode = 0; iNode < nNrOfAtts; iNode++) {
@@ -441,10 +431,11 @@ public class UltraSearcher
 				    bayesNet.getParentSet(iTail).getNrOfParents() < m_nMaxNrOfParents) {
 					// go check if reversal results in the best step forward
 					Operation oOperation = new Operation(parentSet.getParent(iParent), iNode, Operation.OPERATION_REVERSE);
-					if (m_Cache.get(oOperation) > oBestOperation.m_fDeltaScore) {
+					double fScore = calcScoreWithReversedParent(oOperation.m_nHead, oOperation.m_nTail);
+					if (fScore > oBestOperation.m_fScore) {
 						if (isNotTabu(oOperation)) {
 							oBestOperation = oOperation;
-							oBestOperation.m_fDeltaScore = m_Cache.get(oOperation);
+							oBestOperation.m_fScore = fScore;
 						}
 					}
 				}
@@ -452,34 +443,6 @@ public class UltraSearcher
 		}
 		return oBestOperation;
 	} // findBestArcToReverse
-
-	/** 
-	 * update the cache due to change of parent set of a node
-	 * 
-	 * @param iAttributeHead node that has its parent set changed
-	 * @param nNrOfAtts number of nodes/attributes in data set
-	 * @param parentSet new parents set of node iAttributeHead
-	 */
-	void updateCache(int iAttributeHead, int nNrOfAtts, ParentSet parentSet) {
-		// update cache entries for arrows heading towards iAttributeHead
-		double fBaseScore = calcNodeScore(iAttributeHead);
-		int nNrOfParents = parentSet.getNrOfParents();
-		for (int iAttributeTail = 0; iAttributeTail < nNrOfAtts; iAttributeTail++) {
-			if (iAttributeTail != iAttributeHead) {
-				if (!parentSet.contains(iAttributeTail)) {
-					// add entries to cache for adding arcs
-					if (nNrOfParents < m_nMaxNrOfParents) {
-						Operation oOperation = new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
-						m_Cache.put(oOperation, calcScoreWithExtraParent(iAttributeHead, iAttributeTail) - fBaseScore);
-					}
-				} else {
-					// add entries to cache for deleting arcs
-					Operation oOperation = new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_DEL);
-					m_Cache.put(oOperation, calcScoreWithMissingParent(iAttributeHead, iAttributeTail) - fBaseScore);
-				}
-			}
-		}
-	} // updateCache
 	
 
 	/**
@@ -511,7 +474,6 @@ public class UltraSearcher
 		newVector.addElement(new Option("\tMaximum number of parents", "P", 1, "-P <nr of parents>"));
 		newVector.addElement(new Option("\tUse arc reversal operation.\n\t(default false)", "R", 0, "-R"));
 		newVector.addElement(new Option("\tInitial structure is empty (instead of Naive Bayes)", "N", 0, "-N"));
-		newVector.addElement(new Option("\tInitial structure specified in XML BIF file", "X", 1, "-X"));
 
 		Enumeration enu = super.listOptions();
 		while (enu.hasMoreElements()) {
@@ -542,8 +504,12 @@ public class UltraSearcher
 	 *  nodes in the network are part of the Markov blanket of the 
 	 *  classifier node.</pre>
 	 * 
-	 * <pre> -S [BAYES|MDL|ENTROPY|AIC|CROSS_CLASSIC|CROSS_BAYES]
-	 *  Score type (BAYES, BDeu, MDL, ENTROPY and AIC)</pre>
+	 * <pre> -S [LOO-CV|k-Fold-CV|Cumulative-CV]
+	 *  Score type (LOO-CV,k-Fold-CV,Cumulative-CV)</pre>
+	 * 
+	 * <pre> -Q
+	 *  Use probabilistic or 0/1 scoring.
+	 *  (default probabilistic scoring)</pre>
 	 * 
 	 <!-- options-end -->
 	 *
@@ -555,8 +521,6 @@ public class UltraSearcher
 
 		setInitAsNaiveBayes (!(Utils.getFlag('N', options)));
 		
-		m_sInitalBIFFile = Utils.getOption('X', options);
-
 		String sMaxNrOfParents = Utils.getOption('P', options);
 		if (sMaxNrOfParents.length() != 0) {
 		  setMaxNrOfParents(Integer.parseInt(sMaxNrOfParents));
@@ -574,7 +538,7 @@ public class UltraSearcher
 	 */
 	public String[] getOptions() {
 		String[] superOptions = super.getOptions();
-		String[] options = new String[9 + superOptions.length];
+		String[] options = new String[7 + superOptions.length];
 		int current = 0;
 		if (getUseArcReversal()) {
 		  options[current++] = "-R";
@@ -583,10 +547,6 @@ public class UltraSearcher
 		if (!getInitAsNaiveBayes()) {
 		  options[current++] = "-N";
 		} 
-		if (m_sInitalBIFFile!=null && !m_sInitalBIFFile.equals("")) {
-			  options[current++] = "-X";
-			  options[current++] = m_sInitalBIFFile;
-		}
 
 		options[current++] = "-P";
 		options[current++] = "" + m_nMaxNrOfParents;
@@ -659,7 +619,6 @@ public class UltraSearcher
 	 * @return		the revision
 	 */
 	public String getRevision() {
-	  return RevisionUtils.extract("$Revision: 8034 $");
+	  return RevisionUtils.extract("$Revision: 1.9 $");
 	}
-
 } // HillClimber
