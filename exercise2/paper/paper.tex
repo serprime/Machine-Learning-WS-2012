@@ -91,6 +91,9 @@
 
 \tableofcontents
 
+%
+%
+%
 \section{TODO}
 
 \begin{itemize}
@@ -100,30 +103,31 @@
 \item comparison and interpretation of the results
 \item description of the used R and Weka features and commands
 \item description of the setup/infrastructure (weka, custom searcher, R, runtime, comparison, data set, ...)
-\item R script that runs the custom searcher
-\item R script that runs a default searcher
-\item find and describe a custom search algorithm we want to uses
 \end{itemize}
 
+%
+%
+%
 \section{Preface}
 
-\paragraph{}This assignment is about extending a Bayes Network Classifier by adding a custom search algorithm.
+\paragraph{}This assignment is about extending a Bayes Network Classifier by adding a custom search algorithm. We chose the Hill Climber search algorithm for an implementation of iterative local search algorithm.
 
+%
+%
+%
 \section{Setup}
 
-Used stuff: R. RWeka -- an interface in R for Weka. implement a searcher by extending a java class from the weka library/framework. running a R script that starts the weka BayesNet-classifier with our custom searcher.
+\paragraph{}To run the search algorithm an R script has be written. It loads Weka,builds the classifier, runs it and evaluates the model. It also shows the performance tables and the differences of the original Hill Climber implementation and our improved one.
 
-\subsection{RWeka}
+\paragraph{} Tools needed to run the code: R (RWeka, rJava), Java (JRE). 
 
-RWeka is a interface in R that wraps the Weka framework and has a really good documentation.
+\paragraph{} RWeka is a interface in R that wraps the Weka framework and has a really good documentation.
 
-Some good stuff to know:
+%
+%
+\section{Current Implementation}
 
-\texttt{WOW("at.ac.tuwien.machine\_learning.UltraSearcher")} WOW is a function in R that reads and prints all possible options of a weka class. This can be done for classifiers, filters, searchers and all other types in weka.
-
-\subsection{Weka Javacode}
-
-\paragraph{initStructure()} of class BayesNet initializes the Bayesnetwork. It creates an adjacency matrix where each attribute has an array of parents. These arrays are empty after initialization.
+First we take a look at the BayesNet classifier implementation. When the classifier is startet, first thing is to generate the classification model. Therefore the BayesNet classifier initializes (\texttt{initStructure()})an adjacency matrix where each attribute has an array of parents. These arrays are empty after initialization.
 
 \paragraph{} The default SearchAlgorithm.class initializes the network like a Naive Bayes network. This shows how we can use the adjacency matrix of BayesNet:
 
@@ -141,12 +145,37 @@ for (int iAttribute = 0; iAttribute < instances.numAttributes(); iAttribute++) {
 
 \paragraph{} Where \texttt{BayesNet} is the classifier that holds the network datastructure and \texttt{getParentSet(n)} returns the \texttt{nth} row in the adjacency matrix.
 
+%
+%
+%
+\section{Hill Climber}
+
+Current implementation of Weka's Hill Climber algorithm.
+
+\begin{lstlisting}
+double fScore = calcScore(bayesNet);
+Operation oOperation = getOptimalOperation(bayesNet, instances);
+while ((oOperation != null) && (oOperation.m_fScore > fScore)) {
+	performOperation(bayesNet, instances, oOperation);
+	fScore = oOperation.m_fScore;
+	oOperation = getOptimalOperation(bayesNet, instances);
+}  
+\end{lstlisting}
+
+\paragraph{}As shown in the listing, Hill Climber calculates an optimal solution based on the current network iteratively until no opration can be found or the new network is only slightly better than the previous one. To find the at least worse next operation all possible operations get evaluated and the best one is returned. 
 
 
+\section{Extended Hill Climber}
+
+TODO: describe our extension.
 
 
+\section{Comparison}
 
-
+TODO:
+* used datasets
+* accuracy results
+* runtime/performance
 
 
 \bibliography{references}
