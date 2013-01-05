@@ -258,7 +258,7 @@ public class IteratedLocalSearch
     		}
     		iAttributeTail = random.nextInt(bayesNet.getParentSet(iAttributeHead).getNrOfParents());
 	    	if(operationType == 1){
-	    		return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
+	    		return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_DEL);
 	    	}else{
 	    		return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_REVERSE);
 	    	}
