@@ -6,9 +6,13 @@ require("rJava")
 
 bayesNet <- make_Weka_classifier("weka/classifiers/bayes/BayesNet")
 
+cmc = read.arff("../../exercise1/samples/cmc_preprocessed.arff")
+adult =  read.arff("../../exercise1/samples/census/adult_preprocessed.arff")
 
-hcModel = bayesNet(Species~., data=iris, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.HillClimber", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
-extendedModel = bayesNet(Species~., data=iris, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.IteratedLocalSearch", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
+names(adult)
+
+hcModel = bayesNet(`contraceptive-method`~., data=cmc, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.HillClimber", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
+extendedModel = bayesNet(`contraceptive-method`~., data=cmc, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.IteratedLocalSearch", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
 
 
 
