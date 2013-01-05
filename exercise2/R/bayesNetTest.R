@@ -9,10 +9,8 @@ bayesNet <- make_Weka_classifier("weka/classifiers/bayes/BayesNet")
 cmc = read.arff("../../exercise1/samples/cmc_preprocessed.arff")
 adult =  read.arff("../../exercise1/samples/census/adult_preprocessed.arff")
 
-names(adult)
-
-hcModel = bayesNet(`contraceptive-method`~., data=cmc, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.HillClimber", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
-extendedModel = bayesNet(`contraceptive-method`~., data=cmc, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.IteratedLocalSearch", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
+hcModel = bayesNet(`Species`~., data=iris, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.HillClimber", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
+extendedModel = bayesNet(`Species`~., data=iris, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.IteratedLocalSearch", "--", T=5, P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
 
 
 
@@ -23,10 +21,11 @@ hcEvaluation$details
 
 
 extendedEvaluation = evaluate_Weka_classifier(extendedModel)
-"New Iteradet Local Search Classifier"
+"New Iteratet tocal Search Classifier"
 extendedEvaluation$details
 
 print("Difference of details")
 extendedEvaluation$details - hcEvaluation$details 
 print("Difference of confusion matrices")
 extendedEvaluation$confusionMatrix- hcEvaluation$confusionMatrix
+
