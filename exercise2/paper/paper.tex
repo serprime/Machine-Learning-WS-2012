@@ -121,56 +121,32 @@ Some good stuff to know:
 
 \texttt{WOW("at.ac.tuwien.machine\_learning.UltraSearcher")} WOW is a function in R that reads and prints all possible options of a weka class. This can be done for classifiers, filters, searchers and all other types in weka.
 
-\subsection{Preprocessing}
+\subsection{Weka Javacode}
 
-\paragraph{}Write about how we preprocessed the data.
+\paragraph{initStructure()} of class BayesNet initializes the Bayesnetwork. It creates an adjacency matrix where each attribute has an array of parents. These arrays are empty after initialization.
 
-
-\subsection{Classifier}
-
-=There is a beautiful confusion matrix:
-
-\begin{table*}[htb]\centering
-    \begin{tabular}{ll|ll} 
-\multicolumn{2}{c}{\phantom{bla}}  & \multicolumn{2}{c}{Classified as} \\  
-                        & \phantom{aa}  &  0  &  1  \\ \cmidrule{2-4}
-\multirow{2}{*}{Instances}     &  0  &  0  &  4  \\
-                                   &  1  &  1  &  90 \\ 
-\end{tabular}
-\caption{Confusion matrix for Decision tree}
-\end{table*}
-
-And a listing:
+\paragraph{} The default SearchAlgorithm.class initializes the network like a Naive Bayes network. This shows how we can use the adjacency matrix of BayesNet:
 
 \begin{lstlisting}
-J48 unpruned tree
-pericardial-effusion = 0
-|   epss <= 13100: 1 (76.62/1.95)
-|   epss > 13100
-|   |   epss <= 15600: 0 (2.19/0.16)
-|   |   epss > 15600: 1 (2.19/0.03)
-pericardial-effusion = 1: 1 (14.0)
+...
+// initialize parent sets to have arrow from classifier node to
+// each of the other nodes
+for (int iAttribute = 0; iAttribute < instances.numAttributes(); iAttribute++) {
+    if (iAttribute != iClass) {
+        bayesNet.getParentSet(iAttribute).addParent(iClass, instances);
+    }
+}
+...
 \end{lstlisting}
 
-And look at this performance/accuracy table:
+\paragraph{} Where \texttt{BayesNet} is the classifier that holds the network datastructure and \texttt{getParentSet(n)} returns the \texttt{nth} row in the adjacency matrix.
 
-\begin{table*}[htb]\centering
-    \begin{tabular*}{\columnwidth}{@{}lllllll@{}}
-        \toprule 
-               &  TP Rate & FP Rate & Precision & Recall & F-Measure &  Class  \\ \midrule
-               &  0       & 0       & 0         & 0      & 0         &  0      \\     
-               &  1       & 1       & 0.959     & 1      & 0.979     &  1      \\     
-Weighted Avg.  &  0.959   & 0.959   & 0.919     & 0.959  & 0.939     &         \\ \bottomrule
-    \end{tabular*}
-\caption{Decision Tree -- best achievable results} 
-\label{tab:echo:dec:best}
-\end{table*}
-\FloatBarrier
 
-\subsubsection{Another Classifier}
 
-Look what I can predict!
-	
+
+
+
+
 
 
 \bibliography{references}
