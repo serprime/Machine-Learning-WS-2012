@@ -161,6 +161,17 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 
 	/** use the arc reversal operator **/
 	boolean m_bUseArcReversal = false;
+	
+	/** how many random operation per pertubation ? **/ 
+	int numberOfPertubations = 1;
+
+	public int getNumberOfPertubations() {
+		return numberOfPertubations;
+	}
+
+	public void setNumberOfPertubations(int numberOfPertubations) {
+		this.numberOfPertubations = numberOfPertubations;
+	}
 
 	/**
 	 * search determines the network structure/graph of the network with the
@@ -186,7 +197,7 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		int numberOfIterationsWithNoBetterSolution = 0;
 
 		do {
-			perturbate(bayesNet, instances, 3);
+			perturbate(bayesNet, instances, getNumberOfPertubations());
 			localSearch(bayesNet, instances);
 			scoreOfFoundSolution = calcScore(bayesNet);
 			System.out.println("Score of found solution: " + scoreOfFoundSolution);
@@ -218,7 +229,7 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 
 	private void perturbate(BayesNet bayesNet, Instances instances, Integer times)
 			throws Exception {
-		System.out.println("Start " + times + " perturbations");
+		System.out.println("Start pertubation with " + times + " random operations");
 		for (@SuppressWarnings("unused") Integer i : new int[times]){
 		Operation randomOperation = getRandomOperation(bayesNet, instances);
 		performOperation(bayesNet, instances, randomOperation);
@@ -576,6 +587,11 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		newVector.addElement(new Option(
 				"\tInitial structure is empty (instead of Naive Bayes)", "N",
 				0, "-N"));
+		
+		newVector.addElement(new Option(
+				"\tNumber of random operations during pertubation", "T",
+				1, "-T <nr of random operations>"));
+		
 
 		Enumeration enu = super.listOptions();
 		while (enu.hasMoreElements()) {
@@ -644,9 +660,14 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		} else {
 			setMaxNrOfParents(100000);
 		}
+		
+		String numberOfPertubations = Utils.getOption('T', options);
+		setNumberOfPertubations(Integer.parseInt(numberOfPertubations));
 
 		super.setOptions(options);
 	} // setOptions
+
+
 
 	/**
 	 * Gets the current settings of the search algorithm.
@@ -667,6 +688,9 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 
 		options[current++] = "-P";
 		options[current++] = "" + m_nMaxNrOfParents;
+		
+		options[current++] = "-T";
+		options[current++] = "" + getNumberOfPertubations();
 
 		// insert options from parent class
 		for (int iOption = 0; iOption < superOptions.length; iOption++) {
