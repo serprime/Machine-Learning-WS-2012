@@ -186,7 +186,7 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		int numberOfIterationsWithNoBetterSolution = 0;
 
 		do {
-			perturbate(bayesNet, instances);
+			perturbate(bayesNet, instances, 3);
 			localSearch(bayesNet, instances);
 			scoreOfFoundSolution = calcScore(bayesNet);
 			System.out.println("Score of found solution: " + scoreOfFoundSolution);
@@ -216,14 +216,16 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		System.out.println("End local search");
 	} // search
 
-	private void perturbate(BayesNet bayesNet, Instances instances)
+	private void perturbate(BayesNet bayesNet, Instances instances, Integer times)
 			throws Exception {
-		System.out.println("Start perturbation");
+		System.out.println("Start " + times + " perturbations");
+		for (@SuppressWarnings("unused") Integer i : new int[times]){
 		Operation randomOperation = getRandomOperation(bayesNet, instances);
 		performOperation(bayesNet, instances, randomOperation);
+		}
 		System.out.println("End perturbation");
 	}
-
+	
 	private ParentSet[] copyParentSets(ParentSet[] parentSets) {
 		ParentSet[] copy = new ParentSet[parentSets.length];
 		for (int i = 0; i < copy.length; i++) {
