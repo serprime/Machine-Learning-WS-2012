@@ -318,12 +318,12 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 
 		switch (operationType) {
 		case (Operation.OPERATION_ADD):
-			int attempt = 0, maxAttempts = bayesNet.getNrOfNodes(); // maxAttempts is rather arbitrarlily chosen
+			int attempt = 0, maxAttempts = 2*bayesNet.getNrOfNodes(); // maxAttempts is rather arbitrarlily chosen
 			do {
 				iAttributeHead = nodesWithMissingParents.get(random.nextInt(nodesWithMissingParents.size()));
 				iAttributeTail = random.nextInt(instances.numAttributes());
 				attempt++;
-				if (attempt < maxAttempts) return null; // seems we can't add valid arcs?
+				if (attempt >= maxAttempts) return null; // seems we can't add valid arcs?
 				
 			} while (!addArcMakesSense(bayesNet, instances, iAttributeHead, iAttributeTail));
 		// possible infinite loop?
