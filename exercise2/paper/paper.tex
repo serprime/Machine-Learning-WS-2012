@@ -27,7 +27,8 @@
 % philipp: added for code listings
 \usepackage{listings}
 \lstset{
-    captionpos=b
+    captionpos=b,
+    basicstyle=\small
 }
 \newcommand{\Hilight}{\makebox[0pt][l]{\color{red}\rule[-4pt]{0.65\linewidth}{14pt}}}
 \usepackage{booktabs}
@@ -61,8 +62,8 @@
 \numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 \numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 
+\setlength{\parskip}{\baselineskip}%
 \setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
-
 %----------------------------------------------------------------------------------------
 %   TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -97,12 +98,9 @@
 \section{TODO}
 
 \begin{itemize}
-\item Structure for paper
 \item Implementation of cutsom bn-searcher
 \item documentation of cutsom bn-searcher
 \item comparison and interpretation of the results
-\item description of the used R and Weka features and commands
-\item description of the setup/infrastructure (weka, custom searcher, R, runtime, comparison, data set, ...)
 \end{itemize}
 
 %
@@ -110,28 +108,25 @@
 %
 \section{Preface}
 
-\paragraph{}This assignment is about extending a Bayes Network Classifier by adding a custom search algorithm. We chose the Hill Climber search algorithm for an implementation of iterative local search algorithm.
+This assignment is about extending a Bayes Network Classifier by adding a custom search algorithm. We chose the Hill Climber search algorithm for an implementation of an iterative local search algorithm.
 
 %
 %
 %
 \section{Setup}
 
-\paragraph{}To run the search algorithm an R script has be written. It loads Weka,builds the classifier, runs it and evaluates the model. It also shows the performance tables and the differences of the original Hill Climber implementation and our improved one.
+There is a R script to execute the searcher in the handed in package at \texttt{R/bayesNetTest.R}. It loads Weka, builds the classifier, runs it and evaluates the model. It also shows the performance tables and the differences of the original Hill Climber implementation and our improved one. To run the script the following Tools need to be installed: R with the packages RWeka and rJava, Java (JRE).
 
-\paragraph{} Tools needed to run the code: R (RWeka, rJava), Java (JRE). 
-
-\paragraph{} RWeka is a interface in R that wraps the Weka framework and has a really good documentation.
+The used package RWeka is an interface in R that wraps the Weka framework and has a really good documentation.
 
 %
 %
-\section{Current Implementation}
+\section{BayesNet}
 
-First we take a look at the BayesNet classifier implementation. When the classifier is startet, first thing is to generate the classification model. Therefore the BayesNet classifier initializes (\texttt{initStructure()})an adjacency matrix where each attribute has an array of parents. These arrays are empty after initialization.
+First we take a look at the BayesNet classifier implementation. When the classifier is startet, first thing is to generate the classification model. Therefore the BayesNet classifier initializes an adjacency matrix (\texttt{initStructure()}) where each attribute has an array of parents. These arrays are empty after initialization. 
 
-\paragraph{} The default SearchAlgorithm.class initializes the network like a Naive Bayes network. This shows how we can use the adjacency matrix of BayesNet:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Initialization of BayesNet},label=initStructure]
 ...
 // initialize parent sets to have arrow from classifier node to
 // each of the other nodes
@@ -143,16 +138,22 @@ for (int iAttribute = 0; iAttribute < instances.numAttributes(); iAttribute++) {
 ...
 \end{lstlisting}
 
-\paragraph{} Where \texttt{BayesNet} is the classifier that holds the network datastructure and \texttt{getParentSet(n)} returns the \texttt{nth} row in the adjacency matrix.
+The default Weka's SearchAlgorithm initializes the network like a Naive Bayes network. Listing \ref{initStructure} shows how we can use the adjacency matrix of BayesNet. Where \texttt{BayesNet} is the classifier that holds the network datastructure and \texttt{getParentSet(n)} returns the \texttt{nth} row in the adjacency matrix.
 
 %
 %
 %
 \section{Hill Climber}
 
-Current implementation of Weka's Hill Climber algorithm.
+Implementation of Weka's Hill Climber algorithm.
 
-\begin{lstlisting}
+%
+%
+\subsection{Description}
+
+As shown in listing \ref{hcSearch}, Hill Climber calculates an optimal solution based on the current network iteratively until no opration can be found to improve the network or the new network is only slightly better than the previous one. To find the best operation all possible operations get evaluated and the best one is returned. The algorithm stops, when it finds a local optima.
+
+\begin{lstlisting}[caption={HillClimbers search algorithm},label=hcSearch]
 double fScore = calcScore(bayesNet);
 Operation oOperation = getOptimalOperation(bayesNet, instances);
 while ((oOperation != null) && (oOperation.m_fScore > fScore)) {
@@ -162,14 +163,39 @@ while ((oOperation != null) && (oOperation.m_fScore > fScore)) {
 }  
 \end{lstlisting}
 
-\paragraph{}As shown in the listing, Hill Climber calculates an optimal solution based on the current network iteratively until no opration can be found or the new network is only slightly better than the previous one. To find the at least worse next operation all possible operations get evaluated and the best one is returned. 
 
+%
+%
+\subsection{Test Results}
 
+Two data sets are used to test the search algorithm. These are x and y from the assignment 1.
+
+\todo{insert results of test}
+
+As shown in the result listing, \todo{describe result} ....
+
+%
+%
+%
 \section{Extended Hill Climber}
 
-TODO: describe our extension.
+To improve the Hill Climber algorithm we used it with an iterated local search algorithm.
+
+\subsection{Description}
+
+Like the Hill Climber, our improved search algorithm introduces an initial Naive Bayes like network where each attribute has the classification attribute as parent.
+
+Then the Hill Climber algorithm is executed to find a local optima. To find other local optima, our search algorithm iteratively selects a neighbor of the found network and uses it as initial network for the Hill Climber to hopefully find better local optima than the first one.
+
+ The intial network we use in each iteration is a random neighbor of the previously found one. It does not matter if it is better or worse.
+
+If the Hill Climber finds a better network it is stored as the current best found network and if the seacher cannot find a better network after a given number of iterations, the algorithm stops and yields the best solution found.
 
 
+
+%
+%
+%
 \section{Comparison}
 
 TODO:
