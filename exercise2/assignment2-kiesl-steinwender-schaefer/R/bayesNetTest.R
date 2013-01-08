@@ -6,16 +6,10 @@ require("rJava")
 
 bayesNet <- make_Weka_classifier("weka/classifiers/bayes/BayesNet")
 
-cmc = read.arff("../../exercise1/samples/cmc_preprocessed.arff")
-adult =  read.arff("../../exercise1/samples/census/adult_preprocessed.arff")
+adult =  read.arff("adult_preprocessed.arff")
 
-#hcModel = bayesNet(`Species`~., data=iris, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.HillClimber", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
 hcAdultModel = bayesNet(`income`~., data=adult, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.HillClimber", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
 extendedAdultModel = bayesNet(`income`~., data=adult, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.IteratedLocalSearch", "--", T=5, P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
-
-#hcCmcModel = bayesNet(`income`~., data=adult, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.HillClimber", "--", P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
-#extendedCmcModel = bayesNet(`Species`~., data=iris, control = Weka_control(D="",  Q = "weka.classifiers.bayes.net.search.global.IteratedLocalSearch", "--", T=5, P=1, S="BAYES", E="weka.classifiers.bayes.net.estimate.SimpleEstimator", "--", A=0.5))
-
 
 "ADULT DATA SET"
 hcAdultEvaluation = evaluate_Weka_classifier(hcAdultModel)

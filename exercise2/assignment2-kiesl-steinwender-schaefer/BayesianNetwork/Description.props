@@ -1,0 +1,46 @@
+# Template Description file for a Weka package
+ 
+# Package name (required)
+PackageName=sillyPackage
+ 
+# Version (required)
+Version=1.0.0
+ 
+#Date (year-month-day)
+Date=2012-12-18
+ 
+# Title (required)
+Title=Silly test package
+ 
+# Category (recommended)
+Category=Classification
+ 
+# Author (required)
+Author=Robert Schaefer <robert.schaefer@student.hpi.uni-potsdam.de>
+ 
+# Maintainer (required)
+Maintainer=Robert Schaefer <robert.schaefer@student.hpi.uni-potsdam.de>
+ 
+# License (required)
+License=GPL 2.0
+ 
+# Description (required)
+Description=This package serves only to test the weka framework 
+ 
+# Package URL for obtaining the package archive (required)
+PackageURL=http://example.com/sillyPackage.zip
+
+# URL for further information
+PackageURL=http://example.com/doc/sillyPackage
+ 
+# Enhances various other packages?
+# Enhances=packageName1,packageName2,...
+# ..no
+
+
+# Related to other packages?
+# Related=packageName1,packageName2,...
+# ..no
+ 
+# Dependencies (format: packageName (equality/inequality version_number)
+Depends=weka (>=3.7.1)
