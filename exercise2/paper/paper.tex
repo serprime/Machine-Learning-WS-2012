@@ -108,7 +108,7 @@
 %
 \section{Preface}
 
-This assignment is about extending a Bayes Network Classifier by adding a custom search algorithm. We chose the Hill Climber search algorithm for an implementation of an iterative local search algorithm.
+This assignment is about extending a Bayes Network Classifier by improving an existing search heuristic in Weka. We chose the Hill Climber search algorithm for an implementation of an iterative local search algorithm.
 
 %
 %
@@ -121,87 +121,131 @@ The used package RWeka is an interface in R that wraps the Weka framework and ha
 
 %
 %
-\section{BayesNet}
-
-First we take a look at the BayesNet classifier implementation. When the classifier is startet, first thing is to generate the classification model. Therefore the BayesNet classifier initializes an adjacency matrix (\texttt{initStructure()}) where each attribute has an array of parents. These arrays are empty after initialization. 
-
-
-\begin{lstlisting}[caption={Initialization of BayesNet},label=initStructure]
-...
-// initialize parent sets to have arrow from classifier node to
-// each of the other nodes
-for (int iAttribute = 0; iAttribute < instances.numAttributes(); iAttribute++) {
-    if (iAttribute != iClass) {
-        bayesNet.getParentSet(iAttribute).addParent(iClass, instances);
-    }
-}
-...
-\end{lstlisting}
-
-The default Weka's SearchAlgorithm initializes the network like a Naive Bayes network. Listing \ref{initStructure} shows how we can use the adjacency matrix of BayesNet. Where \texttt{BayesNet} is the classifier that holds the network datastructure and \texttt{getParentSet(n)} returns the \texttt{nth} row in the adjacency matrix.
+%\section{Weka-Implementation of the Bayesian Network}
+%
+%
+%First we take a look at the BayesNet classifier implementation. When the classifier is startet, first thing is to generate the classification model. Therefore the BayesNet classifier initializes an adjacency matrix (\texttt{initStructure()}) where each attribute has an array of parents. These arrays are empty after initialization. 
+%
+%%
+%%\begin{lstlisting}[caption={Initialization of BayesNet},label=initStructure]
+%%...
+%%// initialize parent sets to have arrow from classifier node to
+%%// each of the other nodes
+%%for (int iAttribute = 0; iAttribute < instances.numAttributes(); iAttribute++) {
+%%    if (iAttribute != iClass) {
+%%        bayesNet.getParentSet(iAttribute).addParent(iClass, instances);
+%%    }
+%%}
+%%...
+%%\end{lstlisting}
+%
+%The default Weka's SearchAlgorithm initializes the network like a Naive Bayes network. Listing \ref{initStructure} shows how we can use the adjacency matrix of BayesNet. Where \texttt{BayesNet} is the classifier that holds the network datastructure and \texttt{getParentSet(n)} returns the \texttt{nth} row in the adjacency matrix.
 
 %
 %
 %
-\section{Hill Climber}
+\section{Weka-Implementation of Hill Climber}
 
-Implementation of Weka's Hill Climber algorithm.
+We chose to implement an iterated local search which is based on the pre-implemented Hill Climber algorithm in Weka. There exist implementations as local score based algorithm and as global score based algorithm.  We chose the global score based algorithm because this is better suited to iterated local search (for the perturbation and comparison with other solutions). The existing Hill Climber algorithm does the following:
+
+\begin{enumerate}
+	\item Create a start solution: One can choose between an empty network which contains no arcs or a Naive Bayes network as start solution. In the Naive Bayes network the classification node is the parent of all other attribute nodes.
+	\item Local search: The algorithm chooses always the best solution from its neighborhood. The neighborhood is defined as all solutions which are accessible via the following operations:
+		\begin{itemize}
+			\item Add a new arc.
+			\item Delete an existing arc.
+			\item Reverse an existing arc.
+		\end{itemize}
+		As normal in local search the neighborhood is exploited until a local optimum is reached. The best solution is then returned as the Bayesian network.
+\end{enumerate}
+
+\section{Classification results of the pre-implemented Hill Climber}
+
+\todo{give a table with the results for hill climber with empty start solution as well as with naive bayes.}
+
+\section{Improvement of the Hill Climber: Iterated Local Search}
+
+We improved the existing Hill Climber algorithm by making an iterated local search out of it. The basic functionality is as follows:
+
+\begin{itemize}
+	\item Create a start solution.
+	\item Apply local search to the start solution. The solution obtained is the new best solution.
+	\item Repeat the following procedure until there is no new best solution for five iterations:
+		\begin{itemize}
+			\item Perturbate the current best solution.
+			\item Apply local search to the perturbated solution.
+			\item If the solution obtained after local search is better than the current best solution then this solution is the new best solution.
+		\end{itemize}
+\end{itemize}
+
+It remains to describe what the Perturbation-procedure does: The perturbation-procedure modifies the given net by applying some number of random moves in the neighborhood. We implemented the search procedure in a way such that it is possible for the user to choose the number of random moves which are applied in every perturbation step. The standard value of random moves is three. Since it is not always possible to apply a move there are some tests to make sure that a random move is possible. This is necessary in the following cases:
+
+\begin{itemize}
+	\item The network doesn't contain an arc. (Deletion of an arc is not allowed/possible.)
+	\item Every node has a maximum number of parents. (Addition of an arc is not allowed/possible.)
+	\item Addition of an arc creates a cycle. (This test is pre-implemented in Weka.
+	\item etc.
+\end{itemize}
+
+\section{Classification results of the iterated local search}
+
+\todo{Insert tables containing the classification results of the iterated local search}.
+
+\section{Comparison of the Hill Climber algorithm and the iterated local search}
+
+One can see that the iterated local search does not or in some cases just slightly perform better than the pre-implemented Hill-Climber algorithm. This is mostly due to the fact that for our test data sets the Naive Bayes representation yields the best or at least nearly the best result. The Hill climber doesn't perform many neighborhood operations. For the contraception data set there are no neighborhood operations at all and for the adult data set its just a few operations (about five operations). The perturbation normally leads to worse solutions and local search then finds a net which is close to Naive Bayes or pretty similar to it so we don't get a better solution than the solution after the local search.
 
 %
 %
-\subsection{Description}
-
-As shown in listing \ref{hcSearch}, Hill Climber calculates an optimal solution based on the current network iteratively until no opration can be found to improve the network or the new network is only slightly better than the previous one. To find the best operation all possible operations get evaluated and the best one is returned. The algorithm stops, when it finds a local optima.
-
-\begin{lstlisting}[caption={HillClimbers search algorithm},label=hcSearch]
-double fScore = calcScore(bayesNet);
-Operation oOperation = getOptimalOperation(bayesNet, instances);
-while ((oOperation != null) && (oOperation.m_fScore > fScore)) {
-	performOperation(bayesNet, instances, oOperation);
-	fScore = oOperation.m_fScore;
-	oOperation = getOptimalOperation(bayesNet, instances);
-}  
-\end{lstlisting}
+%\subsection{Description}
+%
+%As shown in listing \ref{hcSearch}, Hill Climber calculates an optimal solution based on the current network iteratively until no opration can be found to improve the network or the new network is only slightly better than the previous one. To find the best operation all possible operations get evaluated and the best one is returned. The algorithm stops, when it finds a local optima.
+%
+%\begin{lstlisting}[caption={HillClimbers search algorithm},label=hcSearch]
+%double fScore = calcScore(bayesNet);
+%Operation oOperation = getOptimalOperation(bayesNet, instances);
+%while ((oOperation != null) && (oOperation.m_fScore > fScore)) {
+%	performOperation(bayesNet, instances, oOperation);
+%	fScore = oOperation.m_fScore;
+%	oOperation = getOptimalOperation(bayesNet, instances);
+%}  
+%\end{lstlisting}
 
 
 %
 %
-\subsection{Test Results}
-
-Two data sets are used to test the search algorithm. These are x and y from the assignment 1.
-
-\todo{insert results of test}
-
-As shown in the result listing, \todo{describe result} ....
+%\subsection{Test Results}
+%
+%Two data sets are used to test the search algorithm. These are x and y from the assignment 1.
+%
+%\todo{insert results of test}
+%
+%As shown in the result listing, \todo{describe result} ....
 
 %
 %
+
+%\subsection{Description}
 %
-\section{Extended Hill Climber}
-
-To improve the Hill Climber algorithm we used it with an iterated local search algorithm.
-
-\subsection{Description}
-
-Like the Hill Climber, our improved search algorithm introduces an initial Naive Bayes like network where each attribute has the classification attribute as parent.
-
-Then the Hill Climber algorithm is executed to find a local optima. To find other local optima, our search algorithm iteratively selects a neighbor of the found network and uses it as initial network for the Hill Climber to hopefully find better local optima than the first one.
-
- The intial network we use in each iteration is a random neighbor of the previously found one. It does not matter if it is better or worse.
-
-If the Hill Climber finds a better network it is stored as the current best found network and if the seacher cannot find a better network after a given number of iterations, the algorithm stops and yields the best solution found.
+%Like the Hill Climber, our improved search algorithm introduces an initial Naive Bayes like network where each attribute has the classification attribute as parent.
+%
+%Then the Hill Climber algorithm is executed to find a local optima. To find other local optima, our search algorithm iteratively selects a neighbor of the found network and uses it as initial network for the Hill Climber to hopefully find better local optima than the first one.
+%
+% The intial network we use in each iteration is a random neighbor of the previously found one. It does not matter if it is better or worse.
+%
+%If the Hill Climber finds a better network it is stored as the current best found network and if the seacher cannot find a better network after a given number of iterations, the algorithm stops and yields the best solution found.
 
 
 
 %
 %
+%%
+%\section{Comparison}
 %
-\section{Comparison}
-
-TODO:
-* used datasets
-* accuracy results
-* runtime/performance
+%TODO:
+%* used datasets
+%* accuracy results
+%* runtime/performance
 
 
 \bibliography{references}
