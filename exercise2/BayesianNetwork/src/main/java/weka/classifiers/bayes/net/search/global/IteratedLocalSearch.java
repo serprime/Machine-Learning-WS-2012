@@ -107,6 +107,7 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		final static int OPERATION_ADD = 0;
 		final static int OPERATION_DEL = 1;
 		final static int OPERATION_REVERSE = 2;
+		final static int OPERATION_HEADCHANGE = 3;
 
 		/** c'tor **/
 		public Operation() {
@@ -136,7 +137,8 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 			if (other == null) {
 				return false;
 			}
-			return ((m_nOperation == other.m_nOperation) && (m_nHead == other.m_nHead) && (m_nTail == other.m_nTail));
+			return ((m_nOperation == other.m_nOperation)
+					&& (m_nHead == other.m_nHead) && (m_nTail == other.m_nTail));
 		} // equals
 
 		/** number of the tail node **/
@@ -162,7 +164,7 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	boolean m_bUseArcReversal = false;
 
 	/** how many random operation per pertubation ? **/
-	int numberOfPertubations = 1;
+	int numberOfPertubations = 3;
 
 	public int getNumberOfPertubations() {
 		return numberOfPertubations;
@@ -183,24 +185,29 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @throws Exception
 	 *             if something goes wrong
 	 */
-	protected void search(BayesNet bayesNet, Instances instances) throws Exception {
+	protected void search(BayesNet bayesNet, Instances instances)
+			throws Exception {
 		m_BayesNet = bayesNet;
 		bayesNet.setDebug(true);
 		System.out.println("Score before local search: " + calcScore(bayesNet));
 		localSearch(bayesNet, instances);
 		ParentSet[] bestSolution = copyParentSets(bayesNet.getParentSets());
 		double scoreOfBestSolution = calcScore(bayesNet);
-		System.out.println("Score of solution after local search: " + scoreOfBestSolution);
+		System.out.println("Score of solution after local search: "
+				+ scoreOfBestSolution);
 		double scoreOfFoundSolution;
 		int numberOfIterationsWithNoBetterSolution = 0;
 
 		do {
 			perturbate(bayesNet, instances, getNumberOfPertubations());
+			scoreOfFoundSolution = calcScore(bayesNet);
 			localSearch(bayesNet, instances);
 			scoreOfFoundSolution = calcScore(bayesNet);
-			System.out.println("Score of found solution: " + scoreOfFoundSolution);
+			System.out.println("Score of found solution after local search: "
+					+ scoreOfFoundSolution);
 			if (scoreOfFoundSolution > scoreOfBestSolution) {
-				System.out.println("New best solution found: " + scoreOfFoundSolution);
+				System.out.println("New best solution found: "
+						+ scoreOfFoundSolution);
 				bestSolution = copyParentSets(bayesNet.getParentSets());
 				scoreOfBestSolution = scoreOfFoundSolution;
 				numberOfIterationsWithNoBetterSolution = 0;
@@ -211,7 +218,8 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		} while (numberOfIterationsWithNoBetterSolution < 5);
 	} // search
 
-	protected void localSearch(BayesNet bayesNet, Instances instances) throws Exception {
+	protected void localSearch(BayesNet bayesNet, Instances instances)
+			throws Exception {
 		System.out.println("Start local search");
 		double fScore = calcScore(bayesNet);
 		// go do the search
@@ -224,15 +232,47 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		System.out.println("End local search");
 	} // search
 
-	private void perturbate(BayesNet bayesNet, Instances instances, Integer times) throws Exception {
-		System.out.println("Start pertubation with " + times + " random operations");
-		for (@SuppressWarnings("unused")
-		Integer i : new int[times]) {
+//	private void perturbate(BayesNet bayesNet, Instances instances,
+//			Integer times) throws Exception {
+//		System.out.println("Start pertubation with " + times
+//				+ " random operations");
+//		for (int i = 0; i < times; i++) {
+//			Operation randomOperation = getRandomOperation(bayesNet, instances);
+//			if (randomOperation != null) {
+//				performOperation(bayesNet, instances, randomOperation);
+//			}
+//		}
+//		System.out.println("End perturbation");
+//	}
+	
+	private void perturbate(BayesNet bayesNet, Instances instances,
+			Integer times) throws Exception {
+		System.out.println("Start pertubation with " + times
+				+ " random operations");
+		for (int i = 0; i < times; i++) {
 			Operation randomOperation = getRandomOperation(bayesNet, instances);
-			if (randomOperation == null) continue;
-			performOperation(bayesNet, instances, randomOperation);
+			if (randomOperation != null) {
+				performOperation(bayesNet, instances, randomOperation);
+			}
 		}
 		System.out.println("End perturbation");
+	}
+	
+	private Operation changeEdgeHead(BayesNet bayesNet, Instances instances) throws Exception{
+		List<Operation> edgesToDelete = findArcsToDelete(bayesNet, instances);
+		if(!edgesToDelete.isEmpty()){
+			Random random = new Random();
+			Operation deleteOperation = edgesToDelete.get(random.nextInt(edgesToDelete.size())); 
+			performOperation(bayesNet, instances, deleteOperation);
+			int tail = deleteOperation.m_nTail;
+			int head = deleteOperation.m_nHead;
+			for (int newHead = 0; newHead < instances.numAttributes(); newHead++){
+				if(newHead != head && addArcMakesSense(bayesNet, instances, newHead, tail)){
+					return new Operation(tail, newHead, Operation.OPERATION_ADD);
+				}
+			}
+		}
+		return null;
 	}
 
 	private ParentSet[] copyParentSets(ParentSet[] parentSets) {
@@ -244,7 +284,8 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		return copy;
 	}
 
-	private void copyParentSetsToBayesNet(BayesNet bayesNet, ParentSet[] parentSets) {
+	private void copyParentSetsToBayesNet(BayesNet bayesNet,
+			ParentSet[] parentSets) {
 		for (int i = 0; i < parentSets.length; i++) {
 			bayesNet.getParentSets()[i].copy(parentSets[i]);
 		}
@@ -275,16 +316,19 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @throws Exception
 	 *             if something goes wrong
 	 */
-	Operation getOptimalOperation(BayesNet bayesNet, Instances instances) throws Exception {
+	Operation getOptimalOperation(BayesNet bayesNet, Instances instances)
+			throws Exception {
 		Operation oBestOperation = new Operation();
 
 		// Add???
 		oBestOperation = findBestArcToAdd(bayesNet, instances, oBestOperation);
 		// Delete???
-		oBestOperation = findBestArcToDelete(bayesNet, instances, oBestOperation);
+		oBestOperation = findBestArcToDelete(bayesNet, instances,
+				oBestOperation);
 		// Reverse???
 		if (getUseArcReversal()) {
-			oBestOperation = findBestArcToReverse(bayesNet, instances, oBestOperation);
+			oBestOperation = findBestArcToReverse(bayesNet, instances,
+					oBestOperation);
 		}
 
 		// did we find something?
@@ -295,62 +339,73 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		return oBestOperation;
 	} // getOptimalOperation
 
-	Operation getRandomOperation(BayesNet bayesNet, Instances instances) throws Exception {
+	Operation getRandomOperation(BayesNet bayesNet, Instances instances)
+			throws Exception {
 		Random random = new Random();
 		int nNrOfAtts = instances.numAttributes();
 		int iAttributeHead = random.nextInt(nNrOfAtts);
 		int iAttributeTail;
 		int numberOfParents;
-		List<Integer> nodesWithParents = getAllNodesWithParents(bayesNet);
-		List<Integer> nodesWithMissingParents = getNodesWhereArcAdditionIsPossible(bayesNet);
+		List<Integer> nodesWithParents = getAllNodesThatHaveParents(bayesNet);
+		List<Integer> nodesWithoutParents = getNodesWhereArcAdditionIsPossible(bayesNet);
 		Integer operationType;
-		if (!nodesWithParents.isEmpty()) {
-			operationType = Operation.OPERATION_ADD; // no arcs to delete or
-														// reverse, we have to
-														// add one first!
+		if (nodesWithParents.isEmpty()) {// no nodes have parents => there are no arcs
+			operationType = Operation.OPERATION_ADD;
+		} else if (nodesWithoutParents.isEmpty()) { //all nodes have a parent, addition not possible
+			operationType = random.nextInt(3) + 1;
 		} else {
-			if (nodesWithMissingParents.isEmpty()) {
-				operationType = random.nextInt(2) + 1; // arc addition is not
-														// possible at all!
-			} else
-				operationType = random.nextInt(3);
+			operationType = random.nextInt(4);
 		}
+		
+		operationType = Operation.OPERATION_HEADCHANGE;
 
 		switch (operationType) {
 		case (Operation.OPERATION_ADD):
-			int attempt = 0, maxAttempts = 2*bayesNet.getNrOfNodes(); // maxAttempts is rather arbitrarlily chosen
+			int attempt = 0,
+			maxAttempts = 2 * bayesNet.getNrOfNodes(); // maxAttempts is rather
+			// arbitrarlily chosen
 			do {
-				iAttributeHead = nodesWithMissingParents.get(random.nextInt(nodesWithMissingParents.size()));
+				iAttributeHead = nodesWithoutParents.get(random
+						.nextInt(nodesWithoutParents.size()));
 				iAttributeTail = random.nextInt(instances.numAttributes());
 				attempt++;
-				if (attempt >= maxAttempts) return null; // seems we can't add valid arcs?
-				
-			} while (!addArcMakesSense(bayesNet, instances, iAttributeHead, iAttributeTail));
-		// possible infinite loop?
-			return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
-			
+				if (attempt >= maxAttempts)
+					return null; // seems we can't add valid arcs?
+
+			} while (!addArcMakesSense(bayesNet, instances, iAttributeHead,
+					iAttributeTail));
+			// possible infinite loop?
+			return new Operation(iAttributeTail, iAttributeHead,
+					Operation.OPERATION_ADD);
+
 		case (Operation.OPERATION_DEL):
-			iAttributeHead = nodesWithParents.get(random.nextInt(nodesWithParents.size()));
-			numberOfParents = bayesNet.getParentSet(iAttributeHead).getNrOfParents();
-			iAttributeTail = bayesNet.getParentSet(iAttributeHead).getParents()[random.nextInt(numberOfParents)];
-			return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_DEL);
-		
 		case (Operation.OPERATION_REVERSE):
-			iAttributeHead = nodesWithParents.get(random.nextInt(nodesWithParents.size()));
-			numberOfParents = bayesNet.getParentSet(iAttributeHead).getNrOfParents();
-			iAttributeTail = bayesNet.getParentSet(iAttributeHead).getParents()[random.nextInt(numberOfParents)];
-			return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_REVERSE);
+			iAttributeHead = nodesWithParents.get(random
+					.nextInt(nodesWithParents.size()));
+			numberOfParents = bayesNet.getParentSet(iAttributeHead)
+					.getNrOfParents();
+			iAttributeTail = bayesNet.getParentSet(iAttributeHead).getParents()[random
+					.nextInt(numberOfParents)];
+			return new Operation(iAttributeTail, iAttributeHead,
+					operationType);
+		case (Operation.OPERATION_HEADCHANGE):
+			return changeEdgeHead(bayesNet, instances);
 		}
 		// any of the switch cases should be executed
 		throw new RuntimeException("This should never happen!");
 
 	}
 
-	private ArrayList<Integer> getAllNodesWithParents(BayesNet bayesNet) {
+	private ArrayList<Integer> getAllNodesThatHaveParents(BayesNet bayesNet) {
 		ArrayList<Integer> nodes = new ArrayList();
-		for (int attribute : new int[bayesNet.getNrOfNodes()]) {
-			if (bayesNet.getParentCardinality(attribute) > 0) {
-				nodes.add(attribute);
+		/*
+		 * for (int attribute : new int[bayesNet.getNrOfNodes()]) { if
+		 * (bayesNet.getParentCardinality(attribute) > 0) {
+		 * nodes.add(attribute); } }
+		 */
+		for (int i = 0; i < bayesNet.getParentSets().length; i++) {
+			if (bayesNet.getParentSet(i).getNrOfParents() > 0) {
+				nodes.add(i);
 			}
 		}
 		return nodes;
@@ -366,18 +421,21 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		return possibleNodes;
 	}
 
-	private Operation addRandomArc(BayesNet bayesNet, Instances instances) throws Exception {
+	private Operation addRandomArc(BayesNet bayesNet, Instances instances)
+			throws Exception {
 		Random random = new Random();
 		int nNrOfAtts = instances.numAttributes();
 		int iAttributeHead = random.nextInt(nNrOfAtts);
 		int iAttributeTail = random.nextInt(nNrOfAtts);
-		while (!addArcMakesSense(bayesNet, instances, iAttributeHead, iAttributeTail)) {
+		while (!addArcMakesSense(bayesNet, instances, iAttributeHead,
+				iAttributeTail)) {
 			do {
 				iAttributeHead = random.nextInt(nNrOfAtts);
 			} while (bayesNet.getParentSet(iAttributeHead).getNrOfParents() >= m_nMaxNrOfParents);
 			iAttributeTail = random.nextInt(nNrOfAtts);
 		}
-		return new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
+		return new Operation(iAttributeTail, iAttributeHead,
+				Operation.OPERATION_ADD);
 	}
 
 	/**
@@ -393,26 +451,34 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @throws Exception
 	 *             if something goes wrong
 	 */
-	void performOperation(BayesNet bayesNet, Instances instances, Operation oOperation) throws Exception {
+	void performOperation(BayesNet bayesNet, Instances instances,
+			Operation oOperation) throws Exception {
 		// perform operation
 		switch (oOperation.m_nOperation) {
 		case Operation.OPERATION_ADD:
-			applyArcAddition(bayesNet, oOperation.m_nHead, oOperation.m_nTail, instances);
+			applyArcAddition(bayesNet, oOperation.m_nHead, oOperation.m_nTail,
+					instances);
 			if (bayesNet.getDebug()) {
-				System.out.println("Add " + oOperation.m_nHead + " -> " + oOperation.m_nTail);
+				System.out.println("Add " + oOperation.m_nHead + " -> "
+						+ oOperation.m_nTail);
 			}
 			break;
 		case Operation.OPERATION_DEL:
-			applyArcDeletion(bayesNet, oOperation.m_nHead, oOperation.m_nTail, instances);
+			applyArcDeletion(bayesNet, oOperation.m_nHead, oOperation.m_nTail,
+					instances);
 			if (bayesNet.getDebug()) {
-				System.out.println("Del " + oOperation.m_nHead + " -> " + oOperation.m_nTail);
+				System.out.println("Del " + oOperation.m_nHead + " -> "
+						+ oOperation.m_nTail);
 			}
 			break;
 		case Operation.OPERATION_REVERSE:
-			applyArcDeletion(bayesNet, oOperation.m_nHead, oOperation.m_nTail, instances);
-			applyArcAddition(bayesNet, oOperation.m_nTail, oOperation.m_nHead, instances);
+			applyArcDeletion(bayesNet, oOperation.m_nHead, oOperation.m_nTail,
+					instances);
+			applyArcAddition(bayesNet, oOperation.m_nTail, oOperation.m_nHead,
+					instances);
 			if (bayesNet.getDebug()) {
-				System.out.println("Rev " + oOperation.m_nHead + " -> " + oOperation.m_nTail);
+				System.out.println("Rev " + oOperation.m_nHead + " -> "
+						+ oOperation.m_nTail);
 			}
 			break;
 		}
@@ -425,10 +491,12 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @param iTail
 	 * @param instances
 	 */
-	void applyArcAddition(BayesNet bayesNet, int iHead, int iTail, Instances instances) {
+	void applyArcAddition(BayesNet bayesNet, int iHead, int iTail,
+			Instances instances) {
 		ParentSet bestParentSet = bayesNet.getParentSet(iHead);
 		bestParentSet.addParent(iTail, instances);
 	} // applyArcAddition
+
 
 	/**
 	 * 
@@ -437,7 +505,8 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @param iTail
 	 * @param instances
 	 */
-	void applyArcDeletion(BayesNet bayesNet, int iHead, int iTail, Instances instances) {
+	void applyArcDeletion(BayesNet bayesNet, int iHead, int iTail,
+			Instances instances) {
 		ParentSet bestParentSet = bayesNet.getParentSet(iHead);
 		bestParentSet.deleteParent(iTail, instances);
 	} // applyArcAddition
@@ -457,15 +526,19 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @throws Exception
 	 *             if something goes wrong
 	 */
-	Operation findBestArcToAdd(BayesNet bayesNet, Instances instances, Operation oBestOperation) throws Exception {
+	Operation findBestArcToAdd(BayesNet bayesNet, Instances instances,
+			Operation oBestOperation) throws Exception {
 		int nNrOfAtts = instances.numAttributes();
 		// find best arc to add
 		for (int iAttributeHead = 0; iAttributeHead < nNrOfAtts; iAttributeHead++) {
 			if (bayesNet.getParentSet(iAttributeHead).getNrOfParents() < m_nMaxNrOfParents) {
 				for (int iAttributeTail = 0; iAttributeTail < nNrOfAtts; iAttributeTail++) {
-					if (addArcMakesSense(bayesNet, instances, iAttributeHead, iAttributeTail)) {
-						Operation oOperation = new Operation(iAttributeTail, iAttributeHead, Operation.OPERATION_ADD);
-						double fScore = calcScoreWithExtraParent(oOperation.m_nHead, oOperation.m_nTail);
+					if (addArcMakesSense(bayesNet, instances, iAttributeHead,
+							iAttributeTail)) {
+						Operation oOperation = new Operation(iAttributeTail,
+								iAttributeHead, Operation.OPERATION_ADD);
+						double fScore = calcScoreWithExtraParent(
+								oOperation.m_nHead, oOperation.m_nTail);
 						if (fScore > oBestOperation.m_fScore) {
 							if (isNotTabu(oOperation)) {
 								oBestOperation = oOperation;
@@ -478,6 +551,49 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 		}
 		return oBestOperation;
 	} // findBestArcToAdd
+	
+	List<Operation> findArcsToDelete(BayesNet bayesNet, Instances instances) throws Exception {
+		int nNrOfAtts = instances.numAttributes();
+		List<Operation> arcsToDelete = new ArrayList<Operation>();
+		// find best arc to add
+		for (int iNode = 0; iNode < nNrOfAtts; iNode++) {
+			ParentSet parentSet = bayesNet.getParentSet(iNode);
+			for (int iParent = 0; iParent < parentSet.getNrOfParents(); iParent++) {
+				arcsToDelete.add(new Operation(parentSet
+						.getParent(iParent), iNode, Operation.OPERATION_DEL));
+			}
+		}
+		return arcsToDelete;
+	}
+
+	// Operation findBestArcToChangeHead(BayesNet bayesNet, Instances instances,
+	// Operation oBestOperation) throws Exception {
+	// int nNrOfAtts = instances.numAttributes();
+	// // find best arc to add
+	// for (int iAttributeHead = 0; iAttributeHead < nNrOfAtts;
+	// iAttributeHead++) {
+	// if (bayesNet.getParentSet(iAttributeHead).getNrOfParents() <
+	// m_nMaxNrOfParents) {
+	// for (int iAttributeTail = 0; iAttributeTail < nNrOfAtts;
+	// iAttributeTail++) {
+	// if (addArcMakesSense(bayesNet, instances, iAttributeHead,
+	// iAttributeTail)) {
+	// Operation oOperation = new Operation(iAttributeTail,
+	// iAttributeHead, Operation.OPERATION_ADD);
+	// double fScore = calcScoreWithExtraParent(
+	// oOperation.m_nHead, oOperation.m_nTail);
+	// if (fScore > oBestOperation.m_fScore) {
+	// if (isNotTabu(oOperation)) {
+	// oBestOperation = oOperation;
+	// oBestOperation.m_fScore = fScore;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return oBestOperation;
+	// } // findBestArcToAdd
 
 	/**
 	 * find best (or least bad) arc deletion operation
@@ -492,14 +608,17 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @throws Exception
 	 *             of something goes wrong
 	 */
-	Operation findBestArcToDelete(BayesNet bayesNet, Instances instances, Operation oBestOperation) throws Exception {
+	Operation findBestArcToDelete(BayesNet bayesNet, Instances instances,
+			Operation oBestOperation) throws Exception {
 		int nNrOfAtts = instances.numAttributes();
 		// find best arc to delete
 		for (int iNode = 0; iNode < nNrOfAtts; iNode++) {
 			ParentSet parentSet = bayesNet.getParentSet(iNode);
 			for (int iParent = 0; iParent < parentSet.getNrOfParents(); iParent++) {
-				Operation oOperation = new Operation(parentSet.getParent(iParent), iNode, Operation.OPERATION_DEL);
-				double fScore = calcScoreWithMissingParent(oOperation.m_nHead, oOperation.m_nTail);
+				Operation oOperation = new Operation(parentSet
+						.getParent(iParent), iNode, Operation.OPERATION_DEL);
+				double fScore = calcScoreWithMissingParent(oOperation.m_nHead,
+						oOperation.m_nTail);
 				if (fScore > oBestOperation.m_fScore) {
 					if (isNotTabu(oOperation)) {
 						oBestOperation = oOperation;
@@ -525,7 +644,8 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @throws Exception
 	 *             if something goes wrong
 	 */
-	Operation findBestArcToReverse(BayesNet bayesNet, Instances instances, Operation oBestOperation) throws Exception {
+	Operation findBestArcToReverse(BayesNet bayesNet, Instances instances,
+			Operation oBestOperation) throws Exception {
 		int nNrOfAtts = instances.numAttributes();
 		// find best arc to reverse
 		for (int iNode = 0; iNode < nNrOfAtts; iNode++) {
@@ -533,10 +653,14 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 			for (int iParent = 0; iParent < parentSet.getNrOfParents(); iParent++) {
 				int iTail = parentSet.getParent(iParent);
 				// is reversal allowed?
-				if (reverseArcMakesSense(bayesNet, instances, iNode, iTail) && bayesNet.getParentSet(iTail).getNrOfParents() < m_nMaxNrOfParents) {
+				if (reverseArcMakesSense(bayesNet, instances, iNode, iTail)
+						&& bayesNet.getParentSet(iTail).getNrOfParents() < m_nMaxNrOfParents) {
 					// go check if reversal results in the best step forward
-					Operation oOperation = new Operation(parentSet.getParent(iParent), iNode, Operation.OPERATION_REVERSE);
-					double fScore = calcScoreWithReversedParent(oOperation.m_nHead, oOperation.m_nTail);
+					Operation oOperation = new Operation(parentSet
+							.getParent(iParent), iNode,
+							Operation.OPERATION_REVERSE);
+					double fScore = calcScoreWithReversedParent(
+							oOperation.m_nHead, oOperation.m_nTail);
 					if (fScore > oBestOperation.m_fScore) {
 						if (isNotTabu(oOperation)) {
 							oBestOperation = oOperation;
@@ -576,11 +700,18 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	public Enumeration listOptions() {
 		Vector newVector = new Vector(2);
 
-		newVector.addElement(new Option("\tMaximum number of parents", "P", 1, "-P <nr of parents>"));
-		newVector.addElement(new Option("\tUse arc reversal operation.\n\t(default false)", "R", 0, "-R"));
-		newVector.addElement(new Option("\tInitial structure is empty (instead of Naive Bayes)", "N", 0, "-N"));
+		newVector.addElement(new Option("\tMaximum number of parents", "P", 1,
+				"-P <nr of parents>"));
+		newVector.addElement(new Option(
+				"\tUse arc reversal operation.\n\t(default false)", "R", 0,
+				"-R"));
+		newVector.addElement(new Option(
+				"\tInitial structure is empty (instead of Naive Bayes)", "N",
+				0, "-N"));
 
-		newVector.addElement(new Option("\tNumber of random operations during pertubation", "T", 1, "-T <nr of random operations>"));
+		newVector.addElement(new Option(
+				"\tNumber of random operations during pertubation", "T", 1,
+				"-T <nr of random operations>"));
 
 		Enumeration enu = super.listOptions();
 		while (enu.hasMoreElements()) {
@@ -735,8 +866,10 @@ public class IteratedLocalSearch extends GlobalScoreSearchAlgorithm {
 	 * @return The string.
 	 */
 	public String globalInfo() {
-		return "This Bayes Network learning algorithm uses a hill climbing algorithm " + "adding, deleting and reversing arcs. The search is not restricted by an order "
-				+ "on the variables (unlike K2). The difference with B and B2 is that this hill " + "climber also considers arrows part of the naive Bayes structure for deletion.";
+		return "This Bayes Network learning algorithm uses a hill climbing algorithm "
+				+ "adding, deleting and reversing arcs. The search is not restricted by an order "
+				+ "on the variables (unlike K2). The difference with B and B2 is that this hill "
+				+ "climber also considers arrows part of the naive Bayes structure for deletion.";
 	} // globalInfo
 
 	/**
