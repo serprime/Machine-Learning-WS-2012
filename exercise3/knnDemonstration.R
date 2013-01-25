@@ -62,6 +62,9 @@ if( ncol(training) < 3 || 4 < ncol(training)){
     stop(sprintf("The provided training has got %s columns, whith the last column considered as class attribute, but we can only plot 2dimensional or 3dimensional data!",  ncol(training)))
 }
 
+if( ncol(testing) != ncol(training)){
+    stop(sprintf("The number of columns for the provided data sets is not the same: %s columns for trainingdata and %s columns for testdata.",  ncol(training), ncol(testing)))
+}
 
 
 interface.draw <- function(panel) {
