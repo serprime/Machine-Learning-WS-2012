@@ -33,8 +33,8 @@ library(RWeka)
 # plotting library
 library(rgl)
 
-# library to wait for user input
-library(tcltk)
+# library for the text box
+library(rpanel)
 
 # helper function to extract a fraction amount of the training data
 Nth.rows<-function(dataframe, n)dataframe[(seq(n,to=nrow(dataframe),by=n)),]
@@ -59,19 +59,19 @@ if (is.null(opt$test)){
 }
 
 
-classifier <-IBk(Y~., training, control = Weka_control(K = opt$k))
-predictedData <- testing
-predictedData$P <- predict(classifier, testing)
-predictedData$Color <- (predictedData$Y == predictedData$P)
-plot3d(predictedData$R, predictedData$G, predictedData$B, xlab="B", ylab="G", zlab="R", col=predictedData$Color, size=2, type='s')
-tk_messageBox(message = "Press a key to exit")
 
-
-
-
-
-#evaluation <- evaluate_Weka_classifier(classifier)
-#evaluation$confusionMatrix
-
-
-
+interface.draw <- function(panel) {
+    classifier <-IBk(Y~., training, control = Weka_control(K = as.numeric(panel$k)))
+    predictedData <- testing
+    predictedData$P <- predict(classifier, testing)
+    predictedData$Color <- (predictedData$Y == predictedData$P)
+    # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
+    plot3d(predictedData$R, predictedData$G, predictedData$B, xlab="B", ylab="G", zlab="R", col=predictedData$Color, size=1, type='s')
+    panel
+}
+interface.panel <- rp.control("K nearest neighbor", k=opt$k)
+rp.textentry(panel=interface.panel, var=k, action=interface.draw, names="K nearest neighbor", labels="K=")
+# run it!
+rp.do(interface.panel, interface.draw)
+# user must close the panel to exit the program
+rp.block(interface.panel)
