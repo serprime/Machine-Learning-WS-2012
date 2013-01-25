@@ -58,6 +58,10 @@ if (is.null(opt$test)){
     testing <- read.arff(opt$test)
 }
 
+if( ncol(training) < 3 || 4 < ncol(training)){
+    stop(sprintf("The provided training has got %s columns, whith the last column considered as class attribute, but we can only plot 2dimensional or 3dimensional data!",  ncol(training)))
+}
+
 
 
 interface.draw <- function(panel) {
