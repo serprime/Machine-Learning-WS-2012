@@ -5,7 +5,7 @@ library("optparse")
 
 option_list <- list(
                     make_option(c("-t", "--train"), help="load training data", metavar="ARFF_FILE"),
-                    make_option(c("-T", "--test"), help="load test data, if ommitted, training data is splitted into parts", metavar="ARFF_FILE"),
+                    make_option(c("-T", "--test"), help="NOT IMPLEMENTED YET", metavar="ARFF_FILE"),
                     make_option(c("-k", "--kneighbors"), type="integer", help="k parameter for nearest neighbor classifier", default=as.integer(5), metavar="K"),
                     make_option(c("--extract"), type="integer", help="reduce input data set by extracting every nth instance", metavar="N")
                     )
