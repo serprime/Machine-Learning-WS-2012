@@ -1,18 +1,26 @@
 package at.ac.tuwien.knn.gui;
 
-import at.ac.tuwien.knn.data.DataSets;
-import at.ac.tuwien.knn.weka.WekaApi;
-import weka.classifiers.lazy.IBk;
-import weka.core.Instance;
-import weka.core.Instances;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 import java.io.File;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import weka.classifiers.lazy.IBk;
+import weka.core.Instance;
+import weka.core.Instances;
+import at.ac.tuwien.knn.data.DataSets;
+import at.ac.tuwien.knn.weka.WekaApi;
 
 /**
  * The panel in which all the data points are drawn
@@ -21,6 +29,9 @@ import java.util.Random;
  */
 public class DrawingArea extends JPanel {
 
+	//MainWindow to render things into it
+	private MainWindow window;
+	
     // data, holds training and test data sets
     private DataSets dataSets;
     private Instances originalInstances;
@@ -31,6 +42,7 @@ public class DrawingArea extends JPanel {
     // drawing flags
     private boolean showTrainingData = true;
     private boolean showTestData = false;
+    private boolean showConnections = true;
 
     // coordinate and drawing stuff
     private double minX, maxX, minY, maxY;
@@ -48,8 +60,11 @@ public class DrawingArea extends JPanel {
             new Color(255, 153, 0),//orange
             new Color(255, 255, 100)//beige
     };
-    private Map<Integer, Color> classColorMap = null;
+    private Map<Object, Color> classColorMap = null;
 
+    public DrawingArea(MainWindow window){
+    	this.window = window;
+    }
 
     //
     // CONTROL METHODS FOR USERS OF THIS COMPONENT (MAIN WINDOW)
@@ -68,10 +83,31 @@ public class DrawingArea extends JPanel {
     public void updateDataFile(File dataFile, Integer k) throws Exception {
         originalInstances = WekaApi.getInstance().loadData(dataFile);
         dataSets = WekaApi.getInstance().splitDataSet(originalInstances, 70);
+        Collection<Object> attributeValues = WekaApi.getAttributeValues(dataSets);
         resetClassifier(k);
-        initColorMap(dataSets);
+        initColorMap(attributeValues);
         calibrateDataSetsCoordinates(dataSets);
+        createLegend(attributeValues);
         repaint();
+    }
+    
+    private void createLegend(Collection<Object> attributeValues){
+    	int x = window.getLblClasses().getX();
+    	int y = window.getLblClasses().getY() + 25;
+    	int i=0;
+    	int vSpace = 25;
+    	int hSpace = 10;
+    	for(Object o : attributeValues){
+    		JLabel lblClass = new JLabel(o.toString());
+    		lblClass.setBounds(x + this.pointRadius*2 + hSpace, y + i*vSpace-2, 140, 14);
+    		window.getFrame().getContentPane().add(lblClass);
+    		ColorPoint colorPoint = new ColorPoint(this.classColorMap.get(o));
+    		colorPoint.setLocation(x, y + i*vSpace);
+    		colorPoint.setRadius(this.pointRadius);
+    		window.getFrame().getContentPane().add(colorPoint);
+    		i++;
+    	}
+
     }
 
     /**
@@ -106,6 +142,16 @@ public class DrawingArea extends JPanel {
     public void updateShowTrainingData(boolean isShowTrainingData) {
         this.showTrainingData = isShowTrainingData;
         repaint();
+    }
+    
+    /**
+     * Update if the connections to the k nearest neighbours should be rendered.
+     *
+     * @param isShowConnections
+     */
+    public void updateShowConnections(boolean isShowConnections){
+    	this.showConnections = isShowConnections;
+    	repaint();
     }
 
     /**
@@ -144,7 +190,9 @@ public class DrawingArea extends JPanel {
 
             if (showTestData) {
                 paintTestSetHighlights((Graphics2D) graphics, dataSets.getTestInstances());
-                paintTestSetKnnConnectors((Graphics2D) graphics, dataSets.getTestInstances());
+                if(showConnections){
+                	paintTestSetKnnConnectors((Graphics2D) graphics, dataSets.getTestInstances());
+                }
             }
             if (showTrainingData) {
                 paintDataPoints((Graphics2D) graphics, dataSets.getTrainingInstances());
@@ -305,17 +353,19 @@ public class DrawingArea extends JPanel {
      *
      * @param dataSets training and test sets
      */
-    private void initColorMap(DataSets dataSets) {
+    private void initColorMap(Collection<Object> attributeValues) {
         System.out.println("init color map");
-        classColorMap = new HashMap<Integer, Color>(dataSets.numClasses());
-        for (int i = 0; i < dataSets.numClasses(); i++) {
-            if (i < colors.length) {
-                classColorMap.put(i, colors[i]);
+        classColorMap = new HashMap<Object, Color>(dataSets.numClasses());
+        //Collection<Object> attributeValues = WekaApi.getAttributeValues(dataSets);
+        int i=0;
+        for(Object attributeValue : attributeValues){
+        	if (i < colors.length) {
+                classColorMap.put(attributeValue, colors[i]);
             } else {
-                classColorMap.put(i, new Color(new Random().nextInt()));
+                classColorMap.put(attributeValue, new Color(new Random().nextInt()));
             }
+        	i++;
         }
     }
-
 
 }

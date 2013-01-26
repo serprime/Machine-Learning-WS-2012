@@ -10,6 +10,9 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.instance.RemovePercentage;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Random;
 
 
@@ -123,5 +126,18 @@ public class WekaApi {
         // get other part
         percentageFilter.setInvertSelection(inverse);
         return Filter.useFilter(instances, percentageFilter);
+    }
+
+    public static Collection<Object> getAttributeValues(DataSets dataSets) {
+        Collection<Object> attributeValues = new HashSet<Object>();
+        Enumeration<Object> testSetAttributes = dataSets.getTestInstances().classAttribute().enumerateValues();
+        Enumeration<Object> trainingSetAttributes = dataSets.getTrainingInstances().classAttribute().enumerateValues();
+        while (testSetAttributes.hasMoreElements()) {
+            attributeValues.add(testSetAttributes.nextElement());
+        }
+        while (trainingSetAttributes.hasMoreElements()) {
+            attributeValues.add(trainingSetAttributes.nextElement());
+        }
+        return attributeValues;
     }
 }
