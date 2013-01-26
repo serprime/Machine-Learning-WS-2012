@@ -214,15 +214,15 @@ public class MainWindow {
         frame.getContentPane().add(chckbxShowConnection);
         
         lblClasses = new JLabel("Classes:");
-        lblClasses.setBounds(810, 425, 76, 14);
+        lblClasses.setBounds(812, 465, 76, 14);
         frame.getContentPane().add(lblClasses);
         
         lblXAxis = new JLabel("x-Axis:");
-        lblXAxis.setBounds(810, 364, 232, 14);
+        lblXAxis.setBounds(812, 404, 232, 14);
         frame.getContentPane().add(lblXAxis);
         
         lblYAxis = new JLabel("y-Axis:");
-        lblYAxis.setBounds(810, 389, 232, 14);
+        lblYAxis.setBounds(812, 429, 232, 14);
         frame.getContentPane().add(lblYAxis);
         
         JLabel lblCorrectClassified = new JLabel("Correctly classified:");

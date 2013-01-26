@@ -9,3 +9,5 @@
 1359148892363	Move compilation units
 1359148927616	Move compilation units
 1359229993356	Rename field 'mainWindow'
+1359237046969	Rename field 'lblXaxis'
+1359237053858	Rename field 'lblYaxis'

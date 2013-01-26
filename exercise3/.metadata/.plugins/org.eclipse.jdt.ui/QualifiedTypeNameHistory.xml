@@ -7,4 +7,9 @@
 <fullyQualifiedTypeName name="java.awt.Color"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.util.Enumeration"/>
+<fullyQualifiedTypeName name="at.ac.tuwien.knn.gui.DrawingArea"/>
+<fullyQualifiedTypeName name="javax.swing.JLabel"/>
+<fullyQualifiedTypeName name="at.ac.tuwien.knn.gui.ColorPoint"/>
+<fullyQualifiedTypeName name="at.ac.tuwien.knn.weka.WekaApi"/>
 </qualifiedTypeNameHistroy>

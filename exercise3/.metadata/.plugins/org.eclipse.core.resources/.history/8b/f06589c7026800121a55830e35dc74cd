@@ -86,7 +86,7 @@ public class MainWindow {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
-        JLabel jlDesc = new JLabel("Test data points are highlighted by a grey circle. The colors show different classes: (actual : predicted)");
+        JLabel jlDesc = new JLabel("Test data points are highlighted by a grey circle. The colors show different classes: (acutal : predicted)");
         jlDesc.setBounds(35, 740, 800, 20);
         frame.getContentPane().add(jlDesc);
 
@@ -214,20 +214,16 @@ public class MainWindow {
         frame.getContentPane().add(chckbxShowConnection);
         
         lblClasses = new JLabel("Classes:");
-        lblClasses.setBounds(810, 425, 76, 14);
+        lblClasses.setBounds(810, 455, 76, 14);
         frame.getContentPane().add(lblClasses);
         
         lblXAxis = new JLabel("x-Axis:");
-        lblXAxis.setBounds(810, 364, 232, 14);
+        lblXAxis.setBounds(810, 334, 46, 14);
         frame.getContentPane().add(lblXAxis);
         
         lblYAxis = new JLabel("y-Axis:");
-        lblYAxis.setBounds(810, 389, 232, 14);
+        lblYAxis.setBounds(810, 359, 46, 14);
         frame.getContentPane().add(lblYAxis);
-        
-        JLabel lblCorrectClassified = new JLabel("Correctly classified:");
-        lblCorrectClassified.setBounds(810, 332, 232, 14);
-        frame.getContentPane().add(lblCorrectClassified);
 
         try {
             //DistributionGenerator.run();

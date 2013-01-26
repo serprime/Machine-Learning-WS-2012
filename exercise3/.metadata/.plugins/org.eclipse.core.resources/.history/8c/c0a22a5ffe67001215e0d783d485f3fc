@@ -62,7 +62,7 @@ public class DrawingArea extends JPanel {
             new Color(255, 153, 0),//orange
             new Color(255, 255, 100)//beige
     };
-    private Map<Integer, Color> classColorMap = null;
+    private Map<Object, Color> classColorMap = null;
 
     public DrawingArea(MainWindow window){
     	this.window = window;
@@ -90,8 +90,6 @@ public class DrawingArea extends JPanel {
         initColorMap(attributeValues);
         calibrateDataSetsCoordinates(dataSets);
         createLegend(attributeValues);
-        window.getLblXAxis().setText("x-Axis: " + getNameOfAttribute(0));
-        window.getLblYAxis().setText("y-Axis: " + getNameOfAttribute(1));
         repaint();
     }
     
@@ -110,7 +108,7 @@ public class DrawingArea extends JPanel {
     		lblClass.setBounds(x + this.pointRadius*2 + hSpace, y + i*vSpace-2, 140, 14);
     		window.getFrame().getContentPane().add(lblClass);
     		this.legendElements.add(lblClass);
-    		ColorPoint colorPoint = new ColorPoint(this.classColorMap.get(getIndexOfAttribute(o)));
+    		ColorPoint colorPoint = new ColorPoint(this.classColorMap.get(dataSets.getTestInstances().indexOf(o)));
     		colorPoint.setLocation(x, y + i*vSpace);
     		colorPoint.setRadius(this.pointRadius);
     		window.getFrame().getContentPane().add(colorPoint);
@@ -236,7 +234,7 @@ public class DrawingArea extends JPanel {
 
             // draw half circle for predicted class
             Integer classValue = (int) classifier.classifyInstance(instance);
-            g.setColor(classColorMap.get(classValue));
+            g.setColor(classColorMap.get(classValue.toString()));
             g.fill(new Arc2D.Double(currentPoint.x, currentPoint.y, 2 * pointRadius, 2 * pointRadius, 90, -180, Arc2D.OPEN));
         }
 
@@ -284,7 +282,7 @@ public class DrawingArea extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         int diameter = 2 * pointRadius;
         for (Instance instance : instances) {
-            g.setColor(classColorMap.get((int)instance.classValue()));
+            g.setColor(colors[(int) (instance.classValue())]);
             Point currentPoint = scale(instance);
             g.fillOval(currentPoint.x, currentPoint.y, diameter, diameter);
         }
@@ -364,24 +362,19 @@ public class DrawingArea extends JPanel {
      */
     private void initColorMap(Collection<Object> attributeValues) {
         System.out.println("init color map");
-        classColorMap = new HashMap<Integer, Color>(dataSets.numClasses());
+        classColorMap = new HashMap<Object, Color>(dataSets.numClasses());
+        Collection<Object> attributeValues = WekaApi.getAttributeValues(dataSets);
         int i=0;
+        
         for(Object attributeValue : attributeValues){
         	System.out.println(attributeValue + ", index: " + dataSets.getTestInstances().classAttribute().indexOfValue(attributeValue.toString()));
         	if (i < colors.length) {
-                classColorMap.put(getIndexOfAttribute(attributeValue), colors[i]);
+                classColorMap.put(dataSets.getTestInstances().indexOf(attributeValue), colors[i]);
             } else {
-                classColorMap.put(getIndexOfAttribute(attributeValue), new Color(new Random().nextInt()));
+                classColorMap.put(dataSets.getTestInstances().indexOf(attributeValue), new Color(new Random().nextInt()));
             }
         	i++;
         }
     }
-    
-    private int getIndexOfAttribute(Object attributeValue){
-    	return dataSets.getTestInstances().classAttribute().indexOfValue(attributeValue.toString());
-    }
 
-    private String getNameOfAttribute(int index){
-    	return dataSets.getTestInstances().attribute(index).name();
-    }
 }
