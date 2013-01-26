@@ -203,8 +203,8 @@ public class MainWindow {
         try {
             DistributionGenerator.run();
             this.updateDataFile(new File("data/knn-3-gauss.arff"), 3);
-            //this.updateDataFile(new File("data/knn-data.arff"), 3);
-            //this.updateDataFile(new File("data/knn_benjamin_data.arff"), 3);
+            // this.updateDataFile(new File("data/knn-data.arff"), 3);
+            // this.updateDataFile(new File("data/knn_benjamin_data.arff"), 3);
         } catch (Exception e) {
             e.printStackTrace();
         }
