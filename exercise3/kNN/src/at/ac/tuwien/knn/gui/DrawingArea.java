@@ -8,6 +8,7 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Arc2D;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,10 +34,13 @@ public class DrawingArea extends JPanel {
 
     // coordinate and drawing stuff
     private double minX, maxX, minY, maxY;
+
     private int pointRadius = 5;
-    private int highlightRadius = 20;
-    private Color unknownColor = new Color(26, 26, 26);
+    private int highlightRadius = 15;
+
+    private Color highlightColor = new Color(230, 230, 230);
     private Color neighborConnectorColor = new Color(255, 163, 0);
+
     private static Color[] colors = new Color[]{new Color(230, 0, 0),//red
             new Color(0, 0, 230),//blue
             new Color(0, 220, 0),//green
@@ -63,7 +67,7 @@ public class DrawingArea extends JPanel {
      */
     public void updateDataFile(File dataFile, Integer k) throws Exception {
         originalInstances = WekaApi.getInstance().loadData(dataFile);
-        this.dataSets = WekaApi.getInstance().splitDataSet(originalInstances, 70);
+        dataSets = WekaApi.getInstance().splitDataSet(originalInstances, 70);
         resetClassifier(k);
         initColorMap(dataSets);
         calibrateDataSetsCoordinates(dataSets);
@@ -82,9 +86,15 @@ public class DrawingArea extends JPanel {
         repaint();
     }
 
+    /**
+     * Update the percentage value where to split the data set.
+     *
+     * @param percentage
+     * @throws Exception
+     */
     public void updatePercentage(Integer percentage) throws Exception {
         // make new split
-        this.dataSets = WekaApi.getInstance().splitDataSet(originalInstances, percentage);
+        dataSets = WekaApi.getInstance().splitDataSet(originalInstances, percentage);
         repaint();
     }
 
@@ -119,22 +129,28 @@ public class DrawingArea extends JPanel {
         super.paintComponent(graphics);
         try {
 
-            System.out.println("repaint");
-
             if (dataSets == null || dataSets.isEmpty()) {
-                System.out.println("no data set, return");
                 return;
             }
 
-            // paint all dots of the test set + highlighting ovals + connectors to the nearest neigbors
+            // order of how to paint all elements:
+            // test:
+            // - highlights of test data
+            // - knn connectors
+            // train:
+            // - training data points
+            // test:
+            // - test data points halfs
+
             if (showTestData) {
-                this.paintTestSet((Graphics2D) graphics, dataSets.getTestInstances());
-
+                paintTestSetHighlights((Graphics2D) graphics, dataSets.getTestInstances());
+                paintTestSetKnnConnectors((Graphics2D) graphics, dataSets.getTestInstances());
             }
-
-            // paint class colored dots from the training set
             if (showTrainingData) {
-                this.paintDataPoints((Graphics2D) graphics, dataSets.getTrainingInstances());
+                paintDataPoints((Graphics2D) graphics, dataSets.getTrainingInstances());
+            }
+            if (showTestData) {
+                paintTestSetDataPoints((Graphics2D) graphics, dataSets.getTestInstances());
             }
 
         } catch (Exception e) {
@@ -153,46 +169,51 @@ public class DrawingArea extends JPanel {
      * @param g
      * @param instances
      */
-    protected void paintTestSet(Graphics2D g, Instances instances) throws Exception {
+    private void paintTestSetDataPoints(Graphics2D g, Instances instances) throws Exception {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-
-        System.out.println("render test highlights, " + instances.numInstances());
-
-        Point currentPoint;
         for (Instance instance : instances) {
-            g.setColor(new Color(230, 230, 230));
-            currentPoint = scale(instance);
-            g.fillOval(currentPoint.x - highlightRadius + this.pointRadius, currentPoint.y - highlightRadius + this.pointRadius, highlightRadius * 2, highlightRadius * 2);
-            paintKnnConnectors(g, instance);
+            Point currentPoint = scale(instance);
+            g.setColor(classColorMap.get((int) instance.classValue()));
+            g.fill(new Arc2D.Double(currentPoint.x, currentPoint.y, 2 * pointRadius, 2 * pointRadius, 90, 180, Arc2D.OPEN));
+
+            // draw half circle for predicted class
+            Integer classValue = (int) classifier.classifyInstance(instance);
+            g.setColor(classColorMap.get(classValue));
+            g.fill(new Arc2D.Double(currentPoint.x, currentPoint.y, 2 * pointRadius, 2 * pointRadius, 90, -180, Arc2D.OPEN));
         }
 
-        System.out.println("render test instances, " + instances.numInstances());
+    }
 
-        g.setColor(unknownColor);
-        int diameter = 2 * this.pointRadius;
+    private void paintTestSetHighlights(Graphics2D g, Instances instances) throws Exception {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
         for (Instance instance : instances) {
-            currentPoint = this.scale(instance);
-            g.fillOval(currentPoint.x, currentPoint.y, diameter, diameter);
+            g.setColor(highlightColor);
+            Point currentPoint = scale(instance);
+            g.fillOval(currentPoint.x - highlightRadius + pointRadius, currentPoint.y - highlightRadius + pointRadius, highlightRadius * 2, highlightRadius * 2);
         }
     }
 
     /**
-     * Routine to draw some special stuff aroung an new instance that gets classified.
+     * Routine to draw some special stuff around the new instance that get classified.
      *
-     * @param instance
+     * @param instances
      * @throws Exception
      */
-    private void paintKnnConnectors(Graphics2D g, Instance instance) throws Exception {
-        Instances instances = classifier.getNearestNeighbourSearchAlgorithm().kNearestNeighbours(instance, classifier.getKNN());
-        Point currentPoint = scale(instance);
-        g.setColor(neighborConnectorColor);
-        for (Instance neighbor : instances) {
-            Point neighborPoint = scale(neighbor);
-            g.drawLine(currentPoint.x + pointRadius, currentPoint.y + pointRadius, neighborPoint.x + pointRadius, neighborPoint.y + pointRadius);
+    private void paintTestSetKnnConnectors(Graphics2D g, Instances instances) throws Exception {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        for (Instance instance : instances) {
+            Instances neighbors = classifier.getNearestNeighbourSearchAlgorithm().kNearestNeighbours(instance, classifier.getKNN());
+            Point currentPoint = scale(instance);
+            // print connectors to all neighbors
+            g.setColor(neighborConnectorColor);
+            for (Instance neighbor : neighbors) {
+                Point neighborPoint = scale(neighbor);
+                g.drawLine(currentPoint.x + pointRadius, currentPoint.y + pointRadius, neighborPoint.x + pointRadius, neighborPoint.y + pointRadius);
+            }
         }
-
-
     }
 
     /**
@@ -202,13 +223,12 @@ public class DrawingArea extends JPanel {
      * @param instances
      */
     protected void paintDataPoints(Graphics2D g, Instances instances) {
-        System.out.println("render instances, " + instances.numInstances());
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        int diameter = 2 * this.pointRadius;
+        int diameter = 2 * pointRadius;
         for (Instance instance : instances) {
-            g.setColor(this.colors[(int) (instance.classValue())]);
-            Point currentPoint = this.scale(instance);
+            g.setColor(colors[(int) (instance.classValue())]);
+            Point currentPoint = scale(instance);
             g.fillOval(currentPoint.x, currentPoint.y, diameter, diameter);
         }
     }
@@ -222,10 +242,10 @@ public class DrawingArea extends JPanel {
     public Point scale(Instance instance) {
         Point scaledPoint = new Point();
         int border = 1;
-        double scaleX = (this.getSize().getWidth() - 2 * this.pointRadius - 2 * border) / (this.maxX - this.minX);
-        double scaleY = (this.getSize().getHeight() - 2 * this.pointRadius - 2 * border) / (this.maxY - this.minY);
-        scaledPoint.x = this.pointRadius + border + (int) ((instance.value(0) - this.minX) * scaleX - this.pointRadius);
-        scaledPoint.y = this.pointRadius + border + (int) ((instance.value(1) - this.minY) * scaleY - this.pointRadius);
+        double scaleX = (getSize().getWidth() - 2 * pointRadius - 2 * border) / (maxX - minX);
+        double scaleY = (getSize().getHeight() - 2 * pointRadius - 2 * border) / (maxY - minY);
+        scaledPoint.x = pointRadius + border + (int) ((instance.value(0) - minX) * scaleX - pointRadius);
+        scaledPoint.y = pointRadius + border + (int) ((instance.value(1) - minY) * scaleY - pointRadius);
         return scaledPoint;
     }
 
@@ -241,7 +261,6 @@ public class DrawingArea extends JPanel {
      * @param dataSets wrapper for training and test data sets
      */
     private void calibrateDataSetsCoordinates(DataSets dataSets) {
-        System.out.println("calibrate coordinates of data sets");
         minX = minY = Double.MAX_VALUE;
         maxX = maxY = Double.MIN_VALUE;
         // calibrate for training and test set
@@ -291,9 +310,9 @@ public class DrawingArea extends JPanel {
         classColorMap = new HashMap<Integer, Color>(dataSets.numClasses());
         for (int i = 0; i < dataSets.numClasses(); i++) {
             if (i < colors.length) {
-                this.classColorMap.put(i, colors[i]);
+                classColorMap.put(i, colors[i]);
             } else {
-                this.classColorMap.put(i, new Color(new Random().nextInt()));
+                classColorMap.put(i, new Color(new Random().nextInt()));
             }
         }
     }

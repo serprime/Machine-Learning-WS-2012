@@ -9,6 +9,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 
 public class MainWindow {
@@ -53,9 +54,15 @@ public class MainWindow {
         // MAIN
         //
         frame = new JFrame();
-        frame.setBounds(100, 100, 1000, 800);
+        frame.setBounds(100, 100, 1000, 810);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
+
+        JLabel jlDesc = new JLabel("Test data points are highlighted by a grey circle. The colors show different classes: (acutal : predicted)");
+        jlDesc.setBounds(35, 740, 800, 20);
+        frame.getContentPane().add(jlDesc);
+
+
 
         // SPINNER K
         //
@@ -166,5 +173,11 @@ public class MainWindow {
         chckbxShowTrainingData.setSelected(true);
         chckbxShowTrainingData.setBounds(810, 235, 152, 23);
         frame.getContentPane().add(chckbxShowTrainingData);
+
+        try {
+            panel.updateDataFile(new File("data/knn-data.arff"), 3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
