@@ -1,0 +1,16 @@
+import java.awt.Graphics;
+import java.util.Collection;
+
+import javax.swing.JPanel;
+
+public class DrawingArea extends JPanel {
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.fillOval(10, 10, 10, 10);
+	}
+	
+	public void paintDataset(DataSet dataset){
+		Collection<DataPoint> dataPoints = dataset.getDataPoints();
+	}
+}

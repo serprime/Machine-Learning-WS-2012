@@ -1,0 +1,80 @@
+import java.awt.EventQueue;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JSpinner;
+
+
+public class MainWindow {
+
+	private JFrame frame;
+	private DrawingArea panel;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					MainWindow window = new MainWindow();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		//DrawingArea drawingArea = new DrawingArea();
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public MainWindow() {
+		initialize();
+		
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 1000, 800);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JSpinner spinner = new JSpinner();
+		spinner.setBounds(875, 56, 29, 20);
+		frame.getContentPane().add(spinner);
+		
+		JLabel lblK = new JLabel("k:");
+		lblK.setBounds(858, 59, 16, 14);
+		frame.getContentPane().add(lblK);
+		
+		panel = new DrawingArea();
+		panel.setBounds(10, 11, 824, 740);
+		frame.getContentPane().add(panel);
+		
+		JButton btnNewButton = new JButton("Open file...");
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				JFileChooser fileChooser = new JFileChooser();
+				int returnVal = fileChooser.showOpenDialog(frame);
+				if(returnVal == JFileChooser.APPROVE_OPTION){
+					DataSet dataSet = DataSetParser.parseFile(fileChooser.getSelectedFile());
+					panel.paintDataSet(dataSet);
+				}
+			}
+		});
+		btnNewButton.setBounds(856, 20, 118, 23);
+		frame.getContentPane().add(btnNewButton);
+	}
+	
+}

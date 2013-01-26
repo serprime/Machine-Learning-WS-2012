@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.internal.QuickAccess">
+		<item value="1260" key="dialogWidth"/>
+		<item value="737" key="dialogHeight"/>
+		<list key="orderedProviders">
+		</list>
+		<list key="textArray">
+		</list>
+		<list key="orderedElements">
+		</list>
+		<list key="textEntries">
+		</list>
+	</section>
+	<section name="WorkbenchPreferenceDialogSettings">
+		<item value="143" key="DIALOG_Y_ORIGIN"/>
+		<item value="531" key="DIALOG_X_ORIGIN"/>
+	</section>
+	<section name="NewWizardAction">
+		<item value="org.eclipse.wb.swing.ApplicationWindow" key="NewWizardSelectionPage.STORE_SELECTED_ID"/>
+		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="org.eclipse.wb"/>
+			<item value="org.eclipse.wb/org.eclipse.wb.swing"/>
+			<item value="org.eclipse.wb/org.eclipse.wb.rcp"/>
+			<item value="org.eclipse.wb/org.eclipse.wb.rcp/org.eclipse.wb.internal.rcp.databinding"/>
+			<item value="org.eclipse.wb/org.eclipse.wb.rcp/org.eclipse.wb.rcp.e4"/>
+			<item value="org.eclipse.wb/org.eclipse.wb.rcp/org.eclipse.wb.rcp.forms"/>
+		</list>
+	</section>
+</section>

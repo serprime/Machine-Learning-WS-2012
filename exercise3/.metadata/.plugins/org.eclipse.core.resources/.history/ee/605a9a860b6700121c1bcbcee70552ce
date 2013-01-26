@@ -1,0 +1,21 @@
+import java.util.Collection;
+
+
+public class DataSet {
+	Collection<DataPoint> datapoints;
+	
+	public DataSet(){}
+	
+	public DataSet(Collection<DataPoint> datapoints){
+		this.datapoints = datapoints;
+	}
+	
+	public Collection<DataPoint> getDatapoints() {
+		return datapoints;
+	}
+
+	public void setDatapoints(Collection<DataPoint> datapoints) {
+		this.datapoints = datapoints;
+	}
+
+}

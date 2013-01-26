@@ -1,6 +1,7 @@
 package at.ac.tuwien.knn.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -8,8 +9,8 @@ import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 import java.io.File;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
@@ -35,6 +36,7 @@ public class DrawingArea extends JPanel {
     // data, holds training and test data sets
     private DataSets dataSets;
     private Instances originalInstances;
+    private Collection<Component> legendElements = new LinkedList<Component>();
 
     // classifier
     private IBk classifier;
@@ -97,17 +99,22 @@ public class DrawingArea extends JPanel {
     	int i=0;
     	int vSpace = 25;
     	int hSpace = 10;
+    	for(Component c : this.legendElements){
+    		window.getFrame().remove(c);
+    	}
+    	this.legendElements.clear();
     	for(Object o : attributeValues){
     		JLabel lblClass = new JLabel(o.toString());
     		lblClass.setBounds(x + this.pointRadius*2 + hSpace, y + i*vSpace-2, 140, 14);
     		window.getFrame().getContentPane().add(lblClass);
+    		this.legendElements.add(lblClass);
     		ColorPoint colorPoint = new ColorPoint(this.classColorMap.get(o));
     		colorPoint.setLocation(x, y + i*vSpace);
     		colorPoint.setRadius(this.pointRadius);
     		window.getFrame().getContentPane().add(colorPoint);
+    		this.legendElements.add(colorPoint);
     		i++;
     	}
-
     }
 
     /**

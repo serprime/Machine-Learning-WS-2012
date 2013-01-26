@@ -1,12 +1,6 @@
 package at.ac.tuwien.knn.weka;
 
-import java.awt.Color;
-import java.io.File;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Random;
-
+import at.ac.tuwien.knn.data.DataSets;
 import weka.classifiers.lazy.IBk;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -14,7 +8,12 @@ import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.neighboursearch.LinearNNSearch;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.RemovePercentage;
-import at.ac.tuwien.knn.data.DataSets;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Random;
 
 
 /**
@@ -81,6 +80,7 @@ public class WekaApi {
     public Instances loadData(File file) throws Exception {
         DataSource dataSource = new DataSource(file.getAbsolutePath());
         Instances instances = dataSource.getDataSet();
+        instances.randomize(new Random());
         instances.setClassIndex(instances.numAttributes() - 1);
         System.out.println("loaded data. class attribute: " + instances.classAttribute());
         return instances;
@@ -127,17 +127,17 @@ public class WekaApi {
         percentageFilter.setInvertSelection(inverse);
         return Filter.useFilter(instances, percentageFilter);
     }
-    
-    public static Collection<Object> getAttributeValues(DataSets dataSets){
-    	Collection<Object> attributeValues = new HashSet<Object>();
-    	Enumeration<Object> testSetAttributes = dataSets.getTestInstances().classAttribute().enumerateValues();
-    	Enumeration<Object> trainingSetAttributes = dataSets.getTrainingInstances().classAttribute().enumerateValues();
-    	while(testSetAttributes.hasMoreElements()){
-        	attributeValues.add(testSetAttributes.nextElement());
+
+    public static Collection<Object> getAttributeValues(DataSets dataSets) {
+        Collection<Object> attributeValues = new HashSet<Object>();
+        Enumeration<Object> testSetAttributes = dataSets.getTestInstances().classAttribute().enumerateValues();
+        Enumeration<Object> trainingSetAttributes = dataSets.getTrainingInstances().classAttribute().enumerateValues();
+        while (testSetAttributes.hasMoreElements()) {
+            attributeValues.add(testSetAttributes.nextElement());
         }
-        while(trainingSetAttributes.hasMoreElements()){
-        	attributeValues.add(trainingSetAttributes.nextElement());
+        while (trainingSetAttributes.hasMoreElements()) {
+            attributeValues.add(trainingSetAttributes.nextElement());
         }
-    	return attributeValues;
+        return attributeValues;
     }
 }

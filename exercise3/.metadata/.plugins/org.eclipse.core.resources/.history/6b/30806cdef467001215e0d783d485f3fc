@@ -1,0 +1,7 @@
+package at.ac.tuwien.knn.gui;
+
+import javax.swing.JPanel;
+
+public class ColorPoint extends JPanel {
+
+}

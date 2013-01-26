@@ -1,0 +1,49 @@
+import java.util.Collection;
+
+
+public class DataSet {
+	Collection<DataPoint> dataPoints;
+	Collection<DataPoint> trainingSet;
+	Collection<DataPoint> testSet;
+	
+	int trainingSetPercentage = 70;
+	
+	public DataSet(){}
+	
+	public DataSet(Collection<DataPoint> dataPoints){
+		this.dataPoints = dataPoints;
+	}
+	
+	public Collection<DataPoint> getAllDataPoints() {
+		return this.dataPoints;
+	}
+
+	public void setAllDataPoints(Collection<DataPoint> datapoints) {
+		this.dataPoints = datapoints;
+	}
+
+	public void setTrainingSetPercentage(int percentage){
+		if(percentage > 100){
+			percentage = 100;
+		}else if(percentage < 0){
+			percentage = 0;
+		}
+		this.trainingSetPercentage = percentage;
+		this.split(percentage);
+	}
+	
+	public void split(int percentage){
+		double step = 100/(double)percentage;
+		double i=0;
+		for(DataPoint dataPoint : this.dataPoints){
+			if(i >= step){
+				i -= step;
+				this.trainingSet.add(dataPoint);
+			}else{
+				this.testSet.add(dataPoint);
+			}
+			i++;
+		}
+		System.out.println("Percentage: " + this.trainingSet.size() / this.dataPoints.size());
+	}
+}
