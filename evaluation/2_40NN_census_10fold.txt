@@ -1,0 +1,56 @@
+=== Run information ===
+
+Scheme:weka.classifiers.lazy.IBk -K 40 -W 0 -A "weka.core.neighboursearch.LinearNNSearch -A \"weka.core.EuclideanDistance -R first-last\""
+Relation:     adult-weka.filters.unsupervised.attribute.ReplaceMissingValues
+Instances:    32561
+Attributes:   15
+              age
+              workclass
+              fnlwgt
+              education
+              education-num
+              marital-status
+              occupation
+              relationship
+              race
+              sex
+              capital-gain
+              capital-loss
+              hours-per-week
+              native-country
+              income
+Test mode:10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+IB1 instance-based classifier
+using 40 nearest neighbour(s) for classification
+
+
+Time taken to build model: 0.01 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances       27181               83.4772 %
+Incorrectly Classified Instances      5380               16.5228 %
+Kappa statistic                          0.5274
+Mean absolute error                      0.2225
+Root mean squared error                  0.3367
+Relative absolute error                 60.8517 %
+Root relative squared error             78.7552 %
+Total Number of Instances            32561     
+
+=== Detailed Accuracy By Class ===
+
+               TP Rate   FP Rate   Precision   Recall  F-Measure   ROC Area  Class
+                 0.593     0.088      0.68      0.593     0.633      0.884    >50K
+                 0.912     0.407      0.876     0.912     0.893      0.884    <=50K
+Weighted Avg.    0.835     0.331      0.829     0.835     0.831      0.884
+
+=== Confusion Matrix ===
+
+     a     b   <-- classified as
+  4647  3194 |     a = >50K
+  2186 22534 |     b = <=50K
+
