@@ -2,6 +2,7 @@ package at.ac.tuwien.knn.gui;
 
 import at.ac.tuwien.knn.data.DataSets;
 import at.ac.tuwien.knn.weka.WekaApi;
+import weka.classifiers.lazy.IBk;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -23,6 +24,9 @@ public class DrawingArea extends JPanel {
     private DataSets dataSets;
     private Instances originalInstances;
 
+    // classifier
+    private IBk classifier;
+
     // drawing flags
     private boolean showTrainingData = true;
     private boolean showTestData = false;
@@ -30,6 +34,9 @@ public class DrawingArea extends JPanel {
     // coordinate and drawing stuff
     private double minX, maxX, minY, maxY;
     private int pointRadius = 5;
+    private int highlightRadius = 20;
+    private Color unknownColor = new Color(26, 26, 26);
+    private Color neighborConnectorColor = new Color(255, 163, 0);
     private static Color[] colors = new Color[]{new Color(230, 0, 0),//red
             new Color(0, 0, 230),//blue
             new Color(0, 220, 0),//green
@@ -44,14 +51,20 @@ public class DrawingArea extends JPanel {
     // CONTROL METHODS FOR USERS OF THIS COMPONENT (MAIN WINDOW)
     //
 
+    private void resetClassifier(int k) throws Exception {
+        classifier = WekaApi.getInstance().buildClassifierFromTrainingInstances(dataSets.getTrainingInstances(), k);
+    }
+
     /**
      * Update dataset file. Reload data, get a new classifier, re-everything.
+     *
      * @param dataFile
      * @throws Exception
      */
-    public void updateDataFile(File dataFile) throws Exception {
+    public void updateDataFile(File dataFile, Integer k) throws Exception {
         originalInstances = WekaApi.getInstance().loadData(dataFile);
         this.dataSets = WekaApi.getInstance().splitDataSet(originalInstances, 70);
+        resetClassifier(k);
         initColorMap(dataSets);
         calibrateDataSetsCoordinates(dataSets);
         repaint();
@@ -60,12 +73,12 @@ public class DrawingArea extends JPanel {
     /**
      * Update the value for k of kNN.
      * This builds a new classifier and restarts the classification.
-     * @param newK
+     *
+     * @param k
      */
-    public void updateK(Integer newK) {
+    public void updateK(Integer k) throws Exception {
         // create new classifier.
-        // draw training instances
-        // run classification
+        resetClassifier(k);
         repaint();
     }
 
@@ -77,6 +90,7 @@ public class DrawingArea extends JPanel {
 
     /**
      * Update if the trainingdata should be rendered.
+     *
      * @param isShowTrainingData
      */
     public void updateShowTrainingData(boolean isShowTrainingData) {
@@ -86,6 +100,7 @@ public class DrawingArea extends JPanel {
 
     /**
      * Update if the test data should be rendered
+     *
      * @param isShowTestData
      */
     public void updateShowTestData(boolean isShowTestData) {
@@ -102,42 +117,82 @@ public class DrawingArea extends JPanel {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        try {
 
-        System.out.println("repaint");
+            System.out.println("repaint");
 
-        if (dataSets == null || dataSets.isEmpty()) {
-            System.out.println("no data set, return");
-            return;
-        }
+            if (dataSets == null || dataSets.isEmpty()) {
+                System.out.println("no data set, return");
+                return;
+            }
 
-        if (showTestData) {
-            this.paintTestSetHighlights((Graphics2D) graphics, dataSets.getTestInstances());
-        }
+            // paint all dots of the test set + highlighting ovals + connectors to the nearest neigbors
+            if (showTestData) {
+                this.paintTestSet((Graphics2D) graphics, dataSets.getTestInstances());
 
-        if (showTrainingData) {
-            this.paintDataPoints((Graphics2D) graphics, dataSets.getTrainingInstances());
+            }
+
+            // paint class colored dots from the training set
+            if (showTrainingData) {
+                this.paintDataPoints((Graphics2D) graphics, dataSets.getTrainingInstances());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
     /**
      * Paints the test data points into the drawing area. For every test-data point we draw a grey circle around it. At this
-     * time the circle has just an arbitrary hardcoded radius but in the future the circle should be exactly as big such that
+     * time the circle has just an arbitrary hardcoded highlightRadius but in the future the circle should be exactly as big such that
      * it contains for every test data point the k nearest neighbours of this data point.
+     * <p/>
+     * For an initial step we paint the circle as highlighting and connect the current instance to its neighbors with lines.
      *
      * @param g
      * @param instances
      */
-    protected void paintTestSetHighlights(Graphics2D g, Instances instances) {
+    protected void paintTestSet(Graphics2D g, Instances instances) throws Exception {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
         System.out.println("render test highlights, " + instances.numInstances());
+
         Point currentPoint;
-        g.setColor(new Color(230, 230, 230));
         for (Instance instance : instances) {
+            g.setColor(new Color(230, 230, 230));
             currentPoint = scale(instance);
-            int radius = 20;
-            g.fillOval(currentPoint.x - radius + this.pointRadius, currentPoint.y - radius + this.pointRadius, radius * 2, radius * 2);
+            g.fillOval(currentPoint.x - highlightRadius + this.pointRadius, currentPoint.y - highlightRadius + this.pointRadius, highlightRadius * 2, highlightRadius * 2);
+            paintKnnConnectors(g, instance);
         }
-        this.paintDataPoints(g, instances);
+
+        System.out.println("render test instances, " + instances.numInstances());
+
+        g.setColor(unknownColor);
+        int diameter = 2 * this.pointRadius;
+        for (Instance instance : instances) {
+            currentPoint = this.scale(instance);
+            g.fillOval(currentPoint.x, currentPoint.y, diameter, diameter);
+        }
+    }
+
+    /**
+     * Routine to draw some special stuff aroung an new instance that gets classified.
+     *
+     * @param instance
+     * @throws Exception
+     */
+    private void paintKnnConnectors(Graphics2D g, Instance instance) throws Exception {
+        Instances instances = classifier.getNearestNeighbourSearchAlgorithm().kNearestNeighbours(instance, classifier.getKNN());
+        Point currentPoint = scale(instance);
+        g.setColor(neighborConnectorColor);
+        for (Instance neighbor : instances) {
+            Point neighborPoint = scale(neighbor);
+            g.drawLine(currentPoint.x + pointRadius, currentPoint.y + pointRadius, neighborPoint.x + pointRadius, neighborPoint.y + pointRadius);
+        }
+
+
     }
 
     /**
@@ -202,6 +257,7 @@ public class DrawingArea extends JPanel {
     /**
      * find the min and max coordinates for instances
      * This should only be called from the calibrateDataSetCoordinates Method.
+     *
      * @param instances
      */
     private void calibrateInstancesCoordinates(Instances instances) {
