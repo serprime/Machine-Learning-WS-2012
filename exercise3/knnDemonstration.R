@@ -70,8 +70,14 @@ if( ncol(testing) != ncol(training)){
     stop(sprintf("The number of columns for the provided data sets is not the same: %s columns for trainingdata and %s columns for testdata.",  ncol(training), ncol(testing)))
 }
 
+for (i in 1:ncol(training)){
+    if (names(testing)[i] != names(training)[i]){
+        stop(sprintf("Please ensure that both training set and test data set have the same schema"))
+        }
+}
+
 if (modus == "2D"){
-    stop("Handling of 2 dimennsional plots is not implemented yet!")
+    stop("Handling of 2 dimensional plots is not implemented yet!")
 } else if (modus == "3D"){
     # for convenience, rename class column to "Class"
     names(training)[4] <- "Class"
