@@ -67,13 +67,19 @@ if( ncol(testing) != ncol(training)){
 }
 
 
+# for convenience, rename class column to "Class"
+names(training)[4] <- "Class"
+names(testing)[4] <- "Class"
+
 interface.draw <- function(panel) {
-    classifier <-IBk(Y~., training, control = Weka_control(K = as.numeric(panel$k)))
-    predictedData <- testing
-    predictedData$P <- predict(classifier, testing)
-    predictedData$Color <- (predictedData$Y == predictedData$P)
+    classifier <-IBk(Class ~ ., training, control = Weka_control(K = as.numeric(panel$k)))
+    testing <- testing
+    testing$P <- predict(classifier, testing)
+    testing$Color <- (testing$Class == testing$P)
+
     # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
-    plot3d(predictedData$R, predictedData$G, predictedData$B, xlab="B", ylab="G", zlab="R", col=predictedData$Color, size=1, type='s')
+
+    plot3d(testing[[1]], testing[[2]], testing[[3]], xlab=names(testing)[1], ylab=names(testing)[2], zlab=names(testing)[3], col=testing$Color, size=1, type='s')
     panel
 }
 interface.panel <- rp.control("K nearest neighbor", k=opt$k)
