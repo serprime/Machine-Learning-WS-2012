@@ -1,5 +1,7 @@
 package at.ac.tuwien.knn.gui;
 
+import at.ac.tuwien.knn.DistributionGenerator;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
@@ -200,7 +202,10 @@ public class MainWindow {
         frame.getContentPane().add(lblClasses);
 
         try {
-            this.updateDataFile(new File("data/knn-data.arff"), 3);
+            DistributionGenerator.run();
+            this.updateDataFile(new File("data/knn-3-gauss.arff"), 3);
+            // this.updateDataFile(new File("data/knn-data.arff"), 3);
+            // this.updateDataFile(new File("data/knn_benjamin_data.arff"), 3);
         } catch (Exception e) {
             e.printStackTrace();
         }
