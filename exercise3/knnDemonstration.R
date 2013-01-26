@@ -7,6 +7,7 @@ option_list <- list(
                     make_option(c("-t", "--train"), help="load training data", metavar="ARFF_FILE"),
                     make_option(c("-T", "--test"), help="load test data, if ommitted, training data is splitted into parts", metavar="ARFF_FILE"),
                     make_option(c("-k", "--kneighbors"), type="integer", help="k parameter for nearest neighbor classifier", default=as.integer(5), metavar="K"),
+                    make_option(c("-c", "--color"), type="character", default="Prediction", help="color the points based on the predicted value or based on the prediction correctness", metavar="Prediction|Correctness"),
                     make_option(c("--extract"), type="integer", help="reduce input data set by extracting every nth instance", metavar="N")
                     )
 parser <- OptionParser(usage="knnDemonstration [option] trainingfile", option_list=option_list)
@@ -26,6 +27,12 @@ if(file.access(opt$train) == -1){
 if( !is.null(opt$test) && (file.access(opt$test) == -1)){
     stop(sprintf("Specified file ( %s ) does not exist", opt$test))
 }
+
+# only values 'Prediction' or 'Correctness' as color values are allowed
+if (!opt$color %in% c("Prediction","Correctness")){
+    stop(sprintf("Expected 'Prediction' or 'Correctness' as 'color' parameter, but given %s", opt$color ))
+}
+
 
 # Weka bridge
 library(RWeka)
@@ -90,8 +97,11 @@ if (modus == "2D"){
         classifier <-IBk(Class ~ ., training, control = Weka_control(K = as.numeric(panel$k)))
         testing <- testing
         testing$P <- predict(classifier, testing)
-        testing$Color <- (testing$Class == testing$P)
-
+        if (opt$color == "Prediction"){
+            testing$Color <- testing$P
+        } else if (opt$color == "Correctness"){
+            testing$Color <- (testing$Class == testing$P)
+        }
         # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
         if (modus == "3D"){
             plot3d(testing[[1]], testing[[2]], testing[[3]], xlab=names(testing)[1], ylab=names(testing)[2], zlab=names(testing)[3], col=testing$Color, size=1, type='s')
