@@ -1,173 +1,302 @@
 package at.ac.tuwien.knn.gui;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.util.Collection;
+import at.ac.tuwien.knn.data.DataSets;
+import at.ac.tuwien.knn.weka.WekaApi;
+import weka.classifiers.lazy.IBk;
+import weka.core.Instance;
+import weka.core.Instances;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.Random;
-
-import javax.swing.JPanel;
-
-import at.ac.tuwien.knn.data.DataPoint;
-import at.ac.tuwien.knn.data.DataSet;
 
 /**
  * The panel in which all the data points are drawn
- * @author BK
  *
+ * @author BK
  */
 public class DrawingArea extends JPanel {
-	private DataSet dataSet;
-	private double minX, maxX, minY, maxY;
-	private boolean showTrainingData = true;
-	private boolean showTestData = false;
-	
-	private static Color[] colors = new Color[]{new Color(230,0,0),//red
-												new Color(0,0,230),//blue
-												new Color(0,220,0),//green
-												new Color(102,0,102),//violet
-												new Color(255,153,0),//orange
-												new Color(255,255,100)//beige
-												};
-	private HashMap<Integer,Color> classColorMap = new HashMap<Integer, Color>();
-	private int pointRadius = 3;
 
-	@Override
-	protected void paintComponent(Graphics graphics) {
-		super.paintComponent(graphics);
-		if(this.dataSet == null || this.dataSet.getAllDataPoints() == null) return;
-		this.initColorMap(this.dataSet.getTrainingSet());
-		this.setMinMaxCoordinates(this.dataSet.getAllDataPoints());
-		if(showTrainingData){
-			this.paintDataPoints((Graphics2D)graphics, this.dataSet.getTrainingSet());
-		}
-		if(showTestData){
-			this.paintTestSet((Graphics2D)graphics, this.dataSet.getTestSet());
-		}
-	}
-	
-	/**
-	 * Paints the test data points into the drawing area. For every test-data point we draw a grey circle around it. At this 
-	 * time the circle has just an arbitrary hardcoded radius but in the future the circle should be exactly as big such that
-	 * it contains for every test data point the k nearest neighbours of this data point.
-	 * @param g The graphics element in which we draw.
-	 * @param dataPoints The datapoints which should be drawn.
-	 */
-	protected void paintTestSet(Graphics2D g, Collection<DataPoint> dataPoints){
-		Point currentPoint;
-		g.setColor(new Color(230,230,230));
-		for(DataPoint dataPoint : dataPoints){
-			currentPoint = scale(dataPoint);
-			int radius = 20;
-			g.fillOval(currentPoint.x-radius+this.pointRadius, currentPoint.y-radius+this.pointRadius, radius*2, radius*2);
-		}
-		this.paintDataPoints(g, dataPoints);
-	}
-	
-	/**
-	 * Paints  data points into the drawing area.
-	 * @param g The graphics element in which we draw.
-	 * @param dataPoints The datapoints which should be drawn
-	 */
-	protected void paintDataPoints(Graphics2D g, Collection<DataPoint> dataPoints){
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		int diameter = 2*this.pointRadius;
-		if (dataPoints != null) {
-			Point currentPoint;
-			for (DataPoint dataPoint : dataPoints) {
-				g.setColor(this.classColorMap.get(dataPoint.getClassification()));
-				currentPoint = this.scale(dataPoint);
-				g.fillOval(currentPoint.x, currentPoint.y, diameter, diameter);
-			}
-		}
-	}
+    // data, holds training and test data sets
+    private DataSets dataSets;
+    private Instances originalInstances;
 
-	public void setDataSet(DataSet dataSet) {
-		this.dataSet = dataSet;
-	}
+    // classifier
+    private IBk classifier;
 
-	/**
-	 * This method is used for scaling the datapoints into the drawing area.
-	 * @param dataPoints
-	 */
-	private void setMinMaxCoordinates(Collection<DataPoint> dataPoints) {
-		minX = maxX = dataPoints.iterator().next().getX();
-		minY = maxY = dataPoints.iterator().next().getY();
-		
-		for (DataPoint dataPoint : dataPoints) {
-			if (dataPoint.getX() < minX) {
-				minX = dataPoint.getX();
-			}
-			if (dataPoint.getX() > maxX) {
-				maxX = dataPoint.getX();
-			}
-			if (dataPoint.getY() < minY) {
-				minY = dataPoint.getY();
-			}
-			if (dataPoint.getY() > maxY) {
-				maxY = dataPoint.getY();
-			}
-		}
-	}
-	
-	/**
-	 * Initializes the color map. The color map stores for every data point the color with which it should be drawn.
-	 * The color of a datapoint depends on its classification value.
-	 * @param dataPoints
-	 */
-	private void initColorMap(Collection<DataPoint> dataPoints){
-		int i=0;
-		for (DataPoint dataPoint : dataPoints) {
-			if(!this.classColorMap.containsKey(dataPoint.getClassification())){
-				if(i<colors.length){
-					this.classColorMap.put(dataPoint.getClassification(), colors[i]);
-					i++;
-				}else{
-					this.classColorMap.put(dataPoint.getClassification(), new Color(new Random().nextInt()));
-				}
-			}
-		}
-	}
+    // drawing flags
+    private boolean showTrainingData = true;
+    private boolean showTestData = false;
 
-	/**
-	 * scales a data point such that it can be drawn into the drawing area.
-	 * @param dataPoint
-	 * @return
-	 */
-	public Point scale(DataPoint dataPoint){
-		Point scaledPoint = new Point();
-		int border = 1;
-		double scaleX = (this.getSize().getWidth()-2*this.pointRadius-2*border)/(this.maxX - this.minX);
-		double scaleY = (this.getSize().getHeight()-2*this.pointRadius-2*border)/(this.maxY - this.minY);
-		scaledPoint.x = this.pointRadius + border + (int)((dataPoint.getX()-this.minX) * scaleX - this.pointRadius);
-		scaledPoint.y = this.pointRadius + border + (int)((dataPoint.getY()-this.minY) * scaleY - this.pointRadius);
-		return scaledPoint;
-	}
+    // coordinate and drawing stuff
+    private double minX, maxX, minY, maxY;
+    private int pointRadius = 5;
+    private int highlightRadius = 20;
+    private Color unknownColor = new Color(26, 26, 26);
+    private Color neighborConnectorColor = new Color(255, 163, 0);
+    private static Color[] colors = new Color[]{new Color(230, 0, 0),//red
+            new Color(0, 0, 230),//blue
+            new Color(0, 220, 0),//green
+            new Color(102, 0, 102),//violet
+            new Color(255, 153, 0),//orange
+            new Color(255, 255, 100)//beige
+    };
+    private Map<Integer, Color> classColorMap = null;
 
-	/**
-	 * Indicates wether the training data points should be drawn.
-	 * @return true if the training data points should be drawn.
-	 */
-	public boolean isShowTrainingData() {
-		return showTrainingData;
-	}
 
-	public void setShowTrainingData(boolean isShowTrainingData) {
-		this.showTrainingData = isShowTrainingData;
-	}
+    //
+    // CONTROL METHODS FOR USERS OF THIS COMPONENT (MAIN WINDOW)
+    //
 
-	public boolean isShowTestData() {
-		return showTestData;
-	}
+    private void resetClassifier(int k) throws Exception {
+        classifier = WekaApi.getInstance().buildClassifierFromTrainingInstances(dataSets.getTrainingInstances(), k);
+    }
 
-	public void setShowTestData(boolean isShowTestData) {
-		this.showTestData = isShowTestData;
-	}
-	
-	
+    /**
+     * Update dataset file. Reload data, get a new classifier, re-everything.
+     *
+     * @param dataFile
+     * @throws Exception
+     */
+    public void updateDataFile(File dataFile, Integer k) throws Exception {
+        originalInstances = WekaApi.getInstance().loadData(dataFile);
+        this.dataSets = WekaApi.getInstance().splitDataSet(originalInstances, 70);
+        resetClassifier(k);
+        initColorMap(dataSets);
+        calibrateDataSetsCoordinates(dataSets);
+        repaint();
+    }
+
+    /**
+     * Update the value for k of kNN.
+     * This builds a new classifier and restarts the classification.
+     *
+     * @param k
+     */
+    public void updateK(Integer k) throws Exception {
+        // create new classifier.
+        resetClassifier(k);
+        repaint();
+    }
+
+    public void updatePercentage(Integer percentage) throws Exception {
+        // make new split
+        this.dataSets = WekaApi.getInstance().splitDataSet(originalInstances, percentage);
+        repaint();
+    }
+
+    /**
+     * Update if the trainingdata should be rendered.
+     *
+     * @param isShowTrainingData
+     */
+    public void updateShowTrainingData(boolean isShowTrainingData) {
+        this.showTrainingData = isShowTrainingData;
+        repaint();
+    }
+
+    /**
+     * Update if the test data should be rendered
+     *
+     * @param isShowTestData
+     */
+    public void updateShowTestData(boolean isShowTestData) {
+        this.showTestData = isShowTestData;
+        repaint();
+    }
+
+
+    //
+    // DRAW ROUTINES
+    //
+
+
+    @Override
+    protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+        try {
+
+            System.out.println("repaint");
+
+            if (dataSets == null || dataSets.isEmpty()) {
+                System.out.println("no data set, return");
+                return;
+            }
+
+            // paint all dots of the test set + highlighting ovals + connectors to the nearest neigbors
+            if (showTestData) {
+                this.paintTestSet((Graphics2D) graphics, dataSets.getTestInstances());
+
+            }
+
+            // paint class colored dots from the training set
+            if (showTrainingData) {
+                this.paintDataPoints((Graphics2D) graphics, dataSets.getTrainingInstances());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Paints the test data points into the drawing area. For every test-data point we draw a grey circle around it. At this
+     * time the circle has just an arbitrary hardcoded highlightRadius but in the future the circle should be exactly as big such that
+     * it contains for every test data point the k nearest neighbours of this data point.
+     * <p/>
+     * For an initial step we paint the circle as highlighting and connect the current instance to its neighbors with lines.
+     *
+     * @param g
+     * @param instances
+     */
+    protected void paintTestSet(Graphics2D g, Instances instances) throws Exception {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
+        System.out.println("render test highlights, " + instances.numInstances());
+
+        Point currentPoint;
+        for (Instance instance : instances) {
+            g.setColor(new Color(230, 230, 230));
+            currentPoint = scale(instance);
+            g.fillOval(currentPoint.x - highlightRadius + this.pointRadius, currentPoint.y - highlightRadius + this.pointRadius, highlightRadius * 2, highlightRadius * 2);
+            paintKnnConnectors(g, instance);
+        }
+
+        System.out.println("render test instances, " + instances.numInstances());
+
+        g.setColor(unknownColor);
+        int diameter = 2 * this.pointRadius;
+        for (Instance instance : instances) {
+            currentPoint = this.scale(instance);
+            g.fillOval(currentPoint.x, currentPoint.y, diameter, diameter);
+        }
+    }
+
+    /**
+     * Routine to draw some special stuff aroung an new instance that gets classified.
+     *
+     * @param instance
+     * @throws Exception
+     */
+    private void paintKnnConnectors(Graphics2D g, Instance instance) throws Exception {
+        Instances instances = classifier.getNearestNeighbourSearchAlgorithm().kNearestNeighbours(instance, classifier.getKNN());
+        Point currentPoint = scale(instance);
+        g.setColor(neighborConnectorColor);
+        for (Instance neighbor : instances) {
+            Point neighborPoint = scale(neighbor);
+            g.drawLine(currentPoint.x + pointRadius, currentPoint.y + pointRadius, neighborPoint.x + pointRadius, neighborPoint.y + pointRadius);
+        }
+
+
+    }
+
+    /**
+     * Paints data points into the drawing area.
+     *
+     * @param g
+     * @param instances
+     */
+    protected void paintDataPoints(Graphics2D g, Instances instances) {
+        System.out.println("render instances, " + instances.numInstances());
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        int diameter = 2 * this.pointRadius;
+        for (Instance instance : instances) {
+            g.setColor(this.colors[(int) (instance.classValue())]);
+            Point currentPoint = this.scale(instance);
+            g.fillOval(currentPoint.x, currentPoint.y, diameter, diameter);
+        }
+    }
+
+    /**
+     * scales a data point such that it can be drawn into the drawing area.
+     *
+     * @param instance
+     * @return
+     */
+    public Point scale(Instance instance) {
+        Point scaledPoint = new Point();
+        int border = 1;
+        double scaleX = (this.getSize().getWidth() - 2 * this.pointRadius - 2 * border) / (this.maxX - this.minX);
+        double scaleY = (this.getSize().getHeight() - 2 * this.pointRadius - 2 * border) / (this.maxY - this.minY);
+        scaledPoint.x = this.pointRadius + border + (int) ((instance.value(0) - this.minX) * scaleX - this.pointRadius);
+        scaledPoint.y = this.pointRadius + border + (int) ((instance.value(1) - this.minY) * scaleY - this.pointRadius);
+        return scaledPoint;
+    }
+
+
+    //
+    // INITIALIZATION ROUTINES
+    //
+
+
+    /**
+     * This method is used for scaling the datapoints into the drawing area.
+     *
+     * @param dataSets wrapper for training and test data sets
+     */
+    private void calibrateDataSetsCoordinates(DataSets dataSets) {
+        System.out.println("calibrate coordinates of data sets");
+        minX = minY = Double.MAX_VALUE;
+        maxX = maxY = Double.MIN_VALUE;
+        // calibrate for training and test set
+        calibrateInstancesCoordinates(dataSets.getTrainingInstances());
+        calibrateInstancesCoordinates(dataSets.getTestInstances());
+        // normalize -- add 1/20 of the plot span as border
+        minX -= (maxX - minX) / 20;
+        maxX += (maxX - minX) / 20;
+        minY -= (maxY - minY) / 20;
+        maxY += (maxY - minY) / 20;
+    }
+
+    /**
+     * find the min and max coordinates for instances
+     * This should only be called from the calibrateDataSetCoordinates Method.
+     *
+     * @param instances
+     */
+    private void calibrateInstancesCoordinates(Instances instances) {
+        double[] xValues = instances.attributeToDoubleArray(0);
+        double[] yValues = instances.attributeToDoubleArray(1);
+        for (double x : xValues) {
+            if (x > maxX) {
+                maxX = x;
+            }
+            if (x < minX) {
+                minX = x;
+            }
+        }
+        for (double y : yValues) {
+            if (y > maxY) {
+                maxY = y;
+            }
+            if (y < minY) {
+                minY = y;
+            }
+        }
+    }
+
+    /**
+     * Initializes the color map. The color map stores a color for each class value
+     *
+     * @param dataSets training and test sets
+     */
+    private void initColorMap(DataSets dataSets) {
+        System.out.println("init color map");
+        classColorMap = new HashMap<Integer, Color>(dataSets.numClasses());
+        for (int i = 0; i < dataSets.numClasses(); i++) {
+            if (i < colors.length) {
+                this.classColorMap.put(i, colors[i]);
+            } else {
+                this.classColorMap.put(i, new Color(new Random().nextInt()));
+            }
+        }
+    }
+
+
 }
