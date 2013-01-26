@@ -17,10 +17,22 @@ public class MainWindow {
     private JFrame frame;
     private DrawingArea panel;
     private JLabel lbFilename;
-    private int defaultK = 3;
+    private JLabel lblClasses;
+    
+	private int defaultK = 3;
     private int defaultPercentage = 70;
 
-    /**
+    
+    public JLabel getLblClasses() {
+		return lblClasses;
+	}
+    
+    public JFrame getFrame() {
+		return frame;
+	}
+
+
+	/**
      * Launch the application.
      */
     public static void main(String[] args) {
@@ -34,8 +46,6 @@ public class MainWindow {
                 }
             }
         });
-
-        //DrawingArea drawingArea = new DrawingArea();
     }
 
     /**
@@ -54,7 +64,7 @@ public class MainWindow {
         // MAIN
         //
         frame = new JFrame();
-        frame.setBounds(100, 100, 1000, 810);
+        frame.setBounds(100, 100, 1068, 810);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
@@ -85,7 +95,7 @@ public class MainWindow {
 
         // DRAWING PANEL
         //
-        panel = new DrawingArea();
+        panel = new DrawingArea(this);
         panel.setBackground(Color.WHITE);
         panel.setBorder(new LineBorder(SystemColor.controlDkShadow));
         panel.setBounds(33, 33, 737, 699);
@@ -125,7 +135,7 @@ public class MainWindow {
         // FILE HANDLING
         //
         lbFilename = new JLabel("No dataset chosen");
-        lbFilename.setBounds(810, 73, 164, 20);
+        lbFilename.setBounds(810, 73, 232, 20);
         frame.getContentPane().add(lbFilename);
         JButton btnOpenFile = new JButton("Open file...");
         btnOpenFile.addMouseListener(new MouseAdapter() {
@@ -135,7 +145,7 @@ public class MainWindow {
                 int returnVal = fileChooser.showOpenDialog(frame);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     try {
-                        panel.updateDataFile(fileChooser.getSelectedFile(), (Integer) spinnerK.getModel().getValue());
+                        updateDataFile(fileChooser.getSelectedFile(), (Integer) spinnerK.getModel().getValue());
                         lbFilename.setText("Dataset: " + fileChooser.getSelectedFile().getName());
                     } catch (Exception e) {
                         lbFilename.setText("Error loading data from file.");
@@ -173,11 +183,30 @@ public class MainWindow {
         chckbxShowTrainingData.setSelected(true);
         chckbxShowTrainingData.setBounds(810, 235, 152, 23);
         frame.getContentPane().add(chckbxShowTrainingData);
+        
+        JCheckBox chckbxShowConnection = new JCheckBox("Show connection to neighbours");
+        chckbxShowConnection.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                panel.updateShowConnections(e.getStateChange() == e.SELECTED);
+            }
+        });
+        chckbxShowConnection.setSelected(true);
+        chckbxShowConnection.setBounds(810, 286, 211, 20);
+        frame.getContentPane().add(chckbxShowConnection);
+        
+        lblClasses = new JLabel("Classes:");
+        lblClasses.setBounds(810, 330, 76, 14);
+        frame.getContentPane().add(lblClasses);
 
         try {
-            panel.updateDataFile(new File("data/knn-data.arff"), 3);
+            this.updateDataFile(new File("data/knn-data.arff"), 3);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    private void updateDataFile(File file, int k) throws Exception{
+    	panel.updateDataFile(new File("data/knn_benjamin_data.arff"), k);
+    	this.lbFilename.setText("Open file: " + file.getName());
     }
 }
