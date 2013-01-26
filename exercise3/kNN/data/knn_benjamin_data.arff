@@ -1,4 +1,4 @@
-@RELATION knn-data
+    @RELATION knn-data
 
 @ATTRIBUTE x     NUMERIC
 @ATTRIBUTE y     NUMERIC

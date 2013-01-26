@@ -26,14 +26,14 @@ public class DistributionGenerator {
                     "\n" +
                     "@ATTRIBUTE x     NUMERIC\n" +
                     "@ATTRIBUTE y     NUMERIC\n" +
-                    "@ATTRIBUTE class {1,2,3}\n" +
+                    "@ATTRIBUTE class {welldone,medium,rare}\n" +
                     "\n" +
                     "@DATA" +
                     "\n");
 
-            generateGaussFor(10, 0, 10, 0, "1", 30);
-            generateGaussFor(10, 0, 10, 30, "2", 30);
-            generateGaussFor(10, -30, 10, 0, "3", 30);
+            generateGaussFor(10, 0, 10, 0, "welldone", 30);
+            generateGaussFor(10, 0, 10, 30, "medium", 30);
+            generateGaussFor(10, -30, 10, 0, "rare", 30);
         } finally {
             out.close();
         }
