@@ -77,11 +77,14 @@ for (i in 1:ncol(training)){
 }
 
 if (modus == "2D"){
-    stop("Handling of 2 dimensional plots is not implemented yet!")
+    # for convenience, rename class column to "Class"
+    names(training)[3] <- "Class"
+    names(testing)[3] <- "Class"
 } else if (modus == "3D"){
     # for convenience, rename class column to "Class"
     names(training)[4] <- "Class"
     names(testing)[4] <- "Class"
+}
 
     interface.draw <- function(panel) {
         classifier <-IBk(Class ~ ., training, control = Weka_control(K = as.numeric(panel$k)))
@@ -90,8 +93,11 @@ if (modus == "2D"){
         testing$Color <- (testing$Class == testing$P)
 
         # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
-
-        plot3d(testing[[1]], testing[[2]], testing[[3]], xlab=names(testing)[1], ylab=names(testing)[2], zlab=names(testing)[3], col=testing$Color, size=1, type='s')
+        if (modus == "3D"){
+            plot3d(testing[[1]], testing[[2]], testing[[3]], xlab=names(testing)[1], ylab=names(testing)[2], zlab=names(testing)[3], col=testing$Color, size=1, type='s')
+        } else if (modus == "2D"){
+            plot(testing[[1]], testing[[2]],xlab=names(testing)[1], ylab=names(testing)[2], col=testing$Color)
+        }
         panel
     }
     interface.panel <- rp.control("K nearest neighbor", k=opt$k)
@@ -100,4 +106,3 @@ if (modus == "2D"){
     rp.do(interface.panel, interface.draw)
     # user must close the panel to exit the program
     rp.block(interface.panel)
-}
