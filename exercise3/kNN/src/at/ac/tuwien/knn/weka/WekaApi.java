@@ -10,6 +10,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.instance.RemovePercentage;
 
 import java.io.File;
+import java.util.Random;
 
 
 /**
@@ -76,6 +77,7 @@ public class WekaApi {
     public Instances loadData(File file) throws Exception {
         DataSource dataSource = new DataSource(file.getAbsolutePath());
         Instances instances = dataSource.getDataSet();
+        instances.randomize(new Random());
         instances.setClassIndex(instances.numAttributes() - 1);
         System.out.println("loaded data. class attribute: " + instances.classAttribute());
         return instances;
