@@ -58,7 +58,11 @@ if (is.null(opt$test)){
     testing <- read.arff(opt$test)
 }
 
-if( ncol(training) < 3 || 4 < ncol(training)){
+if ( ncol(training) == 3 ){
+    modus = "2D"
+} else if ( ncol(training) == 4 ){
+    modus = "3D"
+} else {
     stop(sprintf("The provided training has got %s columns, whith the last column considered as class attribute, but we can only plot 2dimensional or 3dimensional data!",  ncol(training)))
 }
 
@@ -66,25 +70,28 @@ if( ncol(testing) != ncol(training)){
     stop(sprintf("The number of columns for the provided data sets is not the same: %s columns for trainingdata and %s columns for testdata.",  ncol(training), ncol(testing)))
 }
 
+if (modus == "2D"){
+    stop("Handling of 2 dimennsional plots is not implemented yet!")
+} else if (modus == "3D"){
+    # for convenience, rename class column to "Class"
+    names(training)[4] <- "Class"
+    names(testing)[4] <- "Class"
 
-# for convenience, rename class column to "Class"
-names(training)[4] <- "Class"
-names(testing)[4] <- "Class"
+    interface.draw <- function(panel) {
+        classifier <-IBk(Class ~ ., training, control = Weka_control(K = as.numeric(panel$k)))
+        testing <- testing
+        testing$P <- predict(classifier, testing)
+        testing$Color <- (testing$Class == testing$P)
 
-interface.draw <- function(panel) {
-    classifier <-IBk(Class ~ ., training, control = Weka_control(K = as.numeric(panel$k)))
-    testing <- testing
-    testing$P <- predict(classifier, testing)
-    testing$Color <- (testing$Class == testing$P)
+        # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
 
-    # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
-
-    plot3d(testing[[1]], testing[[2]], testing[[3]], xlab=names(testing)[1], ylab=names(testing)[2], zlab=names(testing)[3], col=testing$Color, size=1, type='s')
-    panel
+        plot3d(testing[[1]], testing[[2]], testing[[3]], xlab=names(testing)[1], ylab=names(testing)[2], zlab=names(testing)[3], col=testing$Color, size=1, type='s')
+        panel
+    }
+    interface.panel <- rp.control("K nearest neighbor", k=opt$k)
+    rp.textentry(panel=interface.panel, var=k, action=interface.draw, names="K nearest neighbor", labels="K=")
+    # run it!
+    rp.do(interface.panel, interface.draw)
+    # user must close the panel to exit the program
+    rp.block(interface.panel)
 }
-interface.panel <- rp.control("K nearest neighbor", k=opt$k)
-rp.textentry(panel=interface.panel, var=k, action=interface.draw, names="K nearest neighbor", labels="K=")
-# run it!
-rp.do(interface.panel, interface.draw)
-# user must close the panel to exit the program
-rp.block(interface.panel)
