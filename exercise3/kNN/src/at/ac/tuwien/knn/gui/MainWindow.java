@@ -8,18 +8,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import at.ac.tuwien.knn.data.DataSet;
-import at.ac.tuwien.knn.data.DataSetParser;
+import at.ac.tuwien.knn.weka.WekaApi;
+import weka.core.Instances;
 
 
 public class MainWindow {
@@ -27,6 +22,7 @@ public class MainWindow {
 	private JFrame frame;
 	private DrawingArea panel;
 	private JLabel lbFilename;
+    private int defaultK = 3;
 
 	/**
 	 * Launch the application.
@@ -58,25 +54,39 @@ public class MainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+
+        // MAIN
+        //
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1000, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
-		JSpinner spinnerK = new JSpinner();
+
+        // SPINNER K
+        //
+		final JSpinner spinnerK = new JSpinner(new SpinnerNumberModel(defaultK, 1, 100, 1));
 		spinnerK.setBounds(827, 117, 45, 20);
+        spinnerK.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                panel.updateK((Integer)spinnerK.getModel().getValue());
+            }
+        });
 		frame.getContentPane().add(spinnerK);
-		
 		JLabel lblK = new JLabel("k:");
 		lblK.setBounds(810, 120, 16, 14);
 		frame.getContentPane().add(lblK);
-		
+
+        // DRAWING PANEL
+        //
 		panel = new DrawingArea();
 		panel.setBackground(Color.WHITE);
 		panel.setBorder(new LineBorder(SystemColor.controlDkShadow));
 		panel.setBounds(33, 33, 737, 699);
 		frame.getContentPane().add(panel);
-		
+
+        // FLAG: TRAINING SET
+        //
 		JCheckBox chckbxUseTestSet = new JCheckBox("Use Training/Test Set");
 		chckbxUseTestSet.setSelected(true);
 		chckbxUseTestSet.addChangeListener(new ChangeListener() {
@@ -88,16 +98,29 @@ public class MainWindow {
 		});
 		chckbxUseTestSet.setBounds(807, 160, 155, 23);
 		frame.getContentPane().add(chckbxUseTestSet);
-		
-		JSpinner spinnerPercentage = new JSpinner();
+
+        // SPINNER: PERCENTAGE SPLIT (train/test)
+        //
+		final JSpinner spinnerPercentage = new JSpinner();
 		spinnerPercentage.setBounds(917, 195, 45, 20);
-		spinnerPercentage.getModel().setValue(70);
+		spinnerPercentage.setModel(new SpinnerNumberModel(70, 5, 95, 5));
 		frame.getContentPane().add(spinnerPercentage);
-		
+        spinnerPercentage.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                try {
+                    panel.updatePercentage((Integer)spinnerPercentage.getModel().getValue());
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        // FILE HANDLING
+        //
 		lbFilename = new JLabel("No dataset chosen");
 		lbFilename.setBounds(810, 73, 164, 20);
 		frame.getContentPane().add(lbFilename);
-		
 		JButton btnOpenFile = new JButton("Open file...");
 		btnOpenFile.addMouseListener(new MouseAdapter() {
 			@Override
@@ -105,11 +128,13 @@ public class MainWindow {
 				JFileChooser fileChooser = new JFileChooser();
 				int returnVal = fileChooser.showOpenDialog(frame);
 				if(returnVal == JFileChooser.APPROVE_OPTION){
-					DataSet dataSet = DataSetParser.parseFile(fileChooser.getSelectedFile());
-					lbFilename.setText("Dataset: " + fileChooser.getSelectedFile().getName());
-					dataSet.split(70);
-					panel.setDataSet(dataSet);
-					panel.repaint();
+                    try {
+                        panel.updateDataFile(fileChooser.getSelectedFile());
+                        lbFilename.setText("Dataset: " + fileChooser.getSelectedFile().getName());
+                    } catch (Exception e) {
+                        lbFilename.setText("Error loading data from file.");
+                        e.printStackTrace();
+                    }
 				}
 			}
 		});
@@ -119,22 +144,24 @@ public class MainWindow {
 		JLabel lblOfTestdata = new JLabel("% of Training-Data:");
 		lblOfTestdata.setBounds(810, 198, 109, 14);
 		frame.getContentPane().add(lblOfTestdata);
-		
+
+        // CHECKBOX: TEST DATA
+        //
 		JCheckBox chckbxShowTestData = new JCheckBox("Show Test Data");
 		chckbxShowTestData.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				panel.setShowTestData(e.getStateChange() == e.SELECTED);
-				panel.repaint();
+				panel.updateShowTestData(e.getStateChange() == e.SELECTED);
 			}
 		});
 		chckbxShowTestData.setBounds(810, 261, 152, 23);
 		frame.getContentPane().add(chckbxShowTestData);
-		
+
+        // CHECKBOX: TRAINING DATA
+        //
 		JCheckBox chckbxShowTrainingData = new JCheckBox("Show Training Data");
 		chckbxShowTrainingData.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				panel.setShowTrainingData(e.getStateChange() == e.SELECTED);
-				panel.repaint();
+				panel.updateShowTrainingData(e.getStateChange() == e.SELECTED);
 			}
 		});
 		chckbxShowTrainingData.setSelected(true);
