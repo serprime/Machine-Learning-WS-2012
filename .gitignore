@@ -16,5 +16,12 @@
 /exercise2/BayesianNetwork/target/
 /exercise2/BayesianNetwork/.classpath
 /exercise2/BayesianNetwork/.project
+
+/exercise3/kNN/.settings
+/exercise3/kNN/.settings/
+/exercise3/kNN/bin
+/exercise3/kNN/bin/
+/exercise3/kNN/.classpath
+/exercise3/kNN/.project
 out
 knn-3-gauss.arff
