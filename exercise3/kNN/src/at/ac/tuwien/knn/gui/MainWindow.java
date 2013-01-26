@@ -142,6 +142,7 @@ public class MainWindow {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File("./data"));
                 int returnVal = fileChooser.showOpenDialog(frame);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     try {
@@ -206,7 +207,7 @@ public class MainWindow {
     }
     
     private void updateDataFile(File file, int k) throws Exception{
-    	panel.updateDataFile(new File("data/knn_benjamin_data.arff"), k);
+    	panel.updateDataFile(file, k);
     	this.lbFilename.setText("Open file: " + file.getName());
     }
 }
