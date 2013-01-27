@@ -78,7 +78,7 @@
 
 \section{Our Task}
 
-You should pick a number of 2D (or optionally 3D) datasets (where the variables correspond to the coordinates in the 2D or 3D space), and demonstrate how different settings of the parameter k in k-NN modify the decision boundary. Your solution should work with arbitrary number of classes.
+You should pick a number of 2D (or optionally 3D) datasets (where the variables correspond to the coordinates in the 2D or 3D space), and demonstrate how different settings of the parameter k in K-NN modify the decision boundary. Your solution should work with arbitrary number of classes.
 Provide an interface that visualises the data set and its classes. In that interface, provide controls where the user can select a k value, and colour the points in the space according to which class they would get classified into. A simple approach is to iterate over all your points in the visualisation grid and ask the classifier for the classification of each point.
 
 Finally, provide an option to the user to select a training/test set split, and indicate the classification of the test set in your plot.
@@ -86,20 +86,20 @@ The data sets you provide should contain examples where low numbers of k are sup
 
 \section{Implementation}
 
-We used R as a wrapper for Weka and plotted the result with the native functionality in R.
+We used R as a wrapper for Weka and plotted the result with the native functionality in R. Our R-Script can handle 2- and 3-dimensional data as well as separate test and training data. It visualizes either the predicted instances of the test data itself or visualizes how many of them were classified correctly. After plotting the results, the user is asked to specify another k-parameter and the script runs the visualization once again with the new parameter.
 
 \section{Evaluation}
-Our Data Set were 
+Our Data Sets were 
 \begin{enumerate}
 \item
-The 'Skin-NonSkin' Data Set, which is a collection of RGB-values and the 4th attribute states whether this is a skin color or not
+    The 'Skin-NonSkin' Data Set, which is a collection of RGB-values and the 4th attribute states whether this is a skin color or not
 \item
-A truncation of the iris data set, with a removed column to fit the data to 3 dimensions
+    A truncation of the iris data set, where we have removed the 4th column to adjust the data to three dimensions.
 \item
-\todo[inline]{... a third data set}
+    The 'Haberman's Survival' data set, which contains cases from a study on the survival of patients who had undergone surgery for breast cancer.
 \end{enumerate}
 
-The knn nearest neighbor performs especially well if we have a balanced data set with separated spaces where one of the class values is dominating. Figure \ref{fig:skin:predicted:k5} shows the prediction of K-Nearest-Neighbor for the 'Skin-Nonskin' data set. Obviously, there are a certain space where all the actual skin colors are located. This is an important fact, which facilitates the prediction of instances. In figure \ref{fig:skin:correct:k5} one can see the same data set visualized based on the correctness of the prediction. Black marks belong to correct instances and white marks belong to misclassified instances. In this example, k-nn performs very well, only few instances lying on the border to the skin color space are misclassified.
+The K-NN nearest neighbor performs especially well if we have a balanced data set with separated spaces where one of the class values is dominating. Figure \ref{fig:skin:predicted:k5} shows the prediction of K-NN for the 'Skin-Nonskin' data set. Obviously, there is a certain space where all the actual skin colors are located. This is an important fact, which facilitates the prediction of instances. In figure \ref{fig:skin:correct:k5} one can see the same data set visualized based on the correctness of the prediction. Black marks belong to correct instances and white marks belong to misclassified instances. In this example, K-NN performs very well, only few instances located on the boundary between the two spaces are misclassified.
 
 \begin{figure}[\textwidth]
     \begin{center}
@@ -117,6 +117,8 @@ The knn nearest neighbor performs especially well if we have a balanced data set
 \label{fig:skin:correct:k5}
 \end{figure}
 
+If we raise the K-parameter up to 100, we get worse results. As seen in figure \ref{fig:skin:predicted:k100} the K-NN algorithm misclassfies a couple of instances that are located in one corner of the RGB space. Hence, we can see more white marks in figure \ref{fig:skin:correct:k100}.
+
 \begin{figure}[\textwidth]
     \begin{center}
 \includegraphics[width=\textwidth]{Skin_predicted_k100}
@@ -126,8 +128,6 @@ The knn nearest neighbor performs especially well if we have a balanced data set
 \end{figure}
 
 
-If we raise the K-parameter up to 100, we get worse results. As seen in figure \ref{fig:skin:predicted:k100} the K-NN algorithm misclassfies more instances that are located in one corner of the RGB space. Hence, we can see more white marks in figure \ref{fig:skin:correct:k100}.
-
 \begin{figure}[\textwidth]
     \begin{center}
 \includegraphics[width=\textwidth]{Skin_correct_k100}
@@ -136,4 +136,30 @@ If we raise the K-parameter up to 100, we get worse results. As seen in figure \
 \label{fig:skin:correct:k100}
 \end{figure}
 
+We observe a similar result for the truncated 'Iris' data set. K-NN works very well except for some instances on the boundaries, figure \ref{fig:iris:correct:k5} shows us misclassfied instances exactly on the hyperplane between 'Iris versicolor' and 'Iris virginica'. The predicted instances can be seen in figure \ref{fig:iris:predicted:k5}.
+\begin{figure}[\textwidth]
+    \begin{center}
+\includegraphics[width=\textwidth]{Iris_predicted_k5}
+    \end{center}
+\caption['Iris' prediction with k=5]{The 'Iris' Data Set, colored by the predicted class attribute, with 5 neighbors as K parameter.}
+\label{fig:iris:predicted:k5}
+\end{figure}
+
+
+\begin{figure}[\textwidth]
+    \begin{center}
+\includegraphics[width=\textwidth]{Iris_correct_k5}
+    \end{center}
+\caption['Iris' correctness with k=5]{The 'Iris' Data Set, colored by correct or misclassified instance, with 5 neighbors as K parameter.}
+\label{fig:iris:correct:k5}
+\end{figure}
+
+Unlike the two previous data sets, the 'Haberman' data set does not contain clearly separable spaces where one of the class values dominates. Accordingly, the K-NN algorithm performs rather poor on this input set. Figure \ref{fig:haberman:correct:k13} shows the best distribution of correct and misclassified instances, namely 31 misclassified and 131 correctly classfied instances. It is notably that a k parameter of 13 is a rather high value. This fact could be interpreted in a sense that low k-values are preferable in case of easily separable data sets and higher k-values should be used for more overlapping, more scattered data sets.
+\begin{figure}[\textwidth]
+    \begin{center}
+\includegraphics[width=\textwidth]{Haberman_correct_k13}
+    \end{center}
+\caption['Haberman' correctness with k=13]{The 'Haberman' Data Set, colored by correct or misclassified instance, with 13 neighbors as K parameter.}
+\label{fig:haberman:correct:k13}
+\end{figure}
 \end{document}
