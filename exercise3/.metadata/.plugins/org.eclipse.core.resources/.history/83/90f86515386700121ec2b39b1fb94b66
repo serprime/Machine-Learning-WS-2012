@@ -1,5 +1,0 @@
-package at.ac.tuwien.knn.classification;
-
-public class KnnClassifier {
-
-}
