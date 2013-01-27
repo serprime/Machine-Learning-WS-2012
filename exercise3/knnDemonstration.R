@@ -16,8 +16,7 @@ opt <- arguments$options
 
 # handle training data
 if(is.null(opt$train)){
-    cat("Please provide some training data.. \n")
-    stop()
+    stop("Please provide some training data.. ")
 }
 if(file.access(opt$train) == -1){
     stop(sprintf("Specified file ( %s ) does not exist", opt$input))
@@ -85,6 +84,14 @@ if (modus == "2D"){
     # for convenience, rename class column to "Class"
     names(training)[3] <- "Class"
     names(testing)[3] <- "Class"
+    # change default behaviour, plot to pdf, in plot to window
+    willFail <- tryCatch({
+        x11() # fails on windows
+        windows() # fails on linux
+        } , error = function(err){
+        err # Do nothing, just return the error
+        }
+    )
 } else if (modus == "3D"){
     # for convenience, rename class column to "Class"
     names(training)[4] <- "Class"
