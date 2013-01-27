@@ -19,7 +19,7 @@ if(is.null(opt$train)){
     stop("Please provide some training data.. ")
 }
 if(file.access(opt$train) == -1){
-    stop(sprintf("Specified file ( %s ) does not exist", opt$input))
+    stop(sprintf("Specified file ( %s ) does not exist", opt$train))
 }
 
 # handle test data
