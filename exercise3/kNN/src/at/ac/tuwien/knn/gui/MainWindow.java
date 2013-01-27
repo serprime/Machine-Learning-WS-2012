@@ -119,20 +119,6 @@ public class MainWindow {
         panel.setBounds(33, 33, 737, 699);
         frame.getContentPane().add(panel);
 
-        // FLAG: TRAINING SET
-        //
-        JCheckBox chckbxUseTestSet = new JCheckBox("Use Training/Test Set");
-        chckbxUseTestSet.setSelected(true);
-        chckbxUseTestSet.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent arg0) {
-                if (((JCheckBox) arg0.getSource()).isSelected()) {
-
-                }
-            }
-        });
-        chckbxUseTestSet.setBounds(807, 160, 155, 23);
-        frame.getContentPane().add(chckbxUseTestSet);
-
         // SPINNER: PERCENTAGE SPLIT (train/test)
         //
         final JSpinner spinnerPercentage = new JSpinner();
@@ -143,7 +129,7 @@ public class MainWindow {
             @Override
             public void stateChanged(ChangeEvent e) {
                 try {
-                    panel.updatePercentage((Integer) spinnerPercentage.getModel().getValue());
+                    panel.updatePercentage((Integer) spinnerPercentage.getModel().getValue(), (Integer) spinnerK.getModel().getValue());
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -188,6 +174,7 @@ public class MainWindow {
                 panel.updateShowTestData(e.getStateChange() == e.SELECTED);
             }
         });
+        chckbxShowTestData.setSelected(true);
         chckbxShowTestData.setBounds(810, 261, 152, 23);
         frame.getContentPane().add(chckbxShowTestData);
 
@@ -225,9 +212,9 @@ public class MainWindow {
         lblYAxis.setBounds(810, 389, 232, 14);
         frame.getContentPane().add(lblYAxis);
         
-        JLabel lblCorrectClassified = new JLabel("Correctly classified:");
-        lblCorrectClassified.setBounds(810, 332, 232, 14);
-        frame.getContentPane().add(lblCorrectClassified);
+//        JLabel lblCorrectClassified = new JLabel("Correctly classified:");
+//        lblCorrectClassified.setBounds(810, 332, 232, 14);
+//        frame.getContentPane().add(lblCorrectClassified);
 
         try {
             //DistributionGenerator.run();

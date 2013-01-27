@@ -64,7 +64,7 @@
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
-\author{Benjamin Kiesl \and Philipp Steinwender \and Robert Schäfer} % Your name
+\author{Benjamin Kiesl \and Philipp Steinwender \and Robert Sch\"{a}fer} % Your name
 
 \date{\normalsize\today} % Today's date or a custom date
 
@@ -86,9 +86,53 @@ The data sets you provide should contain examples where low numbers of k are sup
 
 \section{Implementation}
 
+For this assignment we have two implementations: one in Java and a second one in R.
+
+\subsection{kNN visualization in Java}
+
+To visualize the decision boundaries and  classification results of weka's kNN implementation iBK a Java gui was implemented. We used Swing and plain Java. There is also a dataset generator for multiple gaussian cluster that can only be executed after editing the code and recompilation of the application.
+
+To run the application, execute the \texttt{kNN/run.sh} script. There is also a version for windows that was not tested.
+
+\begin{figure}[\textwidth]
+    \begin{center}
+\includegraphics[width=\textwidth]{knn-visualization-marker}
+    \end{center}
+\caption{Java GUI}
+\label{fig:javagui}
+\end{figure}
+
+Figure \ref{fig:javagui} shows how the gui looks like and which controls there are for manipulating the parameters of the data set and the classifier. The drawing area on the left displays the data points on a two dimensional coordinate system. The coordinate values of the data set get scaled to fit this area. The two markers showing the numbers 1 and 2 were added after taking the screenshot and highlight the following features:
+
+\begin{enumerate}
+\item With these 4 blue data points can be described how we visualize the decision boundaries of knn. The blue point in the middle has a light grey bigger circle around it. Points that look like this are from the test set. Data point that do not have this light grey highlighting are data points from the training set. Each data point of the test set has \texttt{k} connectors to surrounding data points which are the k nearest neighbors of the point.
+\item Here we can see a half red half green data point of the test set. It is connected with 2 green data points and a blue one. Therefore the classifier predicts its class as green. The predicted class can be seen in the right half of the data point. The left half shows which class the data point acutally has which is red. If theclassifier predicts the true value of a data point, both halfs have the same color.
+\end{enumerate}
+
+On the right side of the gui is a control panel. From top to bottom:
+
+\begin{itemize}
+\item The "open file" button can be used to read an arff file from disk. After selecting a file, it's content is loaded, a classifier is created and the result gets drawn. Below is a label that displays the name of the currently selected file.
+\item The spinner with the label \texttt{k} can be used to modify the classifier's value of \texttt{k}.
+\item The training-test-split can be modified with the spinner showing the number 70 whereby this means that we do a 70\% split and use 70\% for training and the rest for classification. Although kNN does not train a model, this parameter tells the classifier how much unclassified instances it should use.
+\item The next three checkboxes can be used to view or hide specific visualization details. One can hide the data points of the training data, those of the test set and hide the connectors between the test data points and their nearest neighbors.
+\item Then there is a legend telling the attribute names and which coloreach class is assigned to.
+\end{itemize}
+
+All controls have a ChangeListener that redraws the data points and the results immediately after a value got changed by the user.
+
+When loading a new file, the data is read by weka's arff parser. The created \texttt{Instances} are split by the specified percentage using the \texttt{RemovePercentageFilter}. Before the spilt, the data is shuffled. Then the \texttt{iBK} classifier gets instantiated, configured and the data points are drawn.
+
+With this visualization one can easily recognize how the classifier predicts the class of a new instance and how the values of k and the train-test-set-split can change runtime behaviour.
+
+
+
+
+\subsection{kNN visualization in R}
+
 We used R as a wrapper for Weka and plotted the result with the native functionality in R. Our R-Script can handle 2- and 3-dimensional data as well as separate test and training data. It visualizes either the predicted instances of the test data itself or visualizes how many of them were classified correctly. After plotting the results, the user is asked to specify another k-parameter and the script runs the visualization once again with the new parameter.
 
-\section{Evaluation}
+\subsubsection{Evaluation}
 Our Data Sets were 
 \begin{enumerate}
 \item
