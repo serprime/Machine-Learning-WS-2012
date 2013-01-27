@@ -137,9 +137,10 @@ public class DrawingArea extends JPanel {
      * @param percentage
      * @throws Exception
      */
-    public void updatePercentage(Integer percentage) throws Exception {
+    public void updatePercentage(Integer percentage, Integer k) throws Exception {
         // make new split
         dataSets = WekaApi.getInstance().splitDataSet(originalInstances, percentage);
+        resetClassifier(k);
         repaint();
     }
 
@@ -199,9 +200,9 @@ public class DrawingArea extends JPanel {
 
             if (showTestData) {
                 paintTestSetHighlights((Graphics2D) graphics, dataSets.getTestInstances());
-                if(showConnections){
-                	paintTestSetKnnConnectors((Graphics2D) graphics, dataSets.getTestInstances());
-                }
+            }
+            if(showConnections){
+                paintTestSetKnnConnectors((Graphics2D) graphics, dataSets.getTestInstances());
             }
             if (showTrainingData) {
                 paintDataPoints((Graphics2D) graphics, dataSets.getTrainingInstances());
