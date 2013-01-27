@@ -4,15 +4,14 @@
 library("optparse")
 
 option_list <- list(
-                    make_option(c("-t", "--train"), help="load training data", metavar="ARFF_FILE"),
-                    make_option(c("-T", "--test"), help="load test data, if ommitted, training data is splitted into parts", metavar="ARFF_FILE"),
-                    make_option(c("-k", "--kneighbors"), type="integer", help="k parameter for nearest neighbor classifier", default=as.integer(5), metavar="K"),
-                    make_option(c("-c", "--color"), type="character", default="Prediction", help="color the points based on the predicted value or based on the prediction correctness", metavar="Prediction|Correctness"),
-                    make_option(c("-e","--extract"), type="integer", help="reduce input data set by extracting every nth instance", metavar="N")
+                    make_option(c("-t", "--train"), action="store", help="load training data", metavar="ARFF_FILE"),
+                    make_option(c("-T", "--test"), action="store", help="load test data, if ommitted, training data is splitted into parts", metavar="ARFF_FILE"),
+                    make_option(c("-k", "--kneighbors"), action="store", type="integer", help="k parameter for nearest neighbor classifier", default=as.integer(5), metavar="K"),
+                    make_option(c("-c", "--color"), action="store_true", default=FALSE, help="color the points based on the prediction correctness, otherwise on the predicted value"),
+                    make_option(c("-e","--extract"), action="store", type="integer", help="reduce input data set by extracting every nth instance", metavar="N")
                     )
 parser <- OptionParser(usage="knnDemonstration [option] trainingfile", option_list=option_list)
-arguments <- parse_args(parser, positional_arguments = TRUE)
-opt <- arguments$options
+opt <- parse_args(parser)
 
 # handle training data
 if(is.null(opt$train)){
@@ -26,12 +25,6 @@ if(file.access(opt$train) == -1){
 if( !is.null(opt$test) && (file.access(opt$test) == -1)){
     stop(sprintf("Specified file ( %s ) does not exist", opt$test))
 }
-
-# only values 'Prediction' or 'Correctness' as color values are allowed
-if (!opt$color %in% c("Prediction","Correctness")){
-    stop(sprintf("Expected 'Prediction' or 'Correctness' as 'color' parameter, but given %s", opt$color ))
-}
-
 
 # Weka bridge
 library(RWeka)
@@ -102,9 +95,9 @@ if (modus == "2D"){
         classifier <-IBk(Class ~ ., training, control = Weka_control(K = as.numeric(panel$k)))
         testing <- testing
         testing$P <- predict(classifier, testing)
-        if (opt$color == "Prediction"){
+        if (!opt$color){
             testing$Color <- testing$P
-        } else if (opt$color == "Correctness"){
+        } else {
             testing$Color <- (testing$Class == testing$P)
         } # TODO: does another switch makes sense? Maybe for 'Class', the true Class Attribute without prediction?
         # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
