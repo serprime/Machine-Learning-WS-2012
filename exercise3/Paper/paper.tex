@@ -29,7 +29,9 @@
 
 \usepackage{sectsty} % Allows customizing section commands
 
+\usepackage{graphicx}
 \usepackage{todonotes}
+
 \allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
 
 \usepackage{fancyhdr} % Custom headers and footers
@@ -92,21 +94,48 @@ Our Data Set were
 \item
 The 'Skin-NonSkin' Data Set, which is a collection of RGB-values and the 4th attribute states whether this is a skin color or not
 \item
-A truncation of the iris data set, with a removed column to fit the data set to 3 dimensions
+A truncation of the iris data set, with a removed column to fit the data to 3 dimensions
+\item
+\todo[inline]{... a third data set}
 \end{enumerate}
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{Skin_predicted_k5}
-\caption{The 'Skin-NonSkin' Data Set, colored by the predicted class attribute}
-\label{fig:skin:predicted:k5}
+
+The knn nearest neighbor performs especially well if we have a balanced data set with separated spaces where one of the class values is dominating. Figure \ref{fig:skin:predicted:k5} shows the prediction of K-Nearest-Neighbor for the 'Skin-Nonskin' data set. Obviously, there are a certain space where all the actual skin colors are located. This is an important fact, which facilitates the prediction of instances. In figure \ref{fig:skin:correct:k5} one can see the same data set visualized based on the correctness of the prediction. Black marks belong to correct instances and white marks belong to misclassified instances. In this example, k-nn performs very well, only few instances lying on the border to the skin color space are misclassified.
+
+\begin{figure}[\textwidth]
+    \begin{center}
+        \includegraphics[width=\textwidth]{Skin_predicted_k5}
+    \end{center}
+    \caption['Skin-NonSkin' prediction with k=5]{The 'Skin-NonSkin' Data Set, colored by the predicted class attribute, with 5 neighbors as K parameter.}
+    \label{fig:skin:predicted:k5}
 \end{figure}
 
-\begin{figure}[h]
-\centering
+\begin{figure}[\textwidth]
+    \begin{center}
 \includegraphics[width=\textwidth]{Skin_correct_k5}
-\caption{The 'Skin-NonSkin' Data Set, colored by correct or misclassified instance}
+    \end{center}
+\caption['Skin-NonSkin' correctness with k=5]{The 'Skin-NonSkin' Data Set, colored by correct or misclassified instance, with 5 neighbors as K parameter.}
 \label{fig:skin:correct:k5}
 \end{figure}
+
+\begin{figure}[\textwidth]
+    \begin{center}
+\includegraphics[width=\textwidth]{Skin_predicted_k100}
+    \end{center}
+\caption['Skin-NonSkin' prediction with k=100]{The 'Skin-NonSkin' Data Set, colored by the predicted class attribute, with 100 neighbors as K parameter.}
+\label{fig:skin:predicted:k100}
+\end{figure}
+
+
+If we raise the K-paramter up to 100, we get worse results. As seen in figure \ref{fig:skin:predicted:k100} the K-NN algorithm misclassfies more instances that are located in one corner of the RGB space. Hence, we can see more white marks in figure \ref{fig:skin:correct:k100}.
+
+\begin{figure}[\textwidth]
+    \begin{center}
+\includegraphics[width=\textwidth]{Skin_correct_k100}
+    \end{center}
+\caption['Skin-NonSkin' correctness with k=100]{The 'Skin-NonSkin' Data Set, colored by correct or misclassified instance, with 100 neighbors as K parameter.}
+\label{fig:skin:correct:k100}
+\end{figure}
+
 \subsection{Data Sets}
 \todo[inline]{Wich data sets did we used?}
 \end{document}
