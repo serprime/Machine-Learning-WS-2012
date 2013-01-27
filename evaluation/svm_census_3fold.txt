@@ -1,0 +1,171 @@
+=== Run information ===
+
+Scheme:weka.classifiers.functions.SMO -C 1.0 -L 0.0010 -P 1.0E-12 -N 0 -V -1 -W 1 -K "weka.classifiers.functions.supportVector.PolyKernel -C 250007 -E 1.0"
+Relation:     adult-weka.filters.unsupervised.attribute.ReplaceMissingValues
+Instances:    32561
+Attributes:   15
+              age
+              workclass
+              fnlwgt
+              education
+              education-num
+              marital-status
+              occupation
+              relationship
+              race
+              sex
+              capital-gain
+              capital-loss
+              hours-per-week
+              native-country
+              income
+Test mode:3-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+SMO
+
+Kernel used:
+  Linear Kernel: K(x,y) = <x,y>
+
+Classifier for classes: >50K, <=50K
+
+BinarySMO
+
+Machine linear: showing attribute weights, not support vectors.
+
+        -0.7326 * (normalized) age
+ +      -0.0458 * (normalized) workclass=Private
+ +       0.2372 * (normalized) workclass=Self-emp-not-inc
+ +      -0.244  * (normalized) workclass=Self-emp-inc
+ +      -0.4448 * (normalized) workclass=Federal-gov
+ +      -0.0508 * (normalized) workclass=Local-gov
+ +       0.0792 * (normalized) workclass=State-gov
+ +       0.2687 * (normalized) workclass=Without-pay
+ +       0.2002 * (normalized) workclass=Never-worked
+ +      -0.6001 * (normalized) fnlwgt
+ +      -0.4951 * (normalized) education=Bachelors
+ +       0.1504 * (normalized) education=Some-college
+ +       0.2172 * (normalized) education=11th
+ +       0.2533 * (normalized) education=HS-grad
+ +      -0.7871 * (normalized) education=Prof-school
+ +       0.1181 * (normalized) education=Assoc-acdm
+ +       0.08   * (normalized) education=Assoc-voc
+ +       0.1734 * (normalized) education=9th
+ +       0.2173 * (normalized) education=7th-8th
+ +       0.2615 * (normalized) education=12th
+ +      -0.5876 * (normalized) education=Masters
+ +      -0.0045 * (normalized) education=1st-4th
+ +       0.198  * (normalized) education=10th
+ +      -0.7507 * (normalized) education=Doctorate
+ +      -0.0443 * (normalized) education=5th-6th
+ +       1      * (normalized) education=Preschool
+ +      -1.6669 * (normalized) education-num
+ +      -0.8403 * (normalized) marital-status=Married-civ-spouse
+ +       0.2385 * (normalized) marital-status=Divorced
+ +       0.551  * (normalized) marital-status=Never-married
+ +       0.3103 * (normalized) marital-status=Separated
+ +       0.1252 * (normalized) marital-status=Widowed
+ +       0.3699 * (normalized) marital-status=Married-spouse-absent
+ +      -0.7547 * (normalized) marital-status=Married-AF-spouse
+ +      -0.6056 * (normalized) occupation=Tech-support
+ +      -0.0343 * (normalized) occupation=Craft-repair
+ +       0.2529 * (normalized) occupation=Other-service
+ +      -0.2461 * (normalized) occupation=Sales
+ +      -0.6598 * (normalized) occupation=Exec-managerial
+ +      -0.2636 * (normalized) occupation=Prof-specialty
+ +       0.205  * (normalized) occupation=Handlers-cleaners
+ +       0.062  * (normalized) occupation=Machine-op-inspct
+ +      -0.061  * (normalized) occupation=Adm-clerical
+ +       0.4547 * (normalized) occupation=Farming-fishing
+ +       0.045  * (normalized) occupation=Transport-moving
+ +       1      * (normalized) occupation=Priv-house-serv
+ +      -0.2745 * (normalized) occupation=Protective-serv
+ +       0.1254 * (normalized) occupation=Armed-Forces
+ +      -0.709  * (normalized) relationship=Wife
+ +       0.2941 * (normalized) relationship=Own-child
+ +      -0.1075 * (normalized) relationship=Husband
+ +       0.0476 * (normalized) relationship=Not-in-family
+ +       0.4143 * (normalized) relationship=Other-relative
+ +       0.0605 * (normalized) relationship=Unmarried
+ +      -0.1262 * (normalized) race=White
+ +      -0.1232 * (normalized) race=Asian-Pac-Islander
+ +       0.2173 * (normalized) race=Amer-Indian-Eskimo
+ +       0.1183 * (normalized) race=Other
+ +      -0.0863 * (normalized) race=Black
+ +      -0.3859 * (normalized) sex
+ +     -17.7228 * (normalized) capital-gain
+ +      -1.9644 * (normalized) capital-loss
+ +      -1.7137 * (normalized) hours-per-week
+ +      -0.19   * (normalized) native-country=United-States
+ +      -1      * (normalized) native-country=Cambodia
+ +      -0.2419 * (normalized) native-country=England
+ +       0.1207 * (normalized) native-country=Puerto-Rico
+ +      -0.387  * (normalized) native-country=Canada
+ +      -0.3842 * (normalized) native-country=Germany
+ +       0.5786 * (normalized) native-country=Outlying-US(Guam-USVI-etc)
+ +       0.1415 * (normalized) native-country=India
+ +      -0.2641 * (normalized) native-country=Japan
+ +       0.3375 * (normalized) native-country=Greece
+ +       0.9864 * (normalized) native-country=South
+ +       0.1865 * (normalized) native-country=China
+ +      -0.2238 * (normalized) native-country=Cuba
+ +      -0.2522 * (normalized) native-country=Iran
+ +       0      * (normalized) native-country=Honduras
+ +      -0.4279 * (normalized) native-country=Philippines
+ +      -0.5467 * (normalized) native-country=Italy
+ +      -0.1243 * (normalized) native-country=Poland
+ +       0.1705 * (normalized) native-country=Jamaica
+ +       0.8726 * (normalized) native-country=Vietnam
+ +       0.0878 * (normalized) native-country=Mexico
+ +      -0.0044 * (normalized) native-country=Portugal
+ +      -0.4416 * (normalized) native-country=Ireland
+ +      -0.6146 * (normalized) native-country=France
+ +       0.627  * (normalized) native-country=Dominican-Republic
+ +       0.0291 * (normalized) native-country=Laos
+ +       0      * (normalized) native-country=Ecuador
+ +      -0.2401 * (normalized) native-country=Taiwan
+ +       0      * (normalized) native-country=Haiti
+ +       0.6729 * (normalized) native-country=Columbia
+ +       0.066  * (normalized) native-country=Hungary
+ +       0.0217 * (normalized) native-country=Guatemala
+ +       0.3967 * (normalized) native-country=Nicaragua
+ +      -0.0266 * (normalized) native-country=Scotland
+ +       0      * (normalized) native-country=Thailand
+ +      -0.2911 * (normalized) native-country=Yugoslavia
+ +       0.1511 * (normalized) native-country=El-Salvador
+ +       0.0039 * (normalized) native-country=Trinadad&Tobago
+ +       0.3331 * (normalized) native-country=Peru
+ +      -0.123  * (normalized) native-country=Hong
+ +       4.4042
+
+Number of kernel evaluations: 1063873346 (22.585% cached)
+
+
+
+Time taken to build model: 846.94 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances       27638               84.8807 %
+Incorrectly Classified Instances      4923               15.1193 %
+Kappa statistic                          0.5504
+Mean absolute error                      0.1512
+Root mean squared error                  0.3888
+Relative absolute error                 41.3488 %
+Root relative squared error             90.9398 %
+Total Number of Instances            32561     
+
+=== Detailed Accuracy By Class ===
+
+               TP Rate   FP Rate   Precision   Recall  F-Measure   ROC Area  Class
+                 0.569     0.062      0.743     0.569     0.644      0.753    >50K
+                 0.938     0.431      0.873     0.938     0.904      0.753    <=50K
+Weighted Avg.    0.849     0.343      0.841     0.849     0.841      0.753
+
+=== Confusion Matrix ===
+
+     a     b   <-- classified as
+  4458  3383 |     a = >50K
+  1540 23180 |     b = <=50K

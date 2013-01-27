@@ -1,5 +1,7 @@
 package at.ac.tuwien.knn.gui;
 
+import at.ac.tuwien.knn.DistributionGenerator;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
@@ -9,6 +11,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 
 public class MainWindow {
@@ -16,10 +19,39 @@ public class MainWindow {
     private JFrame frame;
     private DrawingArea panel;
     private JLabel lbFilename;
-    private int defaultK = 3;
+    private JLabel lblClasses;
+    private JLabel lblXAxis;
+    private JLabel lblYAxis;
+    
+	private int defaultK = 3;
     private int defaultPercentage = 70;
 
-    /**
+    public JLabel getLblXAxis() {
+		return lblXAxis;
+	}
+
+	public void setLblXAxis(JLabel lblXAxis) {
+		this.lblXAxis = lblXAxis;
+	}
+
+	public JLabel getLblYAxis() {
+		return lblYAxis;
+	}
+
+	public void setLblYAxis(JLabel lblYAxis) {
+		this.lblYAxis = lblYAxis;
+	}
+
+	public JLabel getLblClasses() {
+		return lblClasses;
+	}
+    
+    public JFrame getFrame() {
+		return frame;
+	}
+
+
+	/**
      * Launch the application.
      */
     public static void main(String[] args) {
@@ -33,8 +65,6 @@ public class MainWindow {
                 }
             }
         });
-
-        //DrawingArea drawingArea = new DrawingArea();
     }
 
     /**
@@ -49,13 +79,18 @@ public class MainWindow {
      * Initialize the contents of the frame.
      */
     private void initialize() {
-
         // MAIN
         //
         frame = new JFrame();
-        frame.setBounds(100, 100, 1000, 800);
+        frame.setBounds(100, 100, 1068, 810);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
+
+        JLabel jlDesc = new JLabel("Test data points are highlighted by a grey circle. The colors show different classes: (actual : predicted)");
+        jlDesc.setBounds(35, 740, 800, 20);
+        frame.getContentPane().add(jlDesc);
+
+
 
         // SPINNER K
         //
@@ -78,7 +113,7 @@ public class MainWindow {
 
         // DRAWING PANEL
         //
-        panel = new DrawingArea();
+        panel = new DrawingArea(this);
         panel.setBackground(Color.WHITE);
         panel.setBorder(new LineBorder(SystemColor.controlDkShadow));
         panel.setBounds(33, 33, 737, 699);
@@ -118,17 +153,18 @@ public class MainWindow {
         // FILE HANDLING
         //
         lbFilename = new JLabel("No dataset chosen");
-        lbFilename.setBounds(810, 73, 164, 20);
+        lbFilename.setBounds(810, 73, 232, 20);
         frame.getContentPane().add(lbFilename);
         JButton btnOpenFile = new JButton("Open file...");
         btnOpenFile.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File("./data"));
                 int returnVal = fileChooser.showOpenDialog(frame);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     try {
-                        panel.updateDataFile(fileChooser.getSelectedFile(), (Integer) spinnerK.getModel().getValue());
+                        updateDataFile(fileChooser.getSelectedFile(), (Integer) spinnerK.getModel().getValue());
                         lbFilename.setText("Dataset: " + fileChooser.getSelectedFile().getName());
                     } catch (Exception e) {
                         lbFilename.setText("Error loading data from file.");
@@ -166,5 +202,45 @@ public class MainWindow {
         chckbxShowTrainingData.setSelected(true);
         chckbxShowTrainingData.setBounds(810, 235, 152, 23);
         frame.getContentPane().add(chckbxShowTrainingData);
+        
+        JCheckBox chckbxShowConnection = new JCheckBox("Show connection to neighbours");
+        chckbxShowConnection.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                panel.updateShowConnections(e.getStateChange() == e.SELECTED);
+            }
+        });
+        chckbxShowConnection.setSelected(true);
+        chckbxShowConnection.setBounds(810, 286, 211, 20);
+        frame.getContentPane().add(chckbxShowConnection);
+        
+        lblClasses = new JLabel("Classes:");
+        lblClasses.setBounds(810, 425, 76, 14);
+        frame.getContentPane().add(lblClasses);
+        
+        lblXAxis = new JLabel("x-Axis:");
+        lblXAxis.setBounds(810, 364, 232, 14);
+        frame.getContentPane().add(lblXAxis);
+        
+        lblYAxis = new JLabel("y-Axis:");
+        lblYAxis.setBounds(810, 389, 232, 14);
+        frame.getContentPane().add(lblYAxis);
+        
+        JLabel lblCorrectClassified = new JLabel("Correctly classified:");
+        lblCorrectClassified.setBounds(810, 332, 232, 14);
+        frame.getContentPane().add(lblCorrectClassified);
+
+        try {
+            //DistributionGenerator.run();
+            this.updateDataFile(new File("data/knn-3-gauss.arff"), 3);
+            // this.updateDataFile(new File("data/knn-data.arff"), 3);
+            // this.updateDataFile(new File("data/knn_benjamin_data.arff"), 3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void updateDataFile(File file, int k) throws Exception{
+    	panel.updateDataFile(file, k);
+    	this.lbFilename.setText("Open file: " + file.getName());
     }
 }

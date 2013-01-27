@@ -1,0 +1,13 @@
+1359131091732	Rename type 'DatasetParser'
+1359142044388	Rename field 'dataPoints'
+1359142159222	Rename method 'setDataSet'
+1359142518172	Rename method 'getDataPoints'
+1359142527552	Rename method 'setDataPoints'
+1359143651826	Rename local variable 'trainingPoints'
+1359146919345	Rename field 'isShowTestData'
+1359148881501	Move compilation units
+1359148892363	Move compilation units
+1359148927616	Move compilation units
+1359229993356	Rename field 'mainWindow'
+1359237046969	Rename field 'lblXaxis'
+1359237053858	Rename field 'lblYaxis'

@@ -1,0 +1,68 @@
+Tried out all different kernels - didn't get better results.
+
+=== Run information ===
+
+Scheme:weka.classifiers.functions.SMO -C 1.0 -L 0.0010 -P 1.0E-12 -N 0 -V -1 -W 1 -K "weka.classifiers.functions.supportVector.PolyKernel -C 250007 -E 1.0"
+Relation:     echocardiogram-weka.filters.unsupervised.attribute.ReplaceMissingValues-weka.filters.unsupervised.attribute.Remove-R1-2
+Instances:    97
+Attributes:   7
+              age-at-heart-attack
+              pericardial-effusion
+              fractional-shortening
+              epss
+              lvdd
+              wall-motion-index
+              alive-at-1
+Test mode:3-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+SMO
+
+Kernel used:
+  Linear Kernel: K(x,y) = <x,y>
+
+Classifier for classes: 0, 1
+
+BinarySMO
+
+Machine linear: showing attribute weights, not support vectors.
+
+        -0.0037 * (normalized) age-at-heart-attack
+ +       0.0011 * (normalized) pericardial-effusion
+ +      -0.0047 * (normalized) fractional-shortening
+ +       0.0024 * (normalized) epss
+ +      -0.0116 * (normalized) lvdd
+ +      -0.0016 * (normalized) wall-motion-index
+ +       1.0115
+
+Number of kernel evaluations: 1591 (79.035% cached)
+
+
+
+Time taken to build model: 0.01 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances          93               95.8763 %
+Incorrectly Classified Instances         4                4.1237 %
+Kappa statistic                          0     
+Mean absolute error                      0.0412
+Root mean squared error                  0.2031
+Relative absolute error                 44.9424 %
+Root relative squared error            101.5913 %
+Total Number of Instances               97     
+
+=== Detailed Accuracy By Class ===
+
+               TP Rate   FP Rate   Precision   Recall  F-Measure   ROC Area  Class
+                 0         0          0         0         0          0.5      0
+                 1         1          0.959     1         0.979      0.5      1
+Weighted Avg.    0.959     0.959      0.919     0.959     0.939      0.5  
+
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+  0  4 |  a = 0
+  0 93 |  b = 1
