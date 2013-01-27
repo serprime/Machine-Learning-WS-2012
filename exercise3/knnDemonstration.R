@@ -8,6 +8,7 @@ option_list <- list(
                     make_option(c("-T", "--test"), action="store", help="load test data, if ommitted, training data is splitted into parts", metavar="ARFF_FILE"),
                     make_option(c("-k", "--kneighbors"), action="store", type="integer", help="k parameter for nearest neighbor classifier", default=as.integer(5), metavar="K"),
                     make_option(c("-c", "--color"), action="store_true", default=FALSE, help="color the points based on the prediction correctness, otherwise on the predicted value"),
+                    make_option(c("-E", "--eval"), action="store_true", default=FALSE, help="output evaluation data"),
                     make_option(c("-e","--extract"), action="store", type="integer", help="reduce input data set by extracting every nth instance", metavar="N")
                     )
 parser <- OptionParser(usage="knnDemonstration [option] trainingfile", option_list=option_list)
@@ -34,6 +35,7 @@ library(rgl)
 
 # library for the text box
 library(rpanel)
+
 
 # helper function to extract a fraction amount of the training data
 Nth.rows<-function(dataframe, n)dataframe[(seq(n,to=nrow(dataframe),by=n)),]
@@ -100,7 +102,12 @@ if (modus == "2D"){
         } else {
             testing$Color <- (testing$Class == testing$P)
         } # TODO: does another switch makes sense? Maybe for 'Class', the true Class Attribute without prediction?
-        # TODO: maybe output some evaluation data? e.g. percentage of misclassified instances
+
+        # output some evaluation data? count of (mis)classified instances
+        if (opt$eval){
+        cat("\nThe distribution of color values is :\n")
+        print(table(testing$Color))
+        }
         if (modus == "3D"){
             plot3d(testing[[1]], testing[[2]], testing[[3]], xlab=names(testing)[1], ylab=names(testing)[2], zlab=names(testing)[3], col=testing$Color, size=1, type='s')
         } else if (modus == "2D"){
